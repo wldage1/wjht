@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/common/decorators">
+    <!-- 在excludes元素下指定的页面将不会由SiteMesh来装饰 -->
+    <excludes>
+    	<pattern>/index</pattern>
+    	<pattern>/main*</pattern>
+    	<pattern>/system*</pattern>
+        <pattern>/error</pattern>
+        <pattern>/left*</pattern>
+        <pattern>/welcome</pattern>
+        <pattern>/exit</pattern>
+        <pattern>/success</pattern>
+        <pattern>/survey/question/maintain/preview*</pattern>
+        <pattern>/survey/question/maintain/join*</pattern>
+    </excludes>
+
+	<!-- 创建一个名为decorator的装饰器，该装饰器页面为decorator.jsp,
+	     用于装饰pattern指定的URL的所有页面-->
+    <decorator name="decorator" page="decorator.jsp">
+        <pattern>*</pattern>
+    </decorator>
+</decorators>
