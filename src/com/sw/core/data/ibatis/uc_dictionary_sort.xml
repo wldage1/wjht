@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   ID                   bigint not null auto_increment comment '字典内容ID',
+   Value                varchar(100) not null comment '字典字段1',
+   Name                 varchar(100) not null comment '字典字段2',
+-->
+<mapper namespace="dictionarySort">
+	<parameterMap id="dictionarySort" type="com.sw.core.data.entity.DictionarySort" />
+	<resultMap id="dictionarySortResult" type="com.sw.core.data.entity.DictionarySort">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="value" column="Value" />
+	</resultMap>
+
+	<!-- 字典通用查询 -->
+	<select id="select" resultMap="dictionarySortResult" parameterMap="dictionarySort">
+		select * from UC_DictionarySort
+		<where>	
+			<trim prefixOverrides="and">
+				<if test="id != null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="value !=null and value !=''">
+			 	 and Value=#{value}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="selectCount" resultType="java.lang.Long" parameterMap="dictionarySort">
+		select count(*) from UC_DictionarySort
+		<where>	
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="value != null and value !=''">
+			 	 and Value=#{value}
+				</if>
+			</trim>
+		</where>
+	</select>	
+	
+	<insert id="insert" parameterMap="dictionarySort">
+		insert into UC_DictionarySort
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,Name</if>
+			<if test="value!=null and value != ''">,Value</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,#{name}</if>
+			<if test="value!=null and value!= ''">,#{value}</if>
+		</trim>
+	</insert>
+		
+	<update id="update" parameterMap="dictionarySort">
+		update UC_DictionarySort
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="name !=null and name !=''">,Name = #{name}</if>
+				<if test="value !=null and value !=''">,Value = #{value}</if>
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+			 	<if test="id!=null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="value !=null and value !=''">
+			 	 and Value=#{value}
+				</if>		
+			</trim>
+		</where>		
+	</update>		
+		
+	<delete id="delete" parameterMap="dictionarySort">
+		delete from UC_DictionarySort
+		<where>
+			<trim prefixOverrides="and">
+			 	<if test="id!=null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="value !=null and value !=''">
+			 	 and Value=#{value}
+				</if>				
+			</trim>
+		</where>			
+	</delete>
+	
+	<!-- 删除所有数据并重置主键 -->
+	<delete id="deleteOverKey">
+		truncate table UC_DictionarySort
+	</delete>
+</mapper>

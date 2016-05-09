@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<clientcenter index="clientcenter" code="2" name="客户中心" level="1" controller="/clientcenter" icon="images/icon/client_center.gif">
+		<reservation index="reservation_mgr" code="201" name=" 产品预约" level="2" controller="/clientcenter/reservation/mgr" icon="images/icon/cc_reservation.gif">
+			<info index="info_mgr" code="20101" isNav="true" isSubAuth="true" isStatus="true" name="预约管理" level="3" controller="/clientcenter/reservation/info/list">
+				<language>
+					<value>/clientcenter/reservation/info/language/reservationMessages_zh_CN.properties</value>
+					<value>/clientcenter/reservation/info/language/reservationMessages_zh_CN.properties</value>
+				</language>
+				<delete index="res_delete" code="2010101" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/reservation/info/delete"/>
+				<detail index="res_detail" code="2010102" isNav="true" isLog="true" name="详细" level="4" controller="/clientcenter/reservation/info/detail"/>
+				<recycle index="res_recycle" code="2010103" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/reservation/info/recycle"/>
+				<restore index="res_restore" code="201010301" isNav="true" isLog="true" name="还原" level="5" controller="/clientcenter/reservation/info/res_restore_delete"/>
+				<del index="res_restore_delete" code="201010302" isNav="true" isLog="true" name="删除" level="5" controller="/clientcenter/reservation/info/restore_delete"/>
+			</info>
+			<consult index="consult_mgr" code="20102" isNav="true" isSubAuth="true" isStatus="true" name="咨询管理" level="3" controller="/clientcenter/reservation/consult/list">
+				<language>
+					<value>/clientcenter/reservation/consult/language/consultMessages_zh_CN.properties</value>
+					<value>/clientcenter/reservation/consult/language/consultMessages_zh_CN.properties</value>
+				</language>
+				<create index="consult_create" code="2010201" isNav="true" isLog="true" name="创建" level="4" controller="/clientcenter/reservation/consult/create"/>
+				<modify index="consult_modify" code="2010202" isNav="true" isLog="true" name="修改" level="4" controller="/clientcenter/reservation/consult/modify"/>
+				<delete index="consult_delete" code="2010203" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/reservation/consult/delete"/>
+				<detail index="consult_detail" code="2010204" isNav="true" isLog="true" name="详细" level="4" controller="/clientcenter/reservation/consult/detail"/>
+				<recycle index="consult_recycle" code="2010205" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/reservation/consult/recycle"/>
+				<restore index="consult_restore" code="201020501" isNav="true" isLog="true" name="还原" level="5" controller="/clientcenter/reservation/consult/restore_delete"/>
+				<del index="consult_restore_delete" code="201020502" isNav="true" isLog="true" name="删除" level="5" controller="/clientcenter/reservation/consult/consult_delete"/>
+			</consult>
+		</reservation>
+		<requirement index="requirement_mgr" code="202" name="投资需求" level="2" controller="/clientcenter/requirement/mgr" icon="images/icon/cc_requiremant.gif">
+			<investment index="investment_mgr" code="20201" isNav="true" isSubAuth="true" isStatus="true" name="需求管理" level="3" controller="/clientcenter/requirement/investment/list">
+				<language>
+					<value>/clientcenter/requirement/investment/language/investmentMessages_zh_CN.properties</value>
+					<value>/clientcenter/requirement/investment/language/investmentMessages_zh_CN.properties</value>
+				</language>
+				<detail index="investment_detail" code="2020101" isNav="true" isLog="true" name="详细" level="4" controller="/clientcenter/requirement/investment/detail"/>
+				<delete index="investment_delete" code="2020102" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/requirement/investment/delete"/>
+				<recycle index="investment_recycle" code="2020103" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/requirement/investment/recycle"/>
+				<restore index="investment_restore" code="202010301" isNav="true" isLog="true" name="还原" level="5" controller="/clientcenter/requirement/investment/restore_delete"/>
+				<del index="investment_restore_delete" code="202010302" isNav="true" isLog="true" name="删除" level="5" controller="/clientcenter/requirement/investment/requirement_restore_delete"/>
+			</investment>
+			<productSort index="productSort_mgr" code="20202" isNav="true" isSubAuth="true" isStatus="true" name="产品类型管理" level="3" controller="/clientcenter/requirement/productsort/list">
+				<language>
+					<value>/clientcenter/requirement/productsort/language/requirementProductSortMessages_zh_CN.properties</value>
+					<value>/clientcenter/requirement/productsort/language/requirementProductSortMessages_zh_CN.properties</value>
+				</language>
+				<detail index="create" code="2020201" isNav="true" isLog="true" name="创建" level="4" controller="/clientcenter/requirement/productsort/create"/>
+				<modify index="modify" code="2020202" isNav="true" isLog="true" name="修改" level="4" controller="/clientcenter/requirement/productsort/modify"/>
+				<delete index="delete" code="2020203" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/requirement/productsort/delete"/>
+				<list index="userList" code="2020204" isNav="true" isLog="true" name="用户列表" level="4" controller="/clientcenter/requirement/productsort/userList"/>
+			</productSort>
+		</requirement>
+		<member path="member_mgr" code="203" name="会员管理" level="2" controller="/clientcenter/member/maintain/mgr" icon="images/icon/cc_member.gif">
+			<maintain index="maintain_mgr" code="20301" isNav="true" isSubAuth="true" isStatus="true" name="会员管理" level="3" controller="/clientcenter/member/maintain/list">
+				<language>
+					<value>/clientcenter/member/maintain/language/memberMessages_zh_CN.properties</value>
+				</language>
+				<create index="maintain_create" code="2030101" isNav="true" isLog="true" name="创建" level="4" controller="/clientcenter/member/maintain/create"/>
+				<modify index="maintain_modify" code="2030102" isNav="true" isLog="true" name="修改" level="4" controller="/clientcenter/member/maintain/modify"/>
+				<pseudoDelete index="maintain_pseudoDelete" code="2030103" isLog="true" name="删除" level="4" controller="/clientcenter/member/maintain/pseudoDelete"/>
+				<start index="maintain_start" code="2030104" isLog="true" name="启用" level="4" controller="/clientcenter/member/maintain/start"/>
+				<stop index="maintain_stop" code="2030105" isLog="true" name="停用" level="4" controller="/clientcenter/member/maintain/stop"/>
+				<recycler index="maintain_recycler" code="2030106" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/member/maintain/recycler"/>
+				<restore index="maintain_restore" code="203010601" isLog="true" name="还原" level="5" controller="/clientcenter/member/maintain/restore"/>
+				<delete index="maintain_delete" code="203010602" isLog="true" name="删除" level="5" controller="/clientcenter/member/maintain/delete"/>
+				<empty index="maintain_empty" code="2030107" isLog="true" name="清空身份认证" level="4" controller="/clientcenter/member/maintain/emptyauthenticationcode"/>
+				<statistic index="maintain_statistic" isSubAuth="true" isStatus="true" code="2030108" name="新会员统计" level="4" controller="/clientcenter/member/maintain/statistic">
+					<det index="maintain_statistic_detail" code="203010801" name="详细" level="5" controller="/clientcenter/member/maintain/detail"/>
+				</statistic>
+				<detail index="maintain_detail" code="2030109" name="详细" level="4" controller="/clientcenter/member/maintain/detail"/>
+				<crmsynchronous index="maintain_crm_synchronous" code="2030110" name="CRM数据同步" level="4" controller="/clientcenter/member/maintain/crmsynchronous"/>
+				<certification index="maintain_certification" code="2030111" name="认证" level="4" controller="/clientcenter/member/maintain/certification"/>
+				<export index="maintain_export" code="2030112" name="导出" level="4" controller="/clientcenter/member/maintain/export"/>
+			</maintain>
+			<generateaccount index="maintain_generateaccount" code="20302" isNav="true" isSubAuth="true" isStatus="true" name="CRM成单生成账号列表" level="3" controller="/clientcenter/member/generateaccount/list">
+				<language>
+					<value>/clientcenter/member/generateaccount/language/generateaccountMessages_zh_CN.properties</value>
+				</language>
+				<generate index="generateaccount_generate" code="2030201" isNav="true" isLog="true" name="生成" level="4" controller="/clientcenter/member/generateaccount/generate"/>
+			</generateaccount>
+		</member>
+		<agreement index="agreement_mgr" code="204" isNav="true"  name="服务约定" level="2" controller="/clientcenter/agreement/service/mgr" icon="images/icon/cc_agreement.gif">
+		   <service index="service_mgr" code="20401" isNav="true" isSubAuth="true" name="服务约定管理" level="3" controller="/clientcenter/agreement/service/editAgreement">
+				<language>
+					<value>/clientcenter/agreement/service/language/agreementServices_zh_CN.properties</value>
+					<value>/clientcenter/agreement/service/language/agreementServices_en_CN.properties</value>
+				</language>
+				<download index="service_mgr_download" code="2040101" isNav="true" isLog="true" name="下载" level="4" controller="/clientcenter/agreement/service/download"/>
+			</service>
+		</agreement>
+		<salon index="salon_mgr" code="205" name="理财沙龙" isNav="true" level="2" controller="/clientcenter/salon/mgr" icon="images/icon/cc_salon.gif">
+			<message index="message_mgr" code="20501" isNav="true" isSubAuth="true" isStatus="true" name="沙龙邀请" level="3" controller="/clientcenter/salon/message/list">
+				<language>
+					<value>/clientcenter/salon/message/language/salonMessageMessages_zh_CN.properties</value>
+					<value>/clientcenter/salon/message/language/salonMessageMessages_zh_CN.properties</value>
+				</language>
+				<create index="create" code="2050101" isNav="true" isLog="true" name="创建" level="4" controller="/clientcenter/salon/message/create"/>
+				<modify index="modify" code="2050102" isNav="true" isLog="true" name="修改" level="4" controller="/clientcenter/salon/message/modify"/>
+				<delete index="delete" code="2050103" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/salon/message/delete"/>
+				<detail index="detail" code="2050104" isNav="true" name="详细" level="4" controller="/clientcenter/salon/message/detail"/>
+				<start index="start" code="2050105" isNav="true" isLog="true" name="启用" level="4" controller="/clientcenter/salon/message/start"/>
+			</message>
+			<feedback index="feedback_mgr" code="20502" isNav="true" isSubAuth="true" isStatus="true" name="邀请反馈" level="3" controller="/clientcenter/salon/feedback/list">
+				<language>
+					<value>/clientcenter/salon/feedback/language/salonFeedbackMessages_zh_CN.properties</value>
+					<value>/clientcenter/salon/feedback/language/salonFeedbackMessages_zh_CN.properties</value>
+				</language>
+				<delete index="delete" code="2050201" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/salon/feedback/delete"/>
+				<detail index="detail" code="2050202" isNav="true" isLog="true" name="详细" level="4" controller="/clientcenter/salon/feedback/detail"/>
+				<recycle index="recycle" code="2050203" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/salon/feedback/recycle"/>
+				<export index="export" code="2050204" isNav="true" isLog="true" name="导出" level="4" controller="/clientcenter/salon/feedback/export"/>
+				<restore index="restore" code="205020301" isNav="true" isLog="true" name="还原" level="5" controller="/clientcenter/salon/feedback/restore_delete"/>
+				<del index="restore_delete" code="205020302" isNav="true" isLog="true" name="删除" level="5" controller="/clientcenter/salon/feedback/feedback_delete"/>
+				<restore_export index="restore_export" code="205020303" isNav="true" isLog="true" name="导出" level="5" controller="/clientcenter/salon/feedback/restore_export"/>
+			</feedback>
+		</salon>
+		<finance index="finance_mgr" code="206" name="理财中心" isNav="true" level="2" controller="/clientcenter/finance/mgr" icon="images/icon/cc_finance.gif">
+			<manage index="manage_mgr" code="20601" isNav="true" isSubAuth="true" isStatus="true" name="理财中心管理" level="3" controller="/clientcenter/finance/manage/list">
+				<language>
+					<value>/clientcenter/finance/manage/language/wealthManagementMessages_zh_CN.properties</value>
+					<value>/clientcenter/finance/manage/language/wealthManagementMessages_zh_CN.properties</value>
+				</language>
+				<create index="create" code="2060101" isNav="true" isLog="true" name="创建" level="4" controller="/clientcenter/finance/manage/create"/>
+				<modify index="modify" code="2060102" isNav="true" isLog="true" name="修改" level="4" controller="/clientcenter/finance/manage/modify"/>
+				<delete index="delete" code="2060103" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/finance/manage/delete"/>
+				<detail index="detail" code="2060104" isNav="true" name="详细" level="4" controller="/clientcenter/finance/manage/detail"/>
+			</manage>
+		</finance>
+	</clientcenter>
+</plugins>

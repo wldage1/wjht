@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSubAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<usercenter index="user_center" code="1" name="用户中心" level="1" controller="/usercenter" icon="images/icon/user_center.gif">
+		<system index="system" code="101" name="系统管理" level="2" controller="/welcome" icon="images/icon/uc_system.gif">
+			<organization index="org_mgr" code="10101" isNav="true" isSubAuth="true" isStatus="true" name="机构管理" level="3" controller="/usercenter/system/organization/list">
+				<language>
+					<value>/usercenter/system/organization/language/organizationMessages_zh_CN.properties</value>
+					<value>/usercenter/system/organization/language/organizationMessages_en_US.properties</value>
+				</language>
+				<create index="org_create" code="1010101" isNav="true" isLog="true" name="创建" level="4" controller="/usercenter/system/organization/create" />
+				<modify index="org_modify" code="1010102" isNav="true" isLog="true" name="修改" level="4" controller="/usercenter/system/organization/modify" />
+				<delete index="org_delete" code="1010103" isNav="true" isLog="true" name="删除" level="4" controller="/usercenter/system/organization/delete" />
+			</organization>
+			<role index="role_mgr" code="10102" isNav="true" isSubAuth="true" isStatus="true" name="角色管理" level="3" controller="/usercenter/system/role/list">
+				<language>
+					<value>/usercenter/system/role/language/roleMessages_zh_CN.properties</value>
+					<value>/usercenter/system/role/language/roleMessages_en_US.properties</value>
+				</language>
+				<create index="role_create" code="1010201" isNav="true" isLog="true" name="创建" level="4" controller="/usercenter/system/role/create" />
+				<modify index="role_modify" code="1010202" isNav="true" isLog="true" name="修改" level="4" controller="/usercenter/system/role/modify" />
+				<funcauth index="role_auth" code="1010203" isNav="true" isLog="true" name="功能授权" level="4" controller="/usercenter/system/role/auth" />
+				<delete index="role_delete" code="1010204" isNav="true" isLog="true" name="删除" level="4" controller="/usercenter/system/role/delete" />
+				<dataauth index="role_source" code="1010205" isNav="true" isLog="true" name="数据授权" level="4" controller="/usercenter/system/role/source" />
+			</role>
+			<user index="user_mgr" code="10103" isNav="true" isSubAuth="true" isStatus="true" name="用户管理" level="3" controller="/usercenter/system/user/list">
+				<language>
+					<value>/usercenter/system/user/language/userMessages_zh_CN.properties</value>
+					<value>/usercenter/system/user/language/userMessages_en_US.properties</value>
+				</language>
+				<create index="user_create" code="1010301" isNav="true" isLog="true" name="创建" level="4" controller="/usercenter/system/user/create" />
+				<modify index="user_modify" code="1010302" isNav="true" isLog="true" name="修改" level="4" controller="/usercenter/system/user/modify" />
+				<bind index="user_bind" code="1010303" isNav="true" isLog="true" name="绑定角色" level="4" controller="/usercenter/system/user/bind" />
+				<cpwd index="user_modify_cmpwd" code="1010304" isNav="true" isLog="true" name="修改密码" level="4" controller="/usercenter/system/user/cmpwd" />
+				<delete index="user_delete" code="1010305" isNav="true" isLog="true" name="删除" level="4" controller="/usercenter/system/user/delete" />
+				<dataauth index="user_dataauth" code="1010306" isNav="true" isLog="true" name="机构授权" level="4" controller="/usercenter/system/user/source" />
+			</user>
+			<password index="user_modify_shmpwd" code="10104" isNav="true" isLog="true" name="修改密码" level="3" controller="/usercenter/system/user/shmpwd">
+			</password>
+			<log index="opt_log" code="10105" isNav="true"  isSubAuth="true" isStatus="true" name="操作日志" level="3" controller="/usercenter/system/log/list">
+				<language>
+					<value>/usercenter/system/log/language/logMessages_zh_CN.properties</value>
+					<value>/usercenter/system/log/language/logMessages_en_US.properties</value>
+				</language>
+				<!-- <delete index="log_delete" code="1010501" name="删除" level="4" controller="/usercenter/system/log/delete" /> -->
+			</log>
+		</system>
+		<config path="config_mgr" code="103" name="客户管理" level="2" controller="/usercenter/config/mgr" icon="images/icon/client_center.gif">
+			<maintain index="client_mgr" code="10301" isNav="true" isSubAuth="true" isStatus="true" name="客户列表" level="3" controller="/clientcenter/client/maintain/list">
+				<language>
+					<value>/clientcenter/client/maintain/language/clientMessages_zh_CN.properties</value>
+				</language>
+				<create index="maintain_create" code="1030101" isNav="true" isLog="true" name="创建" level="4" controller="/clientcenter/client/maintain/create"/>
+				<modify index="maintain_modify" code="1030102" isNav="true" isLog="true" name="修改" level="4" controller="/clientcenter/client/maintain/modify"/>
+				<pseudoDelete index="maintain_delete" code="1030103" isLog="true" name="删除" level="4" controller="/clientcenter/client/maintain/delete"/>
+				<consume index="maintain_consume" code="1030104" isNav="true" isSubAuth="true" name="消费" level="4" controller="/clientcenter/client/maintain/consume"/>
+				<refuse index="maintain_refuse" code="1030105" isLog="true" name="拒绝" level="4" controller="/clientcenter/client/maintain/refuse"/>
+				<check index="maintain_check" code="1030106" isLog="true" name="审核" level="4" controller="/clientcenter/client/maintain/check"/>
+				<activation index="maintain_activation" code="1030107" isLog="true" name="卡激活" level="4" controller="/clientcenter/client/maintain/activation"/>
+				<sendCard index="maintain_sendcard" code="1030108" name="发卡" level="4" controller="/clientcenter/client/maintain/sendcard"/>
+				<detail index="maintain_detail" code="1030109" name="详细" level="4" controller="/clientcenter/client/maintain/detail"/>
+				<add index="consume_create" code="103010401" isLog="true" isNav="true" name="创建" level="5" controller="/clientcenter/client/maintain/carete_consume"/>
+				<del index="consume_delete" code="103010402" isLog="true" name="删除" level="5" controller="/clientcenter/client/maintain/delete_consume"/>
+			
+				<!-- <recycle index="recycle" code="1031003" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/salon/feedback/recycle"/>
+				<export index="export" code="1031004" isNav="true" isLog="true" name="导出" level="4" controller="/clientcenter/salon/feedback/export"/>
+				<restore index="restore" code="103011001" isNav="true" isLog="true" name="还原" level="5" controller="/clientcenter/salon/feedback/restore_delete"/>
+				<del index="restore_delete" code="103011002" isNav="true" isLog="true" name="删除" level="5" controller="/clientcenter/salon/feedback/feedback_delete"/> -->
+			</maintain>
+			<!-- <feedback index="feedback_mgr" code="10302" isNav="true" isSubAuth="true" isStatus="true" name="邀请反馈" level="3" controller="/clientcenter/salon/feedback/list">
+				<language>
+					<value>/clientcenter/salon/feedback/language/salonFeedbackMessages_zh_CN.properties</value>
+					<value>/clientcenter/salon/feedback/language/salonFeedbackMessages_zh_CN.properties</value>
+				</language>
+				<delete index="delete" code="1030201" isNav="true" isLog="true" name="删除" level="4" controller="/clientcenter/salon/feedback/delete"/>
+				<detail index="detail" code="1030202" isNav="true" isLog="true" name="详细" level="4" controller="/clientcenter/salon/feedback/detail"/>
+				<recycle index="recycle" code="1030203" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/clientcenter/salon/feedback/recycle"/>
+				<export index="export" code="1030204" isNav="true" isLog="true" name="导出" level="4" controller="/clientcenter/salon/feedback/export"/>
+				<restore index="restore" code="103020301" isNav="true" isLog="true" name="还原" level="5" controller="/clientcenter/salon/feedback/restore_delete"/>
+				<del index="restore_delete" code="103020302" isNav="true" isLog="true" name="删除" level="5" controller="/clientcenter/salon/feedback/feedback_delete"/>
+			</feedback> -->
+		</config>
+	</usercenter>
+</plugins>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   Code                 varchar(100) not null comment '系统权限代码，编码为数字，具有一定的规律。格式如下：1，11，111，112，12，121，122，13，131，132……',
+   Relation             varchar(200) comment '关系',
+   ParentCode           varchar(100) comment '父权限代码，编码也为数字，格式同上（code）。',
+   IndexCode            varchar(200) comment '权限名称,页面使用索引。',
+   Name                 varchar(200) comment '权限名称，用2-6个汉字进行规整描述，以方便在页面显示。',
+   Type                 char(1) comment '权限类型',
+   AuthLevel                varchar(10) comment '此权限是否有效。1：有效 0：无效',
+   DataSource           varchar(50) comment '数据源',
+   Description          varchar(200) comment '权限描述',
+   Controller           varchar(200) comment '控制器对应的url',
+   Icon                 varchar(500) comment '功能使用图片',
+   CreateTime           datetime comment '创建时间：角色的创建时间，为以后进行跟踪查询。',
+   Creator              varchar(50) comment '创建者：角色创建者姓名的记录。',
+   IsLog                varchar(100) comment '是否记录日志',
+   IsNav                varchar(100) comment '是否设置导航',
+   IsSubAuth            varchar(100) comment '是否设置子权限',
+   IsStatus             varchar(100) comment '是否记录状态',
+-->
+<mapper namespace="authorization">
+
+	<parameterMap id="authorization" type="com.sw.core.data.entity.Authorization" />
+	<!-- 权限结果集 -->
+	<resultMap id="authorizationResult" type="com.sw.core.data.entity.Authorization">
+		<result property="code" column="Code" />
+		<result property="index" column="IndexCode" />
+		<result property="relation" column="Relation" />
+		<result property="parentCode" column="ParentCode" />
+		<result property="level" column="AuthLevel" />
+		<result property="name" column="Name" />
+		<result property="type" column="Type" />
+		<result property="controller" column="Controller" />
+		<result property="dataSource" column="DataSource" />
+		<result property="description" column="Description" />
+		<result property="icon" column="Icon" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creator" column="Creator" />
+		<result property="isLog" column="IsLog" />
+		<result property="isNav" column="IsNav" />
+		<result property="isSubAuth" column="IsSubAuth" />
+		<result property="isStatus" column="IsStatus" />
+	</resultMap>
+	
+	<!-- 权限通用查询 -->
+	<select id="select" resultMap="authorizationResult" parameterMap="authorization">
+		select 
+			Code, 
+			Relation, 
+			ParentCode, 
+			IndexCode, 
+			Name, 
+			Type, 
+			AuthLevel, 
+			DataSource, 
+			Description, 
+			Controller, 
+			Icon, 
+			CreateTime, 
+			Creator, 
+			IsLog, 
+			IsNav, 
+			IsSubAuth,
+			IsStatus
+		from UC_Authorization
+		<where>
+			<trim prefixOverrides="and">
+				<if test="level != null  and level != '' ">
+					and AuthLevel = #{level}
+				</if>
+				<if test="code != null and code != '' ">
+					and Code = #{code}
+				</if>
+				<if test="parentCode != null and parentCode != '' ">
+					and ParentCode = #{parentCode}
+				</if>
+			</trim>
+		</where>
+		order by Code
+	</select>
+
+
+	<select id="selectByCode" resultMap="authorizationResult" parameterMap="authorization">
+		select 
+			Code, 
+			Relation, 
+			ParentCode, 
+			IndexCode, 
+			Name, 
+			Type, 
+			AuthLevel, 
+			DataSource, 
+			Description, 
+			Controller, 
+			Icon, 
+			CreateTime, 
+			Creator, 
+			IsLog, 
+			IsNav, 
+			IsSubAuth,
+			IsStatus
+		from UC_Authorization
+		<where>
+			<trim prefixOverrides="and">
+				<if test="code != null and code != '' ">
+					and Code = #{code}
+				</if>
+			</trim>
+		</where>
+		order by Code
+	</select>
+	
+	<select id="selectByNotCodes" resultMap="authorizationResult" parameterMap="authorization">
+		select Code
+		from   UC_Authorization
+		<where>
+			<if test=" codes != null">
+				<trim prefixOverrides="and">
+					<foreach item="cd" index="index" collection="codes" >  
+		           	 	and Code != #{cd}
+	    			</foreach> 
+    			</trim>
+			</if>
+		</where>
+		order by Code
+	</select>
+	
+	<select id="roleAuthCount" resultType="long" parameterMap="authorization">
+		select count(*) from UC_RoleAuthMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="code != null and code != ''">and AuthCode = #{code}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 新增权限 -->
+	<insert id="insert" parameterMap="authorization">
+		insert into UC_Authorization
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code!=null and code != ''">,Code</if>
+			<if test="index!=null and index != ''">,IndexCode</if>
+			<if test="relation!=null and relation!=''">,Relation</if>
+			<if test="parentCode!=null and parentCode!=''">,ParentCode</if>
+			<if test="level!=null and level!=''">,AuthLevel</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="controller!=null and controller!=''">,Controller</if>
+			<if test="isLog!=null and isLog!=''">,IsLog</if>
+			<if test="isNav!=null and isNav!=''">,IsNav</if>
+			<if test="isSubAuth!=null and isSubAuth!=''">,IsSubAuth</if>
+			<if test="isStatus!=null and isStatus!=''">,IsStatus</if>
+			<if test="icon!=null and icon!=''">,Icon</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code!=null and code != ''">,#{code}</if>
+			<if test="index!=null and index != ''">,#{index}</if>
+			<if test="relation!=null and relation!=''">,#{relation}</if>
+			<if test="parentCode!=null and parentCode!=''">,#{parentCode}</if>
+			<if test="level!=null and level!=''">,#{level}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="controller!=null and controller!=''">,#{controller}</if>
+			<if test="isLog!=null and isLog!=''">,#{isLog}</if>
+			<if test="isNav!=null and isNav!=''">,#{isNav}</if>
+			<if test="isSubAuth!=null and isSubAuth!=''">,#{isSubAuth}</if>
+			<if test="isStatus!=null and isStatus!=''">,#{isStatus}</if>
+			<if test="icon!=null and icon!=''">,#{icon}</if>
+		</trim>
+	</insert>
+
+		<!-- 新增权限 -->
+	<update id="update" parameterMap="authorization">
+		update UC_Authorization
+		<set>
+			<trim prefixOverrides=",">
+			<if test="code!=null and code != ''">,Code=#{code}</if>
+			<if test="index!=null and index != ''">,IndexCode=#{index}</if>
+			<if test="relation!=null and relation!=''">,Relation=#{relation}</if>
+			<if test="parentCode!=null and parentCode!=''">,ParentCode=#{parentCode}</if>
+			<if test="level!=null and level!=''">,AuthLevel=#{level}</if>
+			<if test="name!=null and name!=''">,Name=#{name}</if>
+			<if test="controller!=null and controller!=''">,Controller=#{controller}</if>
+			<if test="isLog!=null and isLog!=''">,IsLog=#{isLog}</if>
+			<if test="isNav!=null and isNav!=''">,IsNav=#{isNav}</if>
+			<if test="isSubAuth!=null and isSubAuth!=''">,IsSubAuth=#{isSubAuth}</if>
+			<if test="isStatus!=null and isStatus!=''">,IsStatus=#{isStatus}</if>
+			<if test="icon!=null and icon!=''">,Icon=#{icon}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="code!=null and code!=''">
+				Code = #{code}
+			</if>
+		</where>		
+	</update>
+
+	<!-- 
+	根据CODE删除
+	 -->
+	<delete id="deleteByCode" parameterMap="authorization">
+		delete from
+		UC_Authorization where Code = #{code}
+	</delete>
+	<!-- 
+	删除所有数据
+	-->	
+	<delete id="deleteAll" parameterMap="authorization">
+		delete from UC_Authorization
+	</delete>
+
+	<!-- 
+	删除所有数据并重置主键 
+	-->
+	<delete id="deleteOverKey">
+		truncate table UC_Authorization
+	</delete>
+
+</mapper>
