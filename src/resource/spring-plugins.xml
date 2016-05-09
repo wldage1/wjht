@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:oscache="http://www.springmodules.org/schema/oscache" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+	   					   http://www.springframework.org/schema/context 
+	   					   http://www.springframework.org/schema/context/spring-context-3.1.xsd 
+	   					   http://www.springframework.org/schema/aop 
+	   					   http://www.springframework.org/schema/aop/spring-aop-3.1.xsd 
+	   					   http://www.springframework.org/schema/tx 
+	   					   http://www.springframework.org/schema/tx/spring-tx-3.1.xsd 
+	   					   http://www.springmodules.org/schema/oscache 
+	   					   http://www.springmodules.org/schema/cache/springmodules-oscache.xsd
+	   					   http://www.springframework.org/schema/mvc
+						   http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+	<!--机构信息数据初始化 -->
+	<!--
+	<bean id="organiztionService" class="com.sw.plugins.usercenter.system.organization.service.OrganiztionService" init-method="init">
+		<property name="commonDao" ref="commonDao" />
+		<property name="name" value="顶级机构" />
+		<property name="code" value="000001" />
+	</bean>
+	-->
+	<!--用户登录鉴权，并进行用户数据初始化 -->
+	<bean id="userDetailsService" class="com.sw.plugins.usercenter.system.user.service.UserService" init-method="init">
+		<property name="commonDao" ref="commonDao" />
+		<property name="account" value="admin" />
+		<property name="password" value="admin" />
+	</bean>
+
+	<!--角色信息数据初始化 -->
+	<!--
+	<bean id="roleService" class="com.sw.plugins.usercenter.system.role.service.RoleService" init-method="init">
+		<property name="commonDao" ref="commonDao" />
+		<property name="name" value="超级管理员" />
+	</bean>
+	-->
+	<!--数据字典类型初始化 -->
+	<bean id="dictionaryService" class="com.sw.plugins.usercenter.config.dynamic.service.DictionaryService" init-method="init">
+		<property name="commonDao" ref="commonDao" />
+		<property name="dictionarySort">
+			<map value-type="java.lang.String">
+				<entry key="gender" value="用户性别"/>  
+				<entry key="occupation" value="用户职业"/>  
+				<entry key="level" value="会员级别"/>  
+				<entry key="dataSource" value="数据来源"/>  
+				<entry key="auditingState" value="审核状态"/>  
+				<entry key="msgSource" value="消息来源"/>  
+				<entry key="msgStatus" value="消息状态"/>
+				<!-- <entry key="pwQuestion" value="密码提示问题"/>  -->
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="initialData" class="com.sw.core.initialize.InitialData">	
+		<!-- 数据库备份配置 -->
+		<!-- <property name="backupConfig">
+			<map value-type="java.lang.String">
+				<entry key="host" value="192.168.1.16"/> 
+				<entry key="dbname" value="rwoms1"/> 
+				<entry key="username" value="root"/> 
+				<entry key="password" value="jhlcdatabase_rwoms"/> 
+				<entry key="backdir" value="D:/"/> 
+			</map>
+		</property> -->
+	</bean>  
+		
+</beans>
