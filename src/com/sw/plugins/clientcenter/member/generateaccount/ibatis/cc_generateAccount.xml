@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="generateAccount">
+	<parameterMap id="generateAccount" type="com.sw.plugins.clientcenter.member.generateaccount.entity.GenerateAccount"/>
+	<resultMap id="generateAccountResult" type="com.sw.plugins.clientcenter.member.generateaccount.entity.GenerateAccount">
+		<id property="id" column="ID" />
+		<result property="crmId" column="CRMID" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="userName" column="UserName" />
+		<result property="passWord" column="PassWord" />
+		<result property="generateTime" column="GenerateTime" />
+	</resultMap>
+	
+	
+	<select id="selectPaginated" resultMap="generateAccountResult" parameterMap="generateAccount">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select  ID,CRMID,MobilePhone,UserName,GenerateTime
+			from   CC_GenerateAccount
+			<where>
+				<if test="id!=null and id!=0">
+					and ID=${id}
+				</if>
+				<if test="crmId!=null">
+					and CRMID=${crmId}
+				</if>
+				<if test="mobilePhone!=null and mobilePhone!=''">
+					and MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="userName!=null and userName!=''">
+					and UserName like CONCAT('%',#{userName},'%') 
+				</if>
+				<if test="startTime!=null and startTime!=''">
+				     <![CDATA[
+						and GenerateTime >= #{startTime}
+				     ]]>
+				</if>
+				<if test="endTime!=null and endTime!=''">
+				     <![CDATA[
+						and GenerateTime <= #{endTime}
+				     ]]>
+				</if>
+			</where>
+			order by GenerateTime desc
+			limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.*
+		    from (	
+				select t.*,ROWNUM rn 
+				from (
+					select ID,CRMID,MobilePhone,UserName,GenerateTime
+					from CC_GenerateAccount
+					<where>
+						<if test="id!=null and id!=0">
+							and ID=${id}
+						</if>
+						<if test="crmId!=null">
+							and CRMID=${crmId}
+						</if>
+						<if test="mobilePhone!=null and mobilePhone!=''">
+							and MobilePhone like '%'||#{mobilePhone}||'%'  
+						</if>
+						<if test="userName!=null and userName!=''">
+							and UserName like '%'||#{userName}||'%'  
+						</if>
+						<if test="startTime!=null and startTime!=''">
+						     <![CDATA[
+								and GenerateTime >= #{startTime}
+						     ]]>
+						</if>
+						<if test="endTime!=null and endTime!=''">
+						     <![CDATA[
+								and GenerateTime <= #{endTime}
+						     ]]>
+						</if>
+					</where>
+					order by GenerateTime desc
+				) t
+				<where>
+				      <if test="offset!=null and offset!=''">
+				         <![CDATA[ROWNUM<=${offset}]]>
+				       </if>  
+			    </where>
+			) a
+			<where>
+		      <if test="start!=null and start!=''">
+		         <![CDATA[rn>=${start}]]>
+		       </if>       
+		    </where>
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select 
+					a.* 
+			from 
+					(
+						select 
+								row_number() over( order by  ID desc ) as rowNum, 
+								ID,CRMID,MobilePhone,UserName,GenerateTime
+						from 
+								CC_GenerateAccount
+						<where>
+							<if test="id!=null and id!=0">
+								and ID=${id}
+							</if>
+							<if test="crmId!=null">
+								and CRMID=${crmId}
+							</if>
+							<if test="mobilePhone!=null and mobilePhone!=''">
+								and MobilePhone like '%'+#{mobilePhone}+'%'  
+							</if>
+							<if test="userName!=null and userName!=''">
+								and UserName like '%'+#{userName}+'%'  
+							</if>
+							<if test="startTime!=null and startTime!=''">
+							     <![CDATA[
+									and GenerateTime >= #{startTime}
+							     ]]>
+							</if>
+							<if test="endTime!=null and endTime!=''">
+							     <![CDATA[
+									and GenerateTime <= #{endTime}
+							     ]]>
+							</if>
+						</where>
+						order by GenerateTime desc
+					) a
+			<![CDATA[
+			where  a.rowNum > ${start} and a.rowNum < ${offset} 
+			]]>
+		</if>
+	</select>
+	
+	
+	<select id="selectCount" resultType="long" parameterMap="generateAccount">
+		select count(*)
+		from   CC_GenerateAccount
+		<where>
+			<if test="id!=null and id!=0">
+				and ID=${id}
+			</if>
+			<if test="crmId!=null">
+				and CRMID=${crmId}
+			</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and MobilePhone like '%'||#{mobilePhone}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and MobilePhone like '%'+#{mobilePhone}+'%' 
+				</if>
+			</if>
+			<if test="userName!=null and userName!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and UserName like CONCAT('%',#{userName},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and UserName like '%'||#{userName}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and UserName like '%'+#{userName}+'%' 
+				</if>
+			</if>
+			<if test="startTime!=null and startTime!=''">
+			     <![CDATA[
+					and GenerateTime >= #{startTime}
+			     ]]>
+			</if>
+			<if test="endTime!=null and endTime!=''">
+			     <![CDATA[
+					and GenerateTime <= #{endTime}
+			     ]]>
+			</if>
+		</where>
+	</select>
+	
+	
+	<insert id="insert" parameterMap="generateAccount">
+		insert into CC_GenerateAccount
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="crmId!=null">,CRMID</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone</if>
+			<if test="userName!=null and userName!=''">,UserName</if>
+			<if test="passWord!=null and passWord!=''">,PassWord</if>
+			,GenerateTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="crmId!=null">,${crmId}</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,#{mobilePhone}</if>
+			<if test="userName!=null and userName!=''">,#{userName}</if>
+			<if test="passWord!=null and passWord!=''">,#{passWord}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+		</trim>
+	</insert>
+
+	
+	<delete id="delete" parameterMap="generateAccount">
+		delete from CC_GenerateAccount where mobilePhone = #{mobilePhone} 
+	</delete>
+	
+</mapper>

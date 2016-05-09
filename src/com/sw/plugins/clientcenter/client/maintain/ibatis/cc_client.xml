@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="client">
+	<parameterMap id="client" type="com.sw.plugins.clientcenter.client.maintain.entity.Client"/>
+	<!-- 会员结果集 -->
+	<resultMap id="clientResult" type="com.sw.plugins.clientcenter.client.maintain.entity.Client">
+		<id property="id" column="ID" />
+		<result property="areaId" column="AreaId" />
+		<result property="name" column="Name"/>
+		<result property="userId" column="UserId" />
+		<result property="idCard" column="IdCard"/>
+		<result property="credit" column="Credit"/>
+		<result property="sex" column="Sex"/>
+		<result property="cardNum" column="CardNum"/>
+		<result property="bankNum" column="BankNum"/>
+		<result property="bankName" column="BankName"/>
+		<result property="permit" column="Permit"/>
+		<result property="permitTime" column="PermitTime"/>
+		<result property="phone" column="Phone"/>
+		<result property="email" column="Email" />
+		<result property="status" column="Status"/>
+		<result property="createTime" column="CreateTime" />
+		<result property="startTime" column="StartTime" />
+		<result property="endTime" column="EndTime" />
+		<result property="cardType" column="CardType" />
+	</resultMap>
+	
+	<select id="selectPaginated" resultMap="clientResult" parameterMap="client">
+		select a.* from (  
+			select c.* ,u.Name as userName
+			from cc_client c 
+				LEFT JOIN uc_user u ON c.userId = u.id
+				LEFT JOIN uc_role r ON r.id=u.roleId
+		<where> 
+			c.status != 9 
+			<if test="creator != null and creator > 0">
+				and c.Creator = ${creator} 
+			</if>
+			<if test="name != null and name != ''">
+				and c.Name like '%${name}%' 
+			</if>
+			<if test="phone != null and phone != ''">
+				and c.Phone = #{phone}
+			</if>
+			<if test="bankNum != null and bankNum != ''">
+				and c.BankNum = #{bankNum}
+			</if>
+			<if test="permit != null and permit != ''">
+				and c.Permit = ${permit}
+			</if>
+			<if test="cardStatus != null and cardStatus != ''">
+				and c.CardStatus = ${cardStatus}
+			</if>
+			<if test="userId != null and userId != ''">
+				and c.UserId = ${userId}
+			</if>
+			<if test="startTime!=null and startTime!=''">
+				and c.CreateTime >= #{startTime} 
+			</if>
+			<if test="endTime!=null and endTime!=''" >
+				and #{endTime} >= c.CreateTime 
+			</if>
+		</where>
+		order by c.id DESC
+		) a 
+		limit ${start},${offset}
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="client">
+		SELECT COUNT(id)
+		FROM cc_client
+		<where> 
+			status != 9 
+			<if test="creator != null and creator > 0">
+				and Creator = ${creator} 
+			</if>
+			<if test="name != null and name != ''">
+				and Name like '%${name}%' 
+			</if>
+			<if test="phone != null and phone != ''">
+				and Phone = #{phone}
+			</if>
+			<if test="bankNum != null and bankNum != ''">
+				and BankNum = #{bankNum}
+			</if>
+			<if test="permit != null and permit != ''">
+				and Permit = ${permit}
+			</if>
+			<if test="cardStatus != null and cardStatus != ''">
+				and CardStatus = ${cardStatus}
+			</if>
+			<if test="userId != null and userId != ''">
+				and UserId = ${userId}
+			</if>
+			<if test="startTime!=null and startTime!=''">
+				and CreateTime >= #{startTime} 
+			</if>
+			<if test="endTime!=null and endTime!=''" >
+				and #{endTime} >= CreateTime 
+			</if>
+		</where>
+	</select>
+	
+	<!-- 用户通用删除 -->
+	<delete id="delete" parameterMap="client">
+		update cc_client
+		set status = 9 
+		<where> 
+			id=${id}
+		</where> 
+	</delete>
+	
+	<!-- 新建用户 -->
+	<insert id="insert" parameterMap="client">
+		insert into cc_client
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="areaId!=null">,areaId</if>
+			<if test="userId!=null and userId != ''">,userId</if>
+			<if test="name!=null and name != ''">,name</if>
+			<if test="phone!=null and phone!=''">,phone</if>
+			<if test="email!=null and email!=''">,email</if>
+			<if test="idCard!=null and idCard!=''">,idCard</if>
+			<if test="sex!=null and sex!=''">,sex</if>
+			<if test="credit!=null and credit!=''">,credit</if>
+			<if test="bankName!=null and bankName!=''">,bankName</if>
+			<if test="bankNum!=null and bankNum!=''">,bankNum</if>
+			<if test="cardType!=null and cardType!=''">,cardType</if>
+			,credit
+			,permit
+			,cardStatus
+			,modifyTime
+			,createTime
+			,creator
+			,status
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="areaId!=null and areaId != ''">,${areaId}</if>
+		    <if test="userId!=null and userId != ''">,${userId}</if>
+			<if test="name!=null and name != ''">,#{name}</if>
+			<if test="phone!=null and phone!=''">,#{phone}</if>
+			<if test="email!=null and email!=''">,#{email}</if>
+			<if test="idCard!=null and idCard!=''">,#{idCard}</if>
+			<if test="sex!=null and sex!=''">,${sex}</if>
+			<if test="credit!=null and credit!=''">,#{credit}</if>
+			<if test="bankName!=null and bankName!=''">,#{bankName}</if>
+			<if test="bankNum!=null and bankNum!=''">,#{bankNum}</if>
+			<if test="cardType!=null and cardType!=''">,${cardType}</if>
+			,300000
+			,0
+			,0
+			,now()
+			,now()
+			,#{creator}
+			,0
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			  select LAST_INSERT_ID() as generatedKey   
+		</selectKey>
+	</insert>
+	
+	
+	<select id="selectOne" resultMap="clientResult" parameterMap="client">
+		<!-- SELECT * FROM cc_client -->
+		SELECT c.*, o.Name as orgName ,u.Name as userName FROM cc_client c LEFT JOIN uc_user u ON u.ID=c.UserID
+		LEFT JOIN uc_organization o ON o.id=c.AreaID 
+		<where> 
+			c.id= ${id}
+		</where>
+	</select>
+	
+	<!-- 更新用户 -->
+	<update id="update" parameterMap="client">
+		update cc_client
+		<set>
+			<trim prefixOverrides=",">
+				<if test="areaId!=null and areaId!=''">,areaId=${areaId}</if>
+				<if test="userId!=null and userId != ''">,userId = ${userId}</if>
+				<if test="name!=null and name!=''">,name = #{name}</if>
+				<if test="phone!=null and phone!=''">,phone = #{phone}</if>
+				<if test="email!=null and email!=''">,email = #{email}</if>
+				<if test="idCard!=null and idCard!=''">,idCard = #{idCard}</if>
+				<if test="credit !=null and credit !=''">,credit = ${credit}</if>
+				<if test="cardNum!=null and cardNum!=''">,cardNum = #{cardNum}</if>
+				<if test="sex!=null and sex!=''">,sex = #{sex}</if>
+				<if test="cardStatus!=null and cardStatus!=''">,cardStatus = #{cardStatus}</if>
+				<if test="permit!=null and permit!=''">,permit = ${permit}</if>
+				<if test="permitTime!=null and permitTime!=''">,permit = now()</if>
+				<if test="bankNum!=null and bankNum!=''">,bankNum = #{bankNum}</if>
+				<if test="bankName!=null and bankName!=''">,bankName = #{bankName}</if>
+				<if test="status!=null and status!=''">,status = ${status}</if>
+				<if test="cardType!=null and cardType!=''">,cardType = ${cardType}</if>
+			</trim>
+		</set>
+		<where>
+			id= ${id}
+		</where>
+	</update>
+
+</mapper>

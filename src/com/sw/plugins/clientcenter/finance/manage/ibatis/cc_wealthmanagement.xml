@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   <!-- 
+   ID                   bigint not null auto_increment comment '理财中心随机编号：系统生成',
+   Name                 varchar(50)		comment '名称',
+   Address              varchar(100)	comment '地址',
+   Phone                varchar(20)		comment '电话',
+   Fax                  varchar(20)		comment '传真',
+   Accuracy             varchar(20)		comment '精度',
+   Latitude             varchar(20)		comment '纬度',
+   Image                varchar(50)		comment '图片',
+   Description          varchar(300)	comment '详细信息',
+   -->
+<mapper namespace="wealthManagement">
+	<parameterMap id="wealthManagement" type="com.sw.plugins.clientcenter.finance.manage.entity.WealthManagement"/>
+	
+	<!-- 理财中心结果集 -->
+	<resultMap id="wealthManagementResult" type="com.sw.plugins.clientcenter.finance.manage.entity.WealthManagement">
+		<id property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="address" column="Address" />
+		<result property="phone" column="Phone" />
+		<result property="fax" column="Fax" />
+		<result property="accuracy" column="Accuracy" />
+		<result property="latitude" column="Latitude" />
+		<result property="image" column="Image" />
+		<result property="description" column="Description" />
+		<result property="creator" column="Creator" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+
+	<!-- 新建理财中心 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterMap="wealthManagement">
+		insert into CC_WealthManagement
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name !=null and name !=''">,Name</if>
+			<if test="address !=null and address !=''">,Address</if>
+			<if test="phone !=null and phone !=''">,Phone</if>
+			<if test="fax !=null and fax !=''">,Fax</if>
+			<if test="accuracy !=null and accuracy !=''">,Accuracy</if>
+			<if test="latitude !=null and latitude !=''">,Latitude</if>
+			<if test="image !=null and image !=''">,Image</if>
+			<if test="description !=null and description !=''">,Description</if>
+			,CreateTime
+			,creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name !=null and name !=''">,#{name}</if>
+			<if test="address !=null and address !=''">,#{address}</if>
+			<if test="phone !=null and phone !=''">,#{phone}</if>
+			<if test="fax !=null and fax !=''">,#{fax}</if>
+			<if test="accuracy !=null and accuracy !=''">,#{accuracy}</if>
+			<if test="latitude !=null and latitude !=''">,#{latitude}</if>
+			<if test="image !=null and image !=''">,#{image}</if>
+			<if test="description !=null and description !=''">,#{description}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_CC_WEALTHMANAGEMENT.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('CC_WealthManagement')
+			</if>
+		</selectKey>
+	</insert>
+	
+	<!-- 更新理财中心 -->
+	<update id="update" parameterMap="wealthManagement">
+		update CC_WealthManagement
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="address !=null and address !=''">,Address=#{address}</if>
+				<if test="phone !=null">,Phone=#{phone}</if>
+				<if test="fax !=null ">,Fax=#{fax}</if>
+				<if test="accuracy !=null">,Accuracy=#{accuracy}</if>
+				<if test="latitude !=null">,Latitude=#{latitude}</if>
+				<if test="image !=null">,Image=#{image}</if>
+				<if test="description !=null">,Description=#{description}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now() 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+		 	<if test="id!=null and id!=''">
+		 	 ID=${id}
+			</if>
+		</where>		
+	</update>
+	
+	<!-- 理财中心通用查询 -->
+	<select id="select" resultMap="wealthManagementResult" parameterMap="wealthManagement">
+		select * from CC_WealthManagement
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+			 	 and ID = ${id}
+				</if>
+			 	<if test="name!=null and name!=''">
+			 	 and Name=#{name}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 理财中心统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="wealthManagement">
+		select count(*) from CC_WealthManagement
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and Name like CONCAT('%',#{name},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and Name like '%'||#{name}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and Name like '%'+#{name}+'%' 
+					</if>
+				</if>
+				<if test="phone!=null and phone!=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and Phone like CONCAT('%',#{phone},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and Phone like '%'||#{phone}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and Phone like '%'+#{phone}+'%' 
+					</if>
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 理财中心分页查询 -->
+	<select id="selectPaginated" resultMap="wealthManagementResult" parameterMap="wealthManagement">
+	<if test="databaseType!=null and databaseType == 'mysql'">	
+		select * from CC_WealthManagement
+		<where>
+			<trim prefixOverrides="and">
+				 <if test="name!=null and name!=''">
+					and Name like CONCAT('%',#{name},'%')
+				</if>
+				<if test="phone!=null and phone!=''">
+					and Phone like CONCAT('%',#{phone},'%')
+				</if>
+			</trim>
+		</where>
+			order by id desc limit ${start},${offset}
+	</if>
+	<if test="databaseType!=null and databaseType == 'oracle'">
+		select a.* from (	
+		select t.*,ROWNUM rn from (
+			select wm.* from CC_WealthManagement wm 
+			<where>
+				<trim prefix="(" prefixOverrides="and" suffix=")"> 
+				<if test="name!=null and name!=''">
+					and Name like '%'||#{name}||'%'  
+				</if>
+				<if test="phone!=null and phone!=''">
+					and Phone like '%'||#{phone}||'%'  
+				</if>
+				</trim>
+			</where>
+			order by wm.id desc
+		) t
+		<where>
+		<if test="offset!=null and offset!=''">
+			<![CDATA[ROWNUM<=${offset}]]>
+		</if>  
+		</where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select a.* from (
+			select row_number() over(order by  Id desc
+			) as rowNum, *
+			from CC_WealthManagement 
+			<where>
+				<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+					and Name like '%'+#{name}+'%'
+				</if>
+			 	<if test="phone!=null and phone!=''">
+					and Phone like '%'+#{phone}+'%'
+				</if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</if>
+	</select>
+
+	<!-- 删除理财中心  -->
+	<delete id="delete" parameterMap="wealthManagement">
+		delete from CC_WealthManagement where ID=${id}
+	</delete>
+</mapper>

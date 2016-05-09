@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="consume">
+	<parameterMap id="consume" type="com.sw.plugins.clientcenter.client.maintain.entity.Consume"/>
+	<!-- 会员结果集 -->
+	<resultMap id="consumeResult" type="com.sw.plugins.clientcenter.client.maintain.entity.Consume">
+		<id property="id" column="ID" javaType="java.lang.Long" />
+		<result property="clientId" column="ClientId" />
+		<result property="money" column="Money"/>
+		<result property="description" column="Description" />
+		<result property="status" column="Status"/>
+	</resultMap>
+	
+	<select id="selectPaginated" resultMap="consumeResult" parameterMap="consume">
+		select a.* from (  
+			select c.id,c.clientId,c.money,c.description,c.status,c.creator, DATE_FORMAT(c.createTime,'%Y-%m-%d %h:%i:%s') as createTime ,u.name as userName 
+			from cc_consume c LEFT JOIN uc_user u ON c.creator = u.id 
+		<where> 
+			c.status = 0 and c.clientId = ${clientId}
+		</where>
+		order by c.id DESC
+		) a 
+		limit ${start},${offset}
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="consume">
+		SELECT COUNT(id)
+		FROM cc_consume
+		<where> 
+			status = 0 and clientId = ${clientId}
+		</where>
+	</select>
+	
+	<!-- 用户通用删除 -->
+	<delete id="delete" parameterMap="consume">
+		update cc_consume
+		set status = 9 
+		<where> 
+			id=${id}
+		</where> 
+	</delete>
+	
+	<!-- 新建用户 -->
+	<insert id="insert" parameterMap="consume">
+		insert into cc_consume
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="clientId!=null  and clientId != ''">,ClientId</if>
+			<if test="money!=null and money != ''">,Money</if>
+			<if test="description!=null and description != ''">,Description</if>
+			,ModifyTime
+			,CreateTime
+			,Creator
+			,Status
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="clientId!=null  and clientId != ''">,${clientId}</if>
+		    <if test="money!=null and money != ''">,#{money}</if>
+			<if test="description!=null and description != ''">,#{description}</if>
+			,now()
+			,now()
+			,#{creator}
+			,0
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			  select LAST_INSERT_ID() as generatedKey   
+		</selectKey>
+	</insert>
+	
+	<select id="selectMoneySum" resultMap="consumeResult" parameterMap="consume">
+		select SUM(money) as total ,clientId from cc_consume 
+		<where> 
+			Status = 0 and ClientId = ${clientId}
+		</where>
+	</select>
+</mapper>
