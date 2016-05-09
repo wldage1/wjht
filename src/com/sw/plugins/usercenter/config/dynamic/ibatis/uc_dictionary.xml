@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    <!-- 
+   ID                   bigint not null auto_increment comment '字典内容ID',
+   Name                 varchar(100) comment '字典字段1',
+   DictSortValue        varchar(100) comment '字典值',
+   Description          varchar(200) comment '字典描述',
+   CreateTime           datetime,
+   ModifyTime           datetime,
+   Creator              bigint,
+   -->
+<mapper namespace="dictionary">
+	<parameterMap id="dictionary" type="com.sw.plugins.usercenter.config.dynamic.entity.Dictionary"/>
+	
+	<!-- 字典结果集 -->
+	<resultMap id="dictionaryResult" type="com.sw.plugins.usercenter.config.dynamic.entity.Dictionary">
+		<id property="id" column="ID" />
+		<result property="dictSortValue" column="DictSortValue" />
+		<result property="name" column="Name" />
+		<result property="value" column="Value" />
+		<result property="description" column="Description" />
+		<result property="creator" column="Creator" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+	
+	<!-- 新建字典 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterMap="dictionary">
+		insert into UC_Dictionary
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="dictSortValue !=null and dictSortValue !=''">,DictSortValue</if>
+			<if test="name !=null and name !=''">,Name</if>
+			<if test="value !=null and value !=''">,Value</if>
+			<if test="description !=null and description !=''">,Description</if>
+			,CreateTime
+			,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="dictSortValue !=null and dictSortValue !=''">,#{dictSortValue}</if>
+			<if test="name !=null and name !=''">,#{name}</if>
+			<if test="value !=null and value !=''">,#{value}</if>
+			<if test="description !=null and description !=''">,#{description}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,#{creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_UC_DICTIONARY.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('UC_Dictionary')
+			</if>
+		</selectKey>
+	</insert>
+	
+	<!-- 更新字典 -->
+	<update id="update" parameterMap="dictionary">
+		update UC_Dictionary
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="dictSortValue !=null and dictSortValue !=''">,DictSortValue = #{dictSortValue}</if>
+				<if test="name !=null and name !=''">,Name = #{name}</if>
+				<if test="value !=null and value !=''">,Value = #{value}</if>
+				<if test="description !=null and description !=''">,Description = #{description}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now() 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+		 	<if test="id!=null and id!=0">
+		 	 ID=${id}
+			</if>
+		</where>		
+	</update>
+	
+	<!-- 字典通用查询 -->
+	<select id="select" resultMap="dictionaryResult" parameterMap="dictionary">
+		select 
+		dict.ID, 
+		dict.Name, 
+		dict.Value, 
+		dict.DictSortValue,
+		dict.Description
+	    from UC_Dictionary dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="dictSortValue!=null and dictSortValue!=''">
+			 	 and dict.DictSortValue=#{dictSortValue}
+				</if>
+				<if test="id!=null and id!=''">
+			 	 and dict.ID=${id}
+				</if>
+			 	<if test="name !=null and name !=''">
+			 	 and dict.Name=#{name}
+				</if>
+			 	<if test="description !=null and description !=''">
+			 	 and dict.Description=#{description}
+				</if>
+				<if test="value !=null and value !=''">
+			 	 and dict.Value=#{value}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 判断字典值是否重复 -->
+	<select id="selectValue" resultType="long" parameterMap="dictionary">
+		select count(id)  from UC_Dictionary dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+			 	and dict.id=${id}
+				</if>
+				<if test="dictSortValue!=null and dictSortValue!=''">
+			 	 and dict.DictSortValue=#{dictSortValue}
+				</if>
+			 	<if test="value !=null and value !=''">
+			 	 and dict.value=${value}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 判断字典名是否重复 -->
+	<select id="selectName" resultType="long" parameterMap="dictionary">
+		select count(id)  from UC_Dictionary dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+			 	and dict.id!=${id}
+				</if>
+				<if test="dictSortValue!=null and dictSortValue!=''">
+			 	 and dict.DictSortValue=#{dictSortValue}
+				</if>
+				<if test="name !=null and name !=''">
+			 	 and dict.name=#{name}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 字典统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="dictionary">
+		select count(id) from UC_Dictionary
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+			 	 and Name like CONCAT('%',#{name},'%')
+				</if>
+			 	<if test="dictSortValue!=null and dictSortValue!=''">
+			 	 and DictSortValue like CONCAT('%',#{dictSortValue},'%')
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 字典分页查询 -->
+	<select id="selectPaginated" resultMap="dictionaryResult" parameterMap="dictionary">
+		select 
+		dict.ID, 
+		dict.Name, 
+		dict.Value,
+		dict.DictSortValue,
+		dict.Description
+		from UC_Dictionary dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+			 	 and Name like CONCAT('%',#{name},'%')
+				</if>
+			 	<if test="dictSortValue!=null and dictSortValue!=''">
+			 	 and DictSortValue like CONCAT('%',#{dictSortValue},'%')
+				</if>
+			</trim>
+		</where>
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			order by ID desc limit ${start},${offset}
+		</if>
+	</select>
+
+	<!-- 删除字典 -->
+	<delete id="deleteDictionary" parameterMap="dictionary">
+		delete from UC_Dictionary where ID=${id}
+	</delete>
+	
+</mapper>

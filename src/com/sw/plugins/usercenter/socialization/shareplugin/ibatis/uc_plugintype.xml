@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="plugintype">
+	<parameterMap id="plugintype" type="com.sw.plugins.usercenter.socialization.shareplugin.entity.Plugintype"/>
+	
+	<!-- 分享配置结果集 -->
+	<resultMap id="plugintypeResult" type="com.sw.plugins.usercenter.socialization.shareplugin.entity.Plugintype">
+		<id property="id" column="ID" />
+		<result property="pluginId" column="PluginID" />
+		<result property="type" column="Type" />
+	</resultMap>
+	
+	<!-- 新建分享配置 -->
+	<insert id="insert" parameterMap="plugintype">
+		insert into UC_PluginType
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="pluginId !=null">,PluginID</if>
+			<if test="type !=null">,Type</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="pluginId !=null">,${pluginId}</if>
+			<if test="type !=null">,${type}</if>
+		</trim>
+	</insert>
+	
+	<!-- 更新分享配置 -->
+	<update id="update" parameterMap="plugintype">
+		update UC_PluginType
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="pluginId !=null">,PluginID = ${pluginId}</if>
+				<if test="type !=null">,Type = ${type}</if>
+			</trim>
+		</set>
+		where ID=${id}
+	</update>
+	
+	<!-- 分享配置通用查询 -->
+	<select id="select" resultMap="plugintypeResult" parameterMap="plugintype">
+		select 
+		ID, 
+		PluginID,
+		Type
+	    from UC_PluginType config
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+			 	 and ID=${id}
+				</if>
+				<if test="type!=null">
+			 	 and Type=${type}
+				</if>
+				<if test="pluginId!=null">
+			 	 and PluginID=${pluginId}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	
+	<!-- 分享配置统计查询 -->
+	<select id="count" resultType="long" parameterMap="plugintype">
+		select count(id) from UC_PluginType
+	</select>
+	
+
+	<!-- 删除分享配置 -->
+	<delete id="delete" parameterMap="plugintype">
+		delete from UC_PluginType where ID=${id}
+	</delete>
+	
+	<!-- 删除分享配置 -->
+	<delete id="delete_by_type" parameterMap="plugintype">
+		delete from UC_PluginType where Type=${type}
+	</delete>
+	
+	<!-- 删除分享配置 -->
+	<delete id="delete_by_pluginid" parameterMap="plugintype">
+		delete from UC_PluginType where PluginID = ${pluginId}
+	</delete>
+	
+</mapper>

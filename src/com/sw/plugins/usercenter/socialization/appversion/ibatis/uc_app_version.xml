@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="appversion">
+	<parameterMap id="appVersion" type="com.sw.plugins.usercenter.socialization.appversion.entity.AppVersion"/>
+	
+	<!-- 结果集 -->
+	<resultMap id="appVersionResult" type="com.sw.plugins.usercenter.socialization.appversion.entity.AppVersion">
+		<id property="id" column="ID" />
+		<result property="deviceType" column="DeviceType" />
+		<result property="version" column="Version" />
+		<result property="info" column="Info" />
+		<result property="downloadURL" column="DownloadURL" />
+		<result property="noticeRate" column="NoticeRate" />
+	</resultMap>
+	
+	<!-- 新建 -->
+	<insert id="insert" parameterMap="appVersion">
+		insert into UC_AppVersion
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="deviceType !=null ">,DeviceType</if>
+			<if test="version !=null and version !=''">,Version</if>
+			<if test="info !=null and info !=''">,Info</if>
+			<if test="downloadURL !=null and downloadURL !=''">,DownloadURL</if>
+			<if test="noticeRate !=null ">,NoticeRate</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="deviceType !=null ">,${deviceType}</if>
+			<if test="version !=null and version !=''">,#{version}</if>
+			<if test="info !=null and info !=''">,#{info}</if>
+			<if test="downloadURL !=null and downloadURL !=''">,#{downloadURL}</if>
+			<if test="noticeRate !=null ">,${noticeRate}</if>
+		</trim>
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterMap="appVersion">
+		update UC_AppVersion
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="version !=null and version !=''">,Version = #{version}</if>
+				<if test="info !=null and info !=''">,Info = #{info}</if>
+				<if test="downloadURL !=null and downloadURL !=''">,DownloadURL = #{downloadURL}</if>
+				<if test="noticeRate !=null ">,NoticeRate = ${noticeRate}</if>
+			</trim>
+		</set>
+		where ID=${id}
+	</update>
+	
+	<!-- 更新 -->
+	<update id="update_by_devicetype" parameterMap="appVersion">
+		update UC_AppVersion
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="version !=null and version !=''">,Version = #{version}</if>
+				<if test="info !=null and info !=''">,Info = #{info}</if>
+				<if test="downloadURL !=null and downloadURL !=''">,DownloadURL = #{downloadURL}</if>
+				<if test="noticeRate !=null ">,NoticeRate = ${noticeRate}</if>
+			</trim>
+		</set>
+		where DeviceType=${deviceType}
+	</update>
+	
+	<!-- 通用查询 -->
+	<select id="select" resultMap="appVersionResult" parameterMap="appVersion">
+		select 
+		*
+	    from UC_AppVersion
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+			 	 and ID=${id}
+				</if>
+				<if test="DeviceType !=null ">
+			 	 and DeviceType=${deviceType}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	
+	<!-- 统计查询 -->
+	<select id="count_by_devicetype" resultType="long" parameterMap="appVersion">
+		select count(id) from UC_AppVersion where DeviceType = ${deviceType}
+	</select>
+
+
+	<!-- 删除 -->
+	<delete id="delete" parameterMap="appVersion">
+		delete from UC_AppVersion where ID=${id}
+	</delete>
+	
+</mapper>

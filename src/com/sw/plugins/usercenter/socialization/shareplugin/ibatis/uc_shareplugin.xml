@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="shareplugin">
+	<parameterMap id="shareplugin" type="com.sw.plugins.usercenter.socialization.shareplugin.entity.Shareplugin"/>
+	
+	<!-- 分享配置结果集 -->
+	<resultMap id="sharepluginResult" type="com.sw.plugins.usercenter.socialization.shareplugin.entity.Shareplugin">
+		<id property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="authoriKey" column="AuthoriKey" />
+		<result property="status" column="Status" />
+		<result property="sortNumber" column="SortNumber" />
+	</resultMap>
+	
+	<!-- 新建分享配置 -->
+	<insert id="insert" parameterMap="shareplugin">
+		insert into UC_SharePlugin
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name !=null and name !=''">,Name</if>
+			<if test="authoriKey !=null and authoriKey !=''">,AuthoriKey</if>
+			<if test="status !=null">,Status</if>
+			<if test="sortNumber !=null">,SortNumber</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name !=null and name !=''">,#{name}</if>
+			<if test="authoriKey !=null and authoriKey !=''">,#{authoriKey}</if>
+			<if test="status !=null">,${status}</if>
+			<if test="sortNumber !=null">,${sortNumber}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_UC_SharePlugin.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('UC_SharePlugin')
+			</if> 
+		</selectKey>
+	</insert>
+	
+	<!-- 更新分享配置 -->
+	<update id="update" parameterMap="shareplugin">
+		update UC_SharePlugin
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="name !=null and name !=''">,Name = #{name}</if>
+				<if test="authoriKey !=null and authoriKey !=''">,AuthoriKey = #{authoriKey}</if>
+				<if test="status !=null">,Status = ${status}</if>
+				<if test="sortNumber !=null">,SortNumber = ${sortNumber}</if>
+			</trim>
+		</set>
+		where ID=${id}
+	</update>
+	
+	<!-- 更新分享配置 -->
+	<update id="reset_all_plugin" parameterMap="shareplugin">
+		update UC_SharePlugin set Status = 0 , sortNumber = 999
+	</update>
+	
+	<!-- 分享配置通用查询 -->
+	<select id="select" resultMap="sharepluginResult" parameterMap="shareplugin">
+		select 
+		plugin.ID, 
+		plugin.Name, 
+		plugin.AuthoriKey, 
+		plugin.Status
+	    from UC_SharePlugin plugin
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+			 	 and plugin.ID=${id}
+				</if>
+				<if test="authoriKey !=null and authoriKey !=''">
+			 	 and plugin.AuthoriKey=#{authoriKey}
+				</if>
+			</trim>
+		</where>
+		order by SortNumber
+	</select>
+
+	
+	<!-- 分享配置统计查询 -->
+	<select id="count" resultType="long" parameterMap="shareplugin">
+		select count(id) from UC_SharePlugin
+		<where>
+			<trim prefixOverrides="and">
+				<if test="authoriKey !=null and authoriKey!=''">
+			 	 and AuthoriKey = #{authoriKey}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="count_for_duplication" resultType="long" parameterMap="shareplugin">
+		select count(id) from UC_SharePlugin
+		<where>
+			<trim prefixOverrides="and">
+				<if test="authoriKey !=null and authoriKey!=''">
+			 	 and AuthoriKey = #{authoriKey}
+				</if>
+				<if test="name !=null and name !=''">
+			 	 and Name = #{name}
+				</if>
+				<if test="id !=null">
+			 	 and ID != ${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	
+	<!-- 分享配置统计查询 -->
+	<select id="count_by_authoriKey" resultType="Long" parameterMap="shareplugin">
+		select count(id) from UC_SharePlugin where AuthoriKey = #{authoriKey};
+	</select>
+	
+	<!-- 分享配置分页查询 -->
+	<select id="select_paginated" resultMap="sharepluginResult" parameterMap="shareplugin">
+		select 
+		plugin.ID, 
+		plugin.Name, 
+		plugin.AuthoriKey,
+		plugin.Status
+		from UC_SharePlugin plugin
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+			 	 and Name like CONCAT('%',#{name},'%')
+				</if>
+			</trim>
+		</where>
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			order by ID desc limit ${start},${offset}
+		</if>
+	</select>
+
+	<!-- 删除分享配置 -->
+	<delete id="delete" parameterMap="shareplugin">
+		delete from UC_SharePlugin where ID=${id}
+	</delete>
+	
+</mapper>
