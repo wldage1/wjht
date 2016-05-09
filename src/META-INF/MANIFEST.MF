@@ -1,0 +1,146 @@
+Manifest-Version: 1.0
+Export-Package: org.springframework.security.web;version="3.0.2.RELEAS
+ E";uses:="javax.servlet,javax.servlet.http,org.apache.commons.logging
+ ,org.springframework.security.core,org.springframework.security.web.u
+ til,org.springframework.web.filter",org.springframework.security.web.
+ access;version="3.0.2.RELEASE";uses:="javax.servlet,javax.servlet.htt
+ p,org.springframework.security.access,org.springframework.security.ac
+ cess.intercept,org.springframework.security.authentication,org.spring
+ framework.security.core,org.springframework.security.web,org.springfr
+ amework.security.web.savedrequest,org.springframework.security.web.ut
+ il,org.springframework.web.filter",org.springframework.security.web.a
+ ccess.channel;version="3.0.2.RELEASE";uses:="javax.servlet,javax.serv
+ let.http,org.springframework.beans.factory,org.springframework.securi
+ ty.access,org.springframework.security.web,org.springframework.securi
+ ty.web.access.intercept,org.springframework.web.filter",org.springfra
+ mework.security.web.access.expression;version="3.0.2.RELEASE";uses:="
+ org.springframework.expression,org.springframework.security.access,or
+ g.springframework.security.access.expression,org.springframework.secu
+ rity.access.hierarchicalroles,org.springframework.security.core,org.s
+ pringframework.security.web,org.springframework.security.web.access.i
+ ntercept,org.springframework.security.web.util",org.springframework.s
+ ecurity.web.access.intercept;version="3.0.2.RELEASE";uses:="javax.ser
+ vlet,org.springframework.security.access,org.springframework.security
+ .access.intercept,org.springframework.security.web,org.springframewor
+ k.security.web.util",org.springframework.security.web.authentication;
+ version="3.0.2.RELEASE";uses:="javax.servlet,javax.servlet.http,org.s
+ pringframework.beans.factory,org.springframework.context,org.springfr
+ amework.security.authentication,org.springframework.security.core,org
+ .springframework.security.core.session,org.springframework.security.c
+ ore.userdetails.memory,org.springframework.security.web,org.springfra
+ mework.security.web.authentication.session,org.springframework.securi
+ ty.web.savedrequest,org.springframework.web.filter",org.springframewo
+ rk.security.web.authentication.logout;version="3.0.2.RELEASE";uses:="
+ javax.servlet,javax.servlet.http,org.springframework.security.core,or
+ g.springframework.security.web.authentication,org.springframework.web
+ .filter",org.springframework.security.web.authentication.preauth;vers
+ ion="3.0.2.RELEASE";uses:="javax.servlet,javax.servlet.http,org.sprin
+ gframework.beans.factory,org.springframework.context,org.springframew
+ ork.core,org.springframework.security.authentication,org.springframew
+ ork.security.core,org.springframework.security.core.authority,org.spr
+ ingframework.security.core.userdetails,org.springframework.security.w
+ eb.authentication,org.springframework.web.filter",org.springframework
+ .security.web.authentication.preauth.j2ee;version="3.0.2.RELEASE";use
+ s:="javax.servlet.http,org.springframework.beans.factory,org.springfr
+ amework.context,org.springframework.core.io,org.springframework.secur
+ ity.authentication,org.springframework.security.core.authority.mappin
+ g,org.springframework.security.web.authentication.preauth,org.xml.sax
+ ",org.springframework.security.web.authentication.preauth.x509;versio
+ n="3.0.2.RELEASE";uses:="javax.servlet.http,org.springframework.conte
+ xt,org.springframework.security.web.authentication.preauth",org.sprin
+ gframework.security.web.authentication.rememberme;version="3.0.2.RELE
+ ASE";uses:="javax.servlet,javax.servlet.http,javax.sql,org.springfram
+ ework.beans.factory,org.springframework.context,org.springframework.j
+ dbc.core.support,org.springframework.jdbc.object,org.springframework.
+ security.authentication,org.springframework.security.core,org.springf
+ ramework.security.core.userdetails,org.springframework.security.web.a
+ uthentication,org.springframework.security.web.authentication.logout,
+ org.springframework.web.filter",org.springframework.security.web.auth
+ entication.session;version="3.0.2.RELEASE";uses:="javax.servlet.http,
+ org.springframework.context,org.springframework.security.core,org.spr
+ ingframework.security.core.session",org.springframework.security.web.
+ authentication.switchuser;version="3.0.2.RELEASE";uses:="javax.servle
+ t,javax.servlet.http,org.springframework.beans,org.springframework.co
+ ntext,org.springframework.security.authentication,org.springframework
+ .security.authentication.event,org.springframework.security.core,org.
+ springframework.security.core.authority,org.springframework.security.
+ core.userdetails,org.springframework.security.web.authentication,org.
+ springframework.web.filter",org.springframework.security.web.authenti
+ cation.ui;version="3.0.2.RELEASE";uses:="javax.servlet,org.springfram
+ ework.security.web.authentication,org.springframework.web.filter",org
+ .springframework.security.web.authentication.www;version="3.0.2.RELEA
+ SE";uses:="javax.servlet,javax.servlet.http,org.springframework.beans
+ .factory,org.springframework.context,org.springframework.core,org.spr
+ ingframework.security.authentication,org.springframework.security.cor
+ e,org.springframework.security.core.userdetails,org.springframework.s
+ ecurity.web,org.springframework.security.web.authentication,org.sprin
+ gframework.web.filter",org.springframework.security.web.context;versi
+ on="3.0.2.RELEASE";uses:="javax.servlet,javax.servlet.http,org.spring
+ framework.beans.factory,org.springframework.security.authentication,o
+ rg.springframework.security.core.context,org.springframework.web.filt
+ er",org.springframework.security.web.savedrequest;version="3.0.2.RELE
+ ASE";uses:="javax.servlet,javax.servlet.http,org.springframework.secu
+ rity.web,org.springframework.web.filter",org.springframework.security
+ .web.servletapi;version="3.0.2.RELEASE";uses:="javax.servlet,javax.se
+ rvlet.http,org.springframework.web.filter",org.springframework.securi
+ ty.web.session;version="3.0.2.RELEASE";uses:="javax.servlet,javax.ser
+ vlet.http,org.springframework.context,org.springframework.security.co
+ re.context,org.springframework.security.core.session,org.springframew
+ ork.security.web,org.springframework.security.web.authentication,org.
+ springframework.security.web.authentication.logout,org.springframewor
+ k.security.web.authentication.session,org.springframework.security.we
+ b.context,org.springframework.web.filter",org.springframework.securit
+ y.web.util;version="3.0.2.RELEASE";uses:="javax.servlet.http,org.spri
+ ngframework.expression"
+Built-By: luke
+Tool: Bundlor 1.0.0.M6
+Bundle-Name: Spring Security Web
+Created-By: Apache Maven
+Bundle-Vendor: SpringSource
+Bundle-Version: 3.0.2.RELEASE
+Build-Jdk: 1.6.0_17
+Bundle-ManifestVersion: 2
+Import-Package: javax.servlet;version="0",javax.servlet.http;version="
+ 0",javax.xml.parsers;version="0";resolution:="optional",org.apache.co
+ mmons.logging;version="[1.0.4, 2.0.0)",org.springframework.beans;vers
+ ion="[3.0.1.RELEASE, 3.1.0)",org.springframework.beans.factory;versio
+ n="[3.0.1.RELEASE, 3.1.0)",org.springframework.context;version="[3.0.
+ 1.RELEASE, 3.1.0)",org.springframework.context.support;version="[3.0.
+ 1.RELEASE, 3.1.0)",org.springframework.core;version="[3.0.1.RELEASE, 
+ 3.1.0)",org.springframework.core.io;version="[3.0.1.RELEASE, 3.1.0)",
+ org.springframework.dao;version="[3.0.1.RELEASE, 3.1.0)";resolution:=
+ "optional",org.springframework.expression;version="[3.0.1.RELEASE, 3.
+ 1.0)";resolution:="optional",org.springframework.expression.spel.stan
+ dard;version="[3.0.1.RELEASE, 3.1.0)";resolution:="optional",org.spri
+ ngframework.expression.spel.support;version="[3.0.1.RELEASE, 3.1.0)";
+ resolution:="optional",org.springframework.jdbc.core;version="[3.0.1.
+ RELEASE, 3.1.0)";resolution:="optional",org.springframework.jdbc.core
+ .support;version="[3.0.1.RELEASE, 3.1.0)";resolution:="optional",org.
+ springframework.jdbc.object;version="[3.0.1.RELEASE, 3.1.0)";resoluti
+ on:="optional",org.springframework.security.access;version="[3.0.2.RE
+ LEASE, 3.1.0)",org.springframework.security.access.expression;version
+ ="[3.0.2.RELEASE, 3.1.0)",org.springframework.security.access.hierarc
+ hicalroles;version="[3.0.2.RELEASE, 3.1.0)",org.springframework.secur
+ ity.access.intercept;version="[3.0.2.RELEASE, 3.1.0)",org.springframe
+ work.security.authentication;version="[3.0.2.RELEASE, 3.1.0)",org.spr
+ ingframework.security.authentication.event;version="[3.0.2.RELEASE, 3
+ .1.0)",org.springframework.security.core;version="[3.0.2.RELEASE, 3.1
+ .0)",org.springframework.security.core.authority;version="[3.0.2.RELE
+ ASE, 3.1.0)",org.springframework.security.core.authority.mapping;vers
+ ion="[3.0.2.RELEASE, 3.1.0)",org.springframework.security.core.codec;
+ version="[3.0.2.RELEASE, 3.1.0)",org.springframework.security.core.co
+ ntext;version="[3.0.2.RELEASE, 3.1.0)",org.springframework.security.c
+ ore.session;version="[3.0.2.RELEASE, 3.1.0)",org.springframework.secu
+ rity.core.userdetails;version="[3.0.2.RELEASE, 3.1.0)",org.springfram
+ ework.security.core.userdetails.cache;version="[3.0.2.RELEASE, 3.1.0)
+ ",org.springframework.security.core.userdetails.memory;version="[3.0.
+ 2.RELEASE, 3.1.0)",org.springframework.util;version="[3.0.1.RELEASE, 
+ 3.1.0)";resolution:="optional",org.springframework.web.context;versio
+ n="[3.0.1.RELEASE, 3.1.0)";resolution:="optional",org.springframework
+ .web.context.support;version="[3.0.1.RELEASE, 3.1.0)";resolution:="op
+ tional",org.springframework.web.filter;version="[3.0.1.RELEASE, 3.1.0
+ )",org.w3c.dom;version="0";resolution:="optional",org.xml.sax;version
+ ="0";resolution:="optional"
+Bundle-SymbolicName: org.springframework.security.web
+Archiver-Version: Plexus Archiver
+
