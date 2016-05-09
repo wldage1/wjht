@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="structure">
+	<parameterMap id="structure" type="com.sw.plugins.productcenter.attribute.structure.entity.Structure"/>
+	<!-- 会员结果集 -->
+	<resultMap id="structureResult" type="com.sw.plugins.productcenter.attribute.structure.entity.Structure">
+		<id property="id" column="ID" />
+		<result property="productTypeId" column="ProductTypeID" />
+		<result property="chineseName" column="ChineseName" />
+		<result property="englishName" column="EnglishName" />
+		<result property="isRequired" column="IsRequired" />
+		<result property="isEnabled" column="IsEnabled" />
+		<result property="showType" column="ShowType" />
+		<result property="value" column="Value" />
+		<result property="verify" column="Verify" />
+		<result property="verifyValue" column="VerifyValue" />
+		<result property="isSreach" column="IsSreach" />
+		<result property="isShowMyProduct" column="IsShowMyProduct" />
+		<result property="isShowProductCounter" column="IsShowProductCounter" />
+		<result property="isShowOnList" column="IsShowOnList" />
+		<result property="isShowOnContent" column="IsShowOnContent" />
+		<result property="isOrder" column="IsOrder" />
+		<result property="description" column="Description" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creator" column="Creator" />
+	</resultMap>
+	
+	<select id="select" resultMap="structureResult" parameterMap="structure">
+		select ID,ProductTypeID,ChineseName,EnglishName,IsRequired,IsEnabled,ShowType,Value,Verify,VerifyValue,IsSreach,IsShowMyProduct,IsShowProductCounter,IsShowOnList,IsShowOnContent,IsOrder,Description
+		from   PRD_ProductAttribute
+		<where>
+			<if test="id!=null and id!=0">
+				and ID=${id}
+			</if>
+			<if test="productTypeId!=null and productTypeId!=0">
+				and ProductTypeID=${productTypeId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectOrder" resultMap="structureResult" parameterMap="structure">
+		select ID,ProductTypeID,ChineseName,EnglishName,IsRequired,IsEnabled,ShowType,Value,Verify,VerifyValue,IsSreach,IsShowMyProduct,IsShowProductCounter,IsShowOnList,IsShowOnContent,IsOrder,Description
+		from   PRD_ProductAttribute
+		<where>
+			<if test="id!=null and id!=0">
+				and ID=${id}
+			</if>
+			<if test="productTypeId!=null and productTypeId!=0">
+				and ProductTypeID=${productTypeId}
+			</if>
+		</where>
+		order by IsOrder desc
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="structure">
+		select count(*)
+		from   PRD_ProductAttribute
+		<where>
+			<if test="id!=null and id!=0">
+				and ID=${id}
+			</if>
+			<if test="productTypeId!=null">
+				and ProductTypeID=${productTypeId}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="structure">
+		insert into PRD_ProductAttribute
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productTypeId!=null">,ProductTypeID</if>
+			<if test="chineseName!=null and chineseName!=''">,ChineseName</if>
+			<if test="englishName!=null and englishName!=''">,EnglishName</if>
+			<if test="isRequired!=null">,IsRequired</if>
+			<if test="isEnabled!=null">,IsEnabled</if>
+			<if test="showType!=null">,ShowType</if>
+			<if test="value!=null">,Value</if>
+			<if test="verify!=null">,Verify</if>
+			<if test="verifyValue!=null">,VerifyValue</if>
+			<if test="isSreach!=null">,IsSreach</if>
+			<if test="isShowMyProduct!=null">,IsShowMyProduct</if>
+			<if test="isShowProductCounter!=null">,IsShowProductCounter</if>
+			<if test="isShowOnList!=null">,IsShowOnList</if>
+			<if test="isShowOnContent!=null">,IsShowOnContent</if>
+			<if test="isOrder!=null">,IsOrder</if>
+			<if test="description!=null and description!=''">,Description</if>
+			,CreateTime
+			,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productTypeId!=null">,${productTypeId}</if>
+			<if test="chineseName!=null and chineseName!=''">,#{chineseName}</if>
+			<if test="englishName!=null and englishName!=''">,#{englishName}</if>
+			<if test="isRequired!=null">,${isRequired}</if>
+			<if test="isEnabled!=null">,${isEnabled}</if>
+			<if test="showType!=null">,${showType}</if>
+			<if test="value!=null">,#{value}</if>
+			<if test="verify!=null">,${verify}</if>
+			<if test="verifyValue!=null">,#{verifyValue}</if>
+			<if test="isSreach!=null">,${isSreach}</if>
+			<if test="isShowMyProduct!=null">,${isShowMyProduct}</if>
+			<if test="isShowProductCounter!=null">,${isShowProductCounter}</if>
+			<if test="isShowOnList!=null">,${isShowOnList}</if>
+			<if test="isShowOnContent!=null">,${isShowOnContent}</if>
+			<if test="isOrder!=null">,${isOrder}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="structure">
+		update PRD_ProductAttribute
+		<set>
+			<trim prefixOverrides=",">
+				<if test="productTypeId!=null">,ProductTypeID=${productTypeId}</if>
+				<if test="chineseName!=null and chineseName!=''">,ChineseName=#{chineseName}</if>
+				<if test="englishName!=null and englishName!=''">,EnglishName=#{englishName}</if>
+				<if test="isRequired!=null">,IsRequired=${isRequired}</if>
+				<if test="isEnabled!=null">,IsEnabled=${isEnabled}</if>
+				<if test="showType!=null">,ShowType=${showType}</if>
+				<if test="value!=null">,Value=#{value}</if>
+				<if test="verify!=null">,Verify=${verify}</if>
+				<if test="verifyValue!=null">,VerifyValue=#{verifyValue}</if>
+				<if test="isSreach!=null">,IsSreach=${isSreach}</if>
+				<if test="isShowMyProduct!=null">,IsShowMyProduct=${isShowMyProduct}</if>
+				<if test="isShowProductCounter!=null">,IsShowProductCounter=${isShowProductCounter}</if>
+				<if test="isShowOnList!=null">,IsShowOnList=${isShowOnList}</if>
+				<if test="isShowOnContent!=null">,IsShowOnContent=${isShowOnContent}</if>
+				<if test="isOrder!=null">,IsOrder=${isOrder}</if>
+				<if test="description!=null and description!=''">,Description=#{description}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=SYSDATE
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<delete id="delete" parameterMap="structure">
+		delete from PRD_ProductAttribute
+		<where>
+			<if test="productTypeId!=null">
+				and ProductTypeID=${productTypeId}
+			</if>
+			<if test="id!=null and id!=0">
+				and ID=${id}
+			</if>
+		</where>
+	</delete>
+	
+	<!-- 产品属性通用查询 -->
+	<select id="selectAttribute" resultMap="structureResult" parameterMap="structure">
+		select
+			A.PrdValue Value,
+			B.ChineseName
+		from PRD_ProductsValues A,PRD_ProductAttribute B
+		<where>
+			<trim prefixOverrides="and">
+				and ( A.PrdAttribute = B.ID and B.IsEnabled = 1 )
+				and A.PrdID=${id}
+				and B.IsShowProductCounter=1
+				and (B.IsShowOnContent=2 or B.IsShowOnContent =3)
+			</trim>
+		</where>
+		order by B.IsOrder DESC
+	</select>
+	
+</mapper>

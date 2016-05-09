@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	   PrdID                   bigint not null '产品ID',
+	   IPadUrl        		   vachar(200) comment 'Ipad产品PDF上传后保存路径',
+	   IPadFileName        vachar(100) comment 'Ipad产品中文文件名',
+	   IPhoneUrl        	   vachar(200) comment 'IPhone产品PDF上传后保存路径',
+	   IPhoneFileName     vachar(100) comment 'IPhone产品中文文件名',
+ -->
+<mapper namespace="productpdf">
+	<parameterMap id="productpdf" type="com.sw.plugins.productcenter.product.maintain.entity.ProductPdf" />
+
+	<!-- 
+	产品结果集
+	 -->
+	<resultMap id="productPdfResult" type="com.sw.plugins.productcenter.product.maintain.entity.ProductPdf">
+		<id property="id" column="ID" />
+		<result property="prdId" column="PrdID" />
+		<result property="iPadUrl" column="IPadUrl" />
+		<result property="iPadFileName" column="IPadFileName" />
+		<result property="iPhoneUrl" column="IPhoneUrl" />
+		<result property="iPhoneFileName" column="IPhoneFileName" />
+		<result property="creator" column="Creator" />
+	</resultMap>
+
+	<!-- 
+	新建产品属性值信息
+	 -->
+	<insert id="insert" parameterMap="productpdf">
+		insert into PRD_ProductPDF
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="prdId != null ">,PrdID </if>
+			<if test="iPadUrl != null ">,IPadUrl</if>
+			<if test="iPadFileName != null ">,IPadFileName</if>
+			<if test="iPhoneUrl != null ">,IPhoneUrl</if>
+			<if test="iPhoneFileName != null">,IPhoneFileName</if>
+			,CreateTime
+			,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="prdId != null ">,${prdId} </if>
+			<if test="iPadUrl != null ">,#{iPadUrl}</if>
+			<if test="iPadFileName != null">,#{iPadFileName}</if>
+			<if test="iPhoneUrl != null ">,#{iPhoneUrl}</if>
+			<if test="iPhoneFileName != null">,#{iPhoneFileName}</if>
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				,now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				,SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				,GETDATE()
+			</if>
+			,#{creator}
+		</trim>
+	</insert>
+	
+	<!-- 
+	根据产品ID获取对应PDF集合Ipad
+	 -->
+	<select id="selectByPrdIdIpad" resultMap="productPdfResult" parameterMap="productpdf">
+		select ID,PrdID,IPadUrl,iPadFileName,IPhoneUrl,IPhoneFileName
+		from PRD_ProductPDF
+		<where>
+			PrdID=${prdId} and iPadFileName is not null
+		</where>
+	</select>
+	
+	<!-- 
+	根据产品ID获取对应PDF集合Iphone
+	 -->
+	<select id="selectByPrdIdIphone" resultMap="productPdfResult" parameterMap="productpdf">
+		select ID,PrdID,IPadUrl,iPadFileName,IPhoneUrl,IPhoneFileName
+		from PRD_ProductPDF
+		<where>
+			PrdID=${prdId} and IPhoneFileName is not null
+		</where>
+	</select>
+	
+	<!-- 
+	单一查询
+	-->
+	<select id="selectByOne" resultMap="productPdfResult" parameterMap="productpdf">
+		select ID,PrdID,IPadUrl,iPadFileName,iPhoneUrl,iPhoneFileName  
+		from PRD_ProductPDF
+		<where>
+			ID=${id}
+		</where>
+	</select>
+	
+	<!--
+	 删除产品PDF
+	 -->
+	<delete id="delete" parameterMap="productpdf">
+		delete from PRD_ProductPDF where ID=${id} 
+	</delete>
+	
+	<!--
+	 批量删除产品存续报告
+	 -->
+	<delete id="deleteiPhonePDF" parameterMap="productpdf">
+		DELETE FROM prd_productpdf
+		WHERE ID IN (
+						select * 
+						from (
+										select m.ID from prd_productpdf as m
+										where m.PrdID = ${prdId}
+										and IPhoneUrl is not null
+										order by m.CreateTime DESC
+										LIMIT 0,1
+									) as tem_result
+					)		
+
+	</delete>
+	<delete id="deleteiPadPDF" parameterMap="productpdf">
+		DELETE FROM prd_productpdf
+		WHERE ID IN (
+						select * 
+						from (
+										select m.ID from prd_productpdf as m
+										where m.PrdID = ${prdId}
+										and IPadUrl is not null
+										order by m.CreateTime DESC
+										LIMIT 0,1
+									) as tem_result
+					)		
+
+	</delete>
+</mapper>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	   ID					       bigint not null auto_increment comment 'CRM产品表ID系统主键：系统生成',
+	   SerialNo               int not null '序号',
+	   ProductName         varcharl(100) '产品名称',
+	   Source                  varcharl(100) '产品提供方，选择列表，由系统灵活配置',
+	   ProductType         varcharl(100) '产品类型，选择列表形式,包括: 公募基金
+																							            私募基金PS
+																							            信托产品PD
+																							            投连险
+																							            券商集合理财
+																							            信托产品PE
+																							            保险产品
+																							            券商佣金
+																							            私募股权PE
+																							            投资移民',
+		ProductDef          		   longblob '产品信息格式定义(XML格式)',
+		ProductDefType           varchar(10) '产品信息格式定义类型',
+		ProductDesc				   varchar(1000) '产品特点',
+		ProductIncome			   varchar(100) '产品年化收益，手工输入',
+		CreateTime			       datetime '上线时间',
+		ProductFoundTime		   datetime '成立时间',
+		PurchasePhase		        varchar(100) '销售状态，选择列表，包括：份额满，结束，可打款，可预约，预热期',
+		PurchaseStartPoint	    int '购买起点，单位万',
+		SaleStartTime  			    datetime '销售开始时间',
+		SaleEndTime  			    datetime '销售结束时间',
+		CommisionRate 			    float '佣金比例，单位%',
+		LadderCommisionRate     varchar(100) '阶梯佣金比例',
+		FactCommisionRate        float '实际佣金比例',
+		ProductTerm        			varchar(50) '产品期限，单位：月',
+		ProductFinishTime        	datetime '产品结束时间',
+		VentureCharacter        	varchar(1000) '风险收益特征',
+		ProductAdvice        	    varchar(1000) '研究部建议',
+		ProductStatus        	    varchar(100) '产品状态，选择列表，包括终止，提前终止，正常',
+		Pad1								varchar(100) '合同文件名',
+		Pad2								varchar(100) '收益分配方式',
+		Pad3								varchar(200) '备用字段3',
+		Pad4								varchar(500) '分配日期',
+		Pad5								varchar(1000) '备用字段5',
+		Pad6								varchar(100) '私募开放日',
+		Pad8								varchar(100) '产品简称',
+		Pad9								varchar(100) '产品同步判断标识',
+		Pad10							varchar(100) '备用字段10',
+		addedFlag						int '上架标记'
+																							 -->
+																							 
+<mapper namespace="crmproduct">
+	<parameterMap id="crmproduct"
+		type="com.sw.plugins.productcenter.product.maintain.entity.CRMProduct" />
+
+	<!-- 
+	产品结果集
+	 -->
+	<resultMap id="crmproductResult"
+		type="com.sw.plugins.productcenter.product.maintain.entity.CRMProduct">
+		<id property="id" column="ID" />
+		<result property="serialNo" column="SerialNo" />
+		<result property="productName" column="ProductName" />
+		<result property="source" column="Source" />
+		<result property="productType" column="ProductType" />
+		<result property="productDef" column="ProductDef" />
+		<result property="productDefType" column="ProductDefType" />
+		<result property="productDesc" column="ProductDesc" />
+		<result property="productIncome" column="ProductIncome" />
+		<result property="createTimeCRM" column="CreateTime" />
+		<result property="productFoundTime" column="ProductFoundTime" />
+		<result property="purchasePhase" column="PurchasePhase" />
+		<result property="purchaseStartPoint" column="PurchaseStartPoint" />
+		<result property="saleStartTime" column="SaleStartTime" />
+		<result property="saleEndTime" column="SaleEndTime" />
+		<result property="commisionRate" column="CommisionRate" />
+		<result property="ladderCommisionRate" column="LadderCommisionRate" />
+		<result property="factCommisionRate" column="FactCommisionRate" />
+		<result property="productTerm" column="ProductTerm" />
+		<result property="productFinishTime" column="ProductFinishTime" />
+		<result property="ventureCharacter" column="VentureCharacter" />
+		<result property="productAdvice" column="ProductAdvice" />
+		<result property="productStatus" column="ProductStatus" />
+		<result property="pad1" column="Pad1" />
+		<result property="pad2" column="Pad2" />
+		<result property="pad3" column="Pad3" />
+		<result property="pad4" column="Pad4" />
+		<result property="pad5" column="Pad5" />
+		<result property="pad6" column="Pad6" />
+		<result property="pad7" column="Pad7" />
+		<result property="pad8" column="Pad8" />
+		<result property="pad9" column="Pad9" />
+		<result property="pad10" column="Pad10" />
+		<result property="addedFlag" column="AddedFlag" />
+		<result property="updFlag" column="UpdFlag" />
+	</resultMap>
+	
+	<!-- 
+	CRM产品通用查询
+	-->
+	<select id="select" resultMap="crmproductResult" parameterMap="crmproduct">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select ID,SerialNo,ProductName,Source,ProductType,ProductDef,ProductDefType,ProductDesc,ProductIncome,CreateTime,ProductFoundTime,
+				PurchasePhase,PurchaseStartPoint,SaleStartTime,CommisionRate,LadderCommisionRate,FactCommisionRate,ProductTerm,ProductFinishTime,
+				VentureCharacter,ProductAdvice,ProductStatus,Pad1,Pad2,Pad3,Pad4,Pad5,Pad6,Pad7,Pad8,Pad9,Pad10,AddedFlag,UpdFlag
+			from CFG_Finance_Product  
+			<where>
+			1=1
+			<if test="productName !=null  and  productName !=''" >and productName like CONCAT('%',#{productName},'%')</if>
+			<if test="productType !=null and productType !=''">and ProductType like CONCAT('%',#{productType},'%')</if>
+			<if test="purchasePhase !=null and purchasePhase !=''">and PurchasePhase like CONCAT('%',#{purchasePhase},'%')</if>
+		<!--  	<if test="purchaseStartPoint!=null and  purchaseStartPoint=0 ">and PurchaseStartPoint like CONCAT('%',${purchaseStartPoint},'%')</if>  	 -->
+			<if test="productIncome !=null and  productIncome !=''">and ProductIncome like CONCAT('%',#{productIncome},'%')</if>
+			<if test="productTerm !=null and productTerm !=''">and ProductTerm like CONCAT('%',#{productTerm},'%')</if>
+			</where>
+			order by UpdFlag DESC,SerialNo DESC limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.ID,a.SerialNo,a.ProductName,a.Source,a.ProductType,a.ProductDef,a.ProductDefType,a.ProductDesc,a.ProductIncome,a.CreateTime,a.ProductFoundTime,
+				a.PurchasePhase,a.PurchaseStartPoint,a.SaleStartTime,a.CommisionRate,a.LadderCommisionRate,a.FactCommisionRate,a.ProductTerm,a.ProductFinishTime,
+				a.VentureCharacter,a.ProductAdvice,a.ProductStatus,a.Pad1,a.Pad2,a.Pad3,a.Pad4,a.Pad5,a.Pad6,a.Pad7,a.Pad8,a.Pad9,a.Pad10,a.AddedFlag,a.UpdFlag
+			from (	
+			select t.*,ROWNUM rn from (
+				select cfp.* from CFG_Finance_Product cfp
+				<where>
+					1=1
+					<if test="productName!=null  and  productName!=''" >and productName like '%'||#{productName}||'%' </if>
+					<if test="productType!=null and productType!=''">and ProductType like '%'||#{productType}||'%' </if>
+					<if test="purchasePhase!=null and purchasePhase!=''">and PurchasePhase like '%'||#{purchasePhase}||'%' </if>
+				<!--  	<if test="purchaseStartPoint!=null and  purchaseStartPoint=0 ">and PurchaseStartPoint like CONCAT('%',${purchaseStartPoint},'%')</if>  	 -->
+					<if test="productIncome!=null and  productIncome!=''">and ProductIncome like '%'||#{productIncome}||'%' </if>
+					<if test="productTerm !=null and productTerm !=''">and ProductTerm like '%'||#{productTerm}||'%' </if>
+					</where>
+				order by cfp.UpdFlag DESC, cfp.SerialNo DESC
+			) t
+			<where>
+			      <if test="offset!=null and offset!=''">
+			         <![CDATA[ROWNUM<=${offset}]]>
+			       </if>  
+		    </where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select a.ID,a.SerialNo,a.ProductName,a.Source,a.ProductType,a.ProductDef,a.ProductDefType,a.ProductDesc,a.ProductIncome,a.CreateTime,a.ProductFoundTime,
+				a.PurchasePhase,a.PurchaseStartPoint,a.SaleStartTime,a.CommisionRate,a.LadderCommisionRate,a.FactCommisionRate,a.ProductTerm,a.ProductFinishTime,
+				a.VentureCharacter,a.ProductAdvice,a.ProductStatus,a.Pad1,a.Pad2,a.Pad3,a.Pad4,a.Pad5,a.Pad6,a.Pad7,a.Pad8,a.Pad9,a.Pad10,a.AddedFlag,a.UpdFlag
+				from (
+			select row_number() over(order by UpdFlag DESC,SerialNo DESC) as rowNum, cfp.* 
+			from CFG_Finance_Product cfp
+			<where>
+				<trim prefixOverrides="and">
+					1=1
+					<if test="productName!=null  and  productName!=''" >and productName like '%'+#{productName}+'%' </if>
+					<if test="productType!=null and productType!=''">and ProductType like '%'+#{productType}+'%' </if>
+					<if test="purchasePhase!=null and purchasePhase!=''">and PurchasePhase like '%'+#{purchasePhase}+'%' </if>
+					<if test="productIncome!=null and  productIncome!=''">and ProductIncome like '%'+#{productIncome}+'%' </if>
+					<if test="productTerm !=null and productTerm !=''">and ProductTerm like '%'+#{productTerm}+'%' </if>
+				</trim>
+			</where>
+				) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>		
+		</if>		
+	</select>
+	
+	<!-- 
+	CRM产品查询最大SerialNo
+	-->
+	<select id="selectLastSerialNo" resultMap="crmproductResult" parameterMap="crmproduct">
+		select ID,SerialNo 
+		from CFG_Finance_Product  
+		order by SerialNo desc 	
+	</select>
+	
+	<!-- 
+	通CRM产品数量查询
+	 -->
+	<select id="selectCount" resultType="long" parameterMap="crmproduct">
+		SELECT count(*) FROM  CFG_Finance_Product
+		<where>
+			1=1
+			<if test="productName!=null  and  productName!=''" >
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and ProductName like CONCAT('%',#{productName},'%')
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and ProductName like '%'||#{productName}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and ProductName like '%'+#{productName}+'%' 
+				</if>				
+			</if>
+			<if test="productType!=null and productType!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and ProductType like CONCAT('%',#{productType},'%')
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and ProductType like '%'||#{productType}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and ProductType like '%'+#{productType}+'%' 
+				</if>
+			</if>
+			<if test="purchasePhase!=null and purchasePhase!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and PurchasePhase like CONCAT('%',#{purchasePhase},'%')
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and PurchasePhase like '%'||#{purchasePhase}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and PurchasePhase like '%'+#{purchasePhase}+'%' 
+				</if>
+			</if>
+			<if test="productIncome!=null and  productIncome!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and ProductIncome like CONCAT('%',#{productIncome},'%')
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and ProductIncome like '%'||#{productIncome}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and ProductIncome like '%'+#{productIncome}+'%' 
+				</if>
+			</if>
+			<if test="productTerm!=null and productTerm!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and ProductTerm like CONCAT('%',#{productTerm},'%')
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and ProductTerm like '%'||#{productTerm}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and ProductTerm like '%'+#{productTerm}+'%' 
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 
+	单一CRM产品查询
+	-->
+	<select id="selectCRMByOne" resultMap="crmproductResult" parameterMap="crmproduct">
+		select cfg.ID,cfg.SerialNo,cfg.ProductName,cfg.Source,cfg.ProductType,cfg.ProductDef,cfg.ProductDefType,cfg.ProductDesc,cfg.ProductIncome,cfg.CreateTime,cfg.ProductFoundTime,
+				cfg.PurchasePhase,cfg.PurchaseStartPoint,cfg.SaleStartTime,cfg.CommisionRate,cfg.LadderCommisionRate,cfg.FactCommisionRate,cfg.ProductTerm,cfg.ProductFinishTime,
+				cfg.VentureCharacter,cfg.ProductAdvice,cfg.ProductStatus,cfg.Pad1,cfg.Pad2,cfg.Pad3,cfg.Pad4,cfg.Pad5,cfg.Pad6,cfg.Pad7,cfg.Pad8,cfg.Pad9,cfg.Pad10,cfg.AddedFlag,cfg.UpdFlag,
+				trust.TrustID,trust.TrustName,trust.TrustCode,trust.TrustAName,trust.SSpell,trust.DeclareDate,trust.UpdateDate,trust.Trust22,trust.Trust31,trust.Trust28,trust.Type,trust.Trust30,trust.IsStat,trust.Trust16,trust.Trust17,trust.Trust32,
+				trust.Trust1,trust.Trust23,trust.Trust2,trust.Trust3,trust.Trust27,trust.Trust4,trust.Trust29,trust.Trust34,trust.Trust5,trust.Trust6,trust.Trust26,trust.Trust38,trust.Trust7,trust.Trust41,trust.Trust9,trust.Trust8,trust.Trust18,trust.Trust24,trust.Trust37,
+				trust.Trust25,trust.Trust10,trust.Trust11,trust.Trust12,trust.Trust21,trust.Trust19,trust.Trust13,trust.Trust20,trust.Trust39,trust.Trust40,trust.Trust14,trust.Trust35,trust.Trust15,trust.Trust33,trust.Trust36,trust.Memo,trust.DataSource,trust.TMStamp,trust.CrmID
+		from CFG_Finance_Product cfg 
+		LEFT JOIN PRD_Trust trust ON cfg.Pad7=trust.TrustCode	
+		where ID=${id}
+	</select>
+	
+	<!-- 
+	CRM产品信息添加
+	 -->
+	<insert id="insert" parameterMap="crmproduct">
+		insert into CFG_Finance_Product    
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="serialNo != null ">,SerialNo </if>
+			<if test="productName != null ">,ProductName</if>
+			<if test="productType != null ">,ProductType</if>
+			<if test="source != null">,Source</if>
+			<if test="productDef != null">,ProductDef</if>
+			<if test="productDefType != null">,ProductDefType</if>
+			<if test="productDesc != null">,ProductDesc</if>
+			<if test="productIncome != null ">,ProductIncome</if>
+			
+			<if test="purchasePhase != null ">,PurchasePhase </if>
+			<if test="purchaseStartPoint != null ">,PurchaseStartPoint</if>
+			<if test="commisionRate != null ">,CommisionRate</if>
+			<if test="ladderCommisionRate != null">,LadderCommisionRate</if>
+			<if test="factCommisionRate != null">,FactCommisionRate</if>
+			<if test="productTerm != null ">,ProductTerm</if>	
+			<if test="ventureCharacter != null">,VentureCharacter</if>
+			<if test="productAdvice != null ">,ProductAdvice</if>
+			<if test="productStatus != null ">,ProductStatus</if>		
+			<if test="pad1 != null ">,Pad1</if>
+			<if test="pad2 != null ">,Pad2 </if>
+			<if test="pad3 != null ">,Pad3</if>
+			<if test="pad4 != null">,Pad4</if>
+			<if test="pad5 != null ">,Pad5</if>
+			<if test="pad6 != null">,Pad6</if>
+			<if test="pad7 != null">,Pad7</if>
+			<if test="pad8 != null ">,Pad8</if>
+			<if test="pad9 != null ">,Pad9</if>
+			<if test="pad10 != null ">,Pad10</if>
+			<if test="addedFlag != null ">,AddedFlag</if>
+			<if test="updFlag != null ">,UpdFlag</if>
+			<if test="createTimeCRM != null ">,CreateTime</if>
+			<if test="productFoundTime != null ">,ProductFoundTime</if>
+			<if test="saleStartTime != null">,SaleStartTime</if>
+			<if test="saleEndTime != null">,SaleEndTime</if>
+			<if test="productFinishTime != null ">,ProductFinishTime</if>
+			,PullTime
+		</trim>
+		values 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="serialNo != null ">,${serialNo} </if>
+			<if test="productName != null ">,#{productName}</if>
+			<if test="productType != null ">,#{productType}</if>
+			<if test="source != null">,#{source}</if>	
+			<if test="productDef != null">,#{productDef}</if>
+			<if test="productDefType != null">,#{productDefType}</if>
+			<if test="productDesc != null">,#{productDesc}</if>
+			<if test="productIncome != null ">,#{productIncome}</if>		
+			<if test="purchasePhase != null ">,#{purchasePhase} </if>
+			<if test="purchaseStartPoint != null ">,${purchaseStartPoint} </if>		
+			<if test="commisionRate != null ">,${commisionRate}</if>
+			<if test="ladderCommisionRate != null">,#{ladderCommisionRate}</if>
+			<if test="factCommisionRate != null">,${factCommisionRate}</if>
+			<if test="productTerm != null ">,#{productTerm}</if>
+			<if test="ventureCharacter != null">,#{ventureCharacter}</if>
+			<if test="productAdvice != null ">,#{productAdvice}</if>
+			<if test="productStatus != null ">,#{productStatus}</if>
+			<if test="pad1 != null ">,#{pad1}</if>
+			<if test="pad2 != null ">,#{pad2}</if>
+			<if test="pad3 != null ">,#{pad3}</if>
+			<if test="pad4 != null">,#{pad4}</if>
+			<if test="pad5 != null ">,#{pad5}</if>
+			<if test="pad6 != null">,#{pad6}</if>
+			<if test="pad7 != null">,#{pad7}</if>
+			<if test="pad8 != null ">,#{pad8}</if>
+			<if test="pad9 != null ">,#{pad9}</if>
+			<if test="pad10 != null ">,#{pad10}</if>			
+			<if test="addedFlag != null ">,${addedFlag}</if>
+			<if test="updFlag != null ">,${updFlag}</if>
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				<if test="createTimeCRM != null ">,#{createTimeCRM}</if>
+				<if test="productFoundTime != null ">,#{productFoundTime}</if>
+				<if test="saleStartTime != null">,#{saleStartTime}</if>
+				<if test="saleEndTime != null">,#{saleEndTime}</if>
+				<if test="productFinishTime != null ">,#{productFinishTime}</if>
+				,now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				<if test="createTimeCRM != null ">,to_date(substr(#{createTimeCRM},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+				<if test="productFoundTime != null ">,to_date(substr(#{productFoundTime},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+				<if test="saleStartTime != null">,to_date(substr(#{saleStartTime},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+				<if test="saleEndTime != null">,to_date(substr(#{saleEndTime},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+				<if test="productFinishTime != null ">,to_date(substr(#{productFinishTime},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+				,SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				<if test="createTimeCRM != null ">,#{createTimeCRM}</if>
+				<if test="productFoundTime != null ">,#{productFoundTime}</if>
+				<if test="saleStartTime != null">,#{saleStartTime}</if>
+				<if test="saleEndTime != null">,#{saleEndTime}</if>
+				<if test="productFinishTime != null ">,#{productFinishTime}</if>
+				,GETDATE()
+			</if>
+			
+		</trim>
+	</insert>
+	
+	<!-- 
+	更新CRM产品上架状态
+	 -->
+	<update id="update" parameterMap="crmproduct">
+		update CFG_Finance_Product  
+		<set>
+			AddedFlag = ${addedFlag} 
+		</set>
+		<where>
+			<if test="id !=null and id !=''">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 
+	还原CRM产品更新状态
+	 -->
+	<update id="updateUpdFlag" parameterMap="crmproduct">
+		update CFG_Finance_Product  
+		<set>
+			UpdFlag = ${updFlag} 
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id !=null and id !=''"> and ID=${id}</if>
+				<if test="serialNo !=null and serialNo !=''">and SerialNo=${serialNo}</if>
+			</trim>
+		</where>
+	</update>
+	
+	<!-- 
+	根据CRM产品ID查询
+	-->
+	<select id="selectCRMBySerialNo" resultMap="crmproductResult" parameterMap="crmproduct">
+		select ID,SerialNo,ProductName,Source,ProductType,ProductDef,ProductDefType,ProductDesc,ProductIncome,CreateTime,ProductFoundTime,
+				PurchasePhase,PurchaseStartPoint,SaleStartTime,CommisionRate,LadderCommisionRate,FactCommisionRate,ProductTerm,ProductFinishTime,
+				VentureCharacter,ProductAdvice,ProductStatus,Pad1,Pad2,Pad3,Pad4,Pad5,Pad6,Pad7,Pad8,Pad9,Pad10,AddedFlag,UpdFlag
+		from CFG_Finance_Product    
+		where SerialNo=${serialNo}
+	</select>
+	
+	<!--
+	 CRM产品删除
+	  -->
+	<delete id="deleteAllCRM" parameterMap="crmproduct">
+		delete from CFG_Finance_Product    
+	</delete>
+	
+	<!-- 
+	CRM产品中类型为（私募基金PS）和（信托产品PD）
+	-->
+	<select id="getCrmTypeIn" resultMap="crmproductResult" parameterMap="crmproduct">
+		select ID,SerialNo,ProductName,Source,ProductType,ProductDef,ProductDefType,ProductDesc,ProductIncome,CreateTime,ProductFoundTime,
+				PurchasePhase,PurchaseStartPoint,SaleStartTime,CommisionRate,LadderCommisionRate,FactCommisionRate,ProductTerm,ProductFinishTime,
+				VentureCharacter,ProductAdvice,ProductStatus,Pad1,Pad2,Pad3,Pad4,Pad5,Pad6,Pad7,Pad8,Pad9,Pad10,AddedFlag,UpdFlag
+		from CFG_Finance_Product  
+		<where>
+			(ProductType='私募基金PS' or ProductType='信托产品PD') 
+		</where>
+		order by SerialNo desc
+	</select>
+
+
+	<!-- 
+	查询产品表中是否已存在CRM产品
+	-->
+	<select id="selectCountCrmID" resultType="long" parameterMap="crmproduct">
+		SELECT count(*) FROM  PRD_Products 
+		<where>
+			CrmPrdId=${serialNo}
+		</where>
+	</select>
+	
+	<select id="selectDifferenceTrustCode" resultMap="crmproductResult">
+		 <![CDATA[
+		 	select SerialNo,Pad7 from CFG_Finance_Product where Pad7 is not NULL and Pad7 <> '' and  NOT EXISTS (select TrustCode from PRD_Trust where CFG_Finance_Product.Pad7 = PRD_Trust.TrustCode)
+		 ]]>
+	</select>
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="pofData">
+	<parameterMap id="pofData"	type="com.sw.plugins.productcenter.product.maintain.entity.POFData" />
+	<!-- 产品结果集 -->
+	<resultMap id="pofDataResult" type="com.sw.plugins.productcenter.product.maintain.entity.POFData">
+		<id property="id" column="ID" />
+		<result property="trustCode" column="TrustCode" />
+		<result property="navDate" column="NavDate" />
+		<result property="nav" column="Nav" />
+		<result property="fqNav" column="FQNav" />
+		<result property="m1NavG" column="M1NavG" />
+		<result property="m3NavG" column="M3NavG" />
+		<result property="m6NavG" column="M6NavG" />
+		<result property="y1NavG" column="Y1NavG" />
+		<result property="y2NavG" column="Y2NavG" />
+		<result property="tyNavG" column="TYNavG" />
+		<result property="createNavG" column="CNavG" />
+	</resultMap>
+	
+	<select id="select" resultMap="pofDataResult" parameterMap="pofData">
+		select 
+			ID,TrustCode,NavDate,Nav,FQNav,M1NavG,M3NavG,M6NavG,Y1NavG,Y2NavG,TYNavG,CNavG
+		from 
+			PRD_PofData 
+		<where>
+			<if test=" trustCode != null and trustCode != '' ">
+				TrustCode=#{trustCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="pofData">
+		select 
+			count(*)
+		from   
+			PRD_PofData
+		<where>
+			<if test="trustCode != null and trustCode != ''">
+				TrustCode=#{trustCode}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="pofData">
+		insert into PRD_PofData 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" trustCode != null and trustCode != '' ">,TrustCode</if>
+			<if test=" navDate != null and navDate != '' ">,NavDate</if>
+			<if test=" nav != null ">,Nav</if>
+			<if test=" fqNav != null ">,FQNav</if>
+			<if test=" m1NavG != null and m1NavG != '' ">,M1NavG</if>
+			<if test=" m3NavG != null and m3NavG != '' ">,M3NavG</if>
+			<if test=" m6NavG != null and m6NavG != '' ">,M6NavG</if>
+			<if test=" y1NavG != null and y1NavG != '' ">,Y1NavG</if>
+			<if test=" y2NavG != null and y2NavG != '' ">,Y2NavG</if>
+			<if test=" tyNavG != null and tyNavG != '' ">,TYNavG</if>
+			<if test=" createNavG != null and createNavG != '' ">,CNavG</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" trustCode != null and trustCode != '' ">,#{trustCode}</if>
+			<if test=" navDate != null and navDate != '' ">,#{navDate}</if>
+			<if test=" nav != null ">,${nav}</if>
+			<if test=" fqNav != null ">,${fqNav}</if>
+			<if test=" m1NavG != null and m1NavG != '' ">,#{m1NavG}</if>
+			<if test=" m3NavG != null and m3NavG != '' ">,#{m3NavG}</if>
+			<if test=" m6NavG != null and m6NavG != '' ">,#{m6NavG}</if>
+			<if test=" y1NavG != null and y1NavG != '' ">,#{y1NavG}</if>
+			<if test=" y2NavG != null and y2NavG != '' ">,#{y2NavG}</if>
+			<if test=" tyNavG != null and tyNavG != '' ">,#{tyNavG}</if>
+			<if test=" createNavG != null and createNavG != '' ">,#{createNavG}</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="pofData">
+		update PRD_PofData 
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" navDate != null and navDate != '' ">,NavDate=#{navDate}</if>
+				<if test=" nav != null ">,Nav=${nav}</if>
+				<if test=" fqNav != null ">,FQNav=${fqNav}</if>
+				<if test=" m1NavG != null and m1NavG != '' ">,M1NavG=#{m1NavG}</if>
+				<if test=" m3NavG != null and m3NavG != '' ">,M3NavG=#{m3NavG}</if>
+				<if test=" m6NavG != null and m6NavG != '' ">,M6NavG=#{m6NavG}</if>
+				<if test=" y1NavG != null and y1NavG != '' ">,Y1NavG=#{y1NavG}</if>
+				<if test=" y2NavG != null and y2NavG != '' ">,Y2NavG=#{y2NavG}</if>
+				<if test=" tyNavG != null and tyNavG != '' ">,TYNavG=#{tyNavG}</if>
+				<if test=" createNavG != null and createNavG != '' ">,CNavG=#{createNavG}</if>
+			</trim>
+		</set>
+		<where>
+			<if test=" trustCode != null and trustCode != '' ">TrustCode=#{trustCode}</if>
+		</where>
+	</update>
+	
+	<select id="selectByTrustCodes" resultMap="pofDataResult" parameterMap="pofData">
+		select 
+			ID,TrustCode,NavDate,Nav,FQNav,M1NavG,M3NavG,M6NavG,Y1NavG,Y2NavG,TYNavG,CNavG
+		from 
+			PRD_PofData 
+		<where>
+			<if test=" ids != null">
+				and TrustCode in
+				<foreach item="cd" index="index" collection="ids" open="(" separator="," close=")">  
+	           	 	#{cd}
+    			</foreach> 
+			</if>
+		</where>
+	</select>
+</mapper>

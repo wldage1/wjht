@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	  SysID					   bigint not null auto_increment comment '产品值ID系统主键：系统生成',
+	   PrdID                   bigint not null '产品标识ID',
+	   PrdAttribute         bigint not null '产品属性ID',
+	   PrdValue                text comment '产品属性对应值',
+ -->
+<mapper namespace="productvalue">
+	<parameterMap id="productvalue"
+		type="com.sw.plugins.productcenter.product.maintain.entity.ProductValue" />
+
+	<!-- 产品结果集 -->
+	<resultMap id="productValueResult"
+		type="com.sw.plugins.productcenter.product.maintain.entity.ProductValue">
+		<id property="sysId" column="SysID" />
+		<result property="prdId" column="PrdID" />
+		<result property="prdAttribute" column="PrdAttribute" />
+		<result property="prdValue" column="PrdValue" />
+		<result property="creator" column="Creator" />
+	</resultMap>
+	
+	<!-- 
+	根据产品ID获取对应值
+	 -->
+	<select id="selectByPrdId" resultMap="productValueResult" parameterMap="productvalue">
+		select SysID,PrdID,PrdAttribute,PrdValue
+		from PRD_ProductsValues
+		<where>
+			PrdID=${prdId}
+		</where>
+	</select>
+	
+	<!-- 
+	根据产品ID获取对应值
+	 -->
+	<select id="selectPrdVal" resultMap="productValueResult" parameterMap="productvalue">
+		select SysID,PrdID,PrdAttribute,PrdValue
+		from PRD_ProductsValues
+		<where>
+			PrdAttribute=${prdAttribute} 
+			<if test="databaseType!=null and databaseType == 'mysql'">
+					and PrdValue like CONCAT('%',#{prdValue},'%')
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				and PrdValue like '%'||#{prdValue}||'%'  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				and PrdValue like '%'+#{prdValue}+'%' 
+			</if>
+			<if test="selectPrdIds != null  and selectPrdIds !='' ">
+					<![CDATA[ and (PrdID in (${selectPrdIds}))]]>
+			</if>
+		</where>
+		group by PrdID
+	</select>
+	
+	<!-- 
+	根据条件查询当前值是否存在
+	 -->
+	<select id="selectCount" resultType="long"  parameterMap="productvalue">
+		select count(*)
+		from PRD_ProductsValues
+		<where>
+			PrdId=${prdId} and PrdAttribute=${prdAttribute}
+		</where>
+	</select>
+	
+	<!-- 
+	更新产品属性信息
+	-->
+	<update id="update" parameterMap="productvalue">
+		update PRD_ProductsValues
+		<set>
+			PrdValue = #{prdValue}
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				,ModifyTime=now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				,ModifyTime=SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				,ModifyTime=GETDATE()
+			</if>
+		</set>
+		<where>
+			PrdId=${prdId} and PrdAttribute=${prdAttribute}
+		</where>
+	</update>
+	
+	<!-- 
+	新建产品属性值信息
+	 -->
+	<insert id="insert" parameterMap="productvalue">
+		insert into PRD_ProductsValues
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="prdId != null ">,PrdID </if>
+		<if test="prdAttribute != null ">,PrdAttribute</if>
+		<if test="prdValue != null">,prdValue</if>
+		,CreateTime
+		,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="prdId != null ">,${prdId} </if>
+		<if test="prdAttribute != null ">,${prdAttribute}</if>
+		<if test="prdValue != null">,#{prdValue}</if>
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			,now()
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			,SYSDATE
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			,GETDATE()
+		</if>
+		,#{creator}
+		</trim>
+	</insert>
+	
+	<!--
+	 删除产品属性值
+	 -->
+	<delete id="delete" parameterMap="productvalue">
+		delete from PRD_ProductsValues 	
+		<where>
+			PrdId=${prdId} and PrdAttribute=${prdAttribute}
+		</where>
+	</delete>
+</mapper>

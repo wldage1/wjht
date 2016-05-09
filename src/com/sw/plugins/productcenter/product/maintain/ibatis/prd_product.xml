@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	   PrdID                   bigint not null auto_increment comment '产品标识ID系统主键：系统生成',
+	   PrdType                bigint  comment '产品类型',
+	   PrdName               varchar(100) comment '产品名称',
+	   PrdNo                   varchar(100) comment '产品编号',
+	   PrdDescribe          text comment '产品描述',
+	   PrdFrom                int comment '产品来源 1=本系统录入，2=CRM导入',
+	   PrdStatus              int comment '产品启用状态 0=停用，1=启用',
+	   FinchinaSymbol      varchar(100) comment '财汇数据库产品编号',
+	   CrmPrdID         		bigint comment '嘉华Crm产品ID',
+	   DelFlag                  int comment '产品删除标记',
+	   ProductFinishTime   datetime '产品结束时间',
+ -->
+<mapper namespace="product">
+	<parameterMap id="product"
+		type="com.sw.plugins.productcenter.product.maintain.entity.Product" />
+
+	<!-- 
+	产品结果集
+	 -->
+	<resultMap id="productResult"
+		type="com.sw.plugins.productcenter.product.maintain.entity.Product">
+		<id property="prdId" column="PrdID" />
+		<result property="prdType" column="PrdType" />
+		<result property="prdName" column="PrdName" />
+		<result property="prdNo" column="PrdNo" />
+		<result property="prdDescribe" column="PrdDescribe" />
+		<result property="prdFrom" column="PrdFrom" />
+		<result property="prdStatus" column="PrdStatus" />
+		<result property="finchinaSymbol" column="FinchinaSymbol" />
+		<result property="crmPrdId" column="CrmPrdId" />
+		<result property="delFlag" column="DelFlag" />
+		<result property="shared" column="Shared" />
+		<result property="creator" column="Creator" />
+		<result property="productFinishTime" column="ProductFinishTime" />
+	</resultMap>
+	
+	<!-- 产品值结果集 -->
+	<resultMap id="attributeMap" type="java.util.HashMap">
+		<id property="sysid" column="sysID"/>
+		<result property="prdattribute" column="EnglishName" />
+		<result property="prdvalue" column="PrdValue" />
+		<result property="prdID" column="PrdID" javaType="java.lang.String" />
+	</resultMap>
+	
+	<!-- 
+	单一产品查询
+	-->
+	<select id="selectByOne" resultMap="productResult" parameterMap="product">
+		select PrdID,PrdType,PrdName,PrdNo,PrdDescribe,PrdFrom,PrdStatus,FinchinaSymbol,CrmPrdId,DelFlag,Shared,ProductFinishTime
+		from PRD_Products 
+		where PrdID=${prdId}
+	</select>
+	
+	<!-- 
+	产品通用查询
+	 -->
+	<select id="select" resultMap="productResult" parameterMap="product">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select PrdID,PrdType,PrdName,PrdNo,PrdDescribe,PrdFrom,PrdStatus,FinchinaSymbol,CrmPrdId,DelFlag,Shared,ProductFinishTime
+			from PRD_Products 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="delFlag != null">and DelFlag=${delFlag}</if>
+				<if test="prdType != null">and PrdType=${prdType}</if>
+				<if test="prdStatus != null">and PrdStatus=${prdStatus}</if>
+				<if test="prdName != null">and PrdName like CONCAT('%',#{prdName},'%')</if>
+				<if test="prdDescribe != null">and PrdDescribe like CONCAT('%',#{prdDescribe},'%')</if>
+				<if test="selectPrdIds != null "><![CDATA[and (PrdID in (${selectPrdIds}))]]></if>
+			</trim>
+		</where>
+			order by PrdID desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.PrdID,a.PrdType,a.PrdName,a.PrdNo,a.PrdDescribe,a.PrdFrom,a.PrdStatus,a.FinchinaSymbol,a.CrmPrdId,a.DelFlag,a.Shared,a.ProductFinishTime from (	
+			select t.*,ROWNUM rn from (
+				select prd.* from PRD_Products prd 
+				<where>
+					<trim prefixOverrides="and">
+						<if test="delFlag != null">and DelFlag=${delFlag}</if>
+						<if test="prdType != null">and PrdType=${prdType}</if>
+						<if test="prdName != null">and PrdName like '%'||#{prdName}||'%'</if>
+						<if test="prdDescribe != null">and PrdDescribe like '%'||#{prdDescribe}||'%'</if>
+						<if test="selectPrdIds != null "><![CDATA[and (PrdID in (${selectPrdIds}))]]></if>
+					</trim>
+				</where>
+				order by prd.PrdID desc
+			) t
+			<where>
+			      <if test="offset!=null and offset!=''">
+			         <![CDATA[ROWNUM<=${offset}]]>
+			       </if>  
+		    </where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select a.PrdID,a.PrdType,a.PrdName,a.PrdNo,a.PrdDescribe,a.PrdFrom,a.PrdStatus,a.FinchinaSymbol,a.CrmPrdId,a.DelFlag,a.Shared,a.ProductFinishTime from (
+			select row_number() over(order by prd.PrdID DESC) as rowNum,  prd.* 
+			from PRD_Products prd
+			<where>
+				<trim prefixOverrides="and">
+					<if test="delFlag != null">and DelFlag=${delFlag}</if>
+					<if test="prdType != null">and PrdType=${prdType}</if>
+					<if test="prdName != null and prdName !='' " >and PrdName like '%'+#{prdName}+'%'</if>
+					<if test="prdDescribe != null">and PrdDescribe like '%'+#{prdDescribe}+'%'</if>
+					<if test="selectPrdIds != null "><![CDATA[and (PrdID in (${selectPrdIds}))]]></if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>	
+		</if>
+		
+	</select>
+	
+	
+	<!-- 
+	按条件查询确定ID
+	 -->
+	<select id="selectByOther" resultMap="productResult" parameterMap="product">
+		select PrdID,PrdType,PrdName,PrdNo,PrdDescribe,PrdFrom,PrdStatus,FinchinaSymbol,CrmPrdId,DelFlag,Shared,ProductFinishTime
+		from PRD_Products 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="delFlag != null">and DelFlag=${delFlag}</if>
+				<if test="prdType != null">and PrdType=${prdType}</if>
+				<if test="prdName != null">and PrdName=#{prdName}</if>
+			</trim>
+		</where>
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			order by PrdID desc
+		</if>
+	</select>
+	
+	<!-- 
+	通产品数量查询
+	 -->
+	<select id="selectCount" resultType="long" parameterMap="product">
+		SELECT count(*) FROM  PRD_Products 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="delFlag != null">and DelFlag=${delFlag}</if>
+				<if test="prdType != null">and PrdType=${prdType}</if>
+				<if test="prdStatus != null">and PrdStatus=${prdStatus}</if>
+				<if test="prdName != null">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and PrdName like CONCAT('%',#{prdName},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and PrdName like '%'||#{prdName}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and PrdName like '%'+#{prdName}+'%' 
+					</if>
+				</if>
+				<if test="prdDescribe != null">and PrdDescribe like CONCAT('%',#{prdDescribe},'%')
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and PrdDescribe like CONCAT('%',#{PrdDescribe},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and PrdDescribe like '%'||#{PrdDescribe}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and PrdDescribe like '%'+#{PrdDescribe}+'%' 
+					</if>
+				</if>
+				<if test="selectPrdIds != null ">
+					<![CDATA[and (PrdID in (${selectPrdIds}))]]>
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 
+	查询产品表中是否有记录
+	-->
+	<select id="selectPrdTypeCount" resultType="long" parameterMap="product">
+		SELECT count(*) FROM  PRD_Products 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="delFlag != null">and DelFlag=${delFlag}</if>
+				<if test="prdType != null">and PrdType=${prdType}</if>
+			</trim>
+		</where>
+	</select>
+	
+	
+	<!-- 
+	新建产品信息
+	 -->
+	<insert id="insert" parameterMap="product">
+		insert into PRD_Products 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="prdType != null ">,PrdType </if>
+		<if test="prdName != null ">,PrdName</if>
+		<if test="prdNo != null">,PrdNo</if>
+		<if test="prdDescribe != null ">,PrdDescribe</if>
+		<if test="prdFrom != null">,PrdFrom</if>
+		<if test="prdStatus != null">,PrdStatus</if>
+		<if test="finchinaSymbol != null ">,FinchinaSymbol</if>
+		<if test="crmPrdId != null ">,CrmPrdId</if>
+		<if test="delFlag != null ">,DelFlag</if>
+		<if test="shared != null ">,Shared</if>
+		<if test="productFinishTime != null and  productFinishTime!='' ">,ProductFinishTime</if>
+		,CreateTime
+		,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="prdType != null ">,${prdType}</if>
+			<if test="prdName != null ">,#{prdName}</if>
+			<if test="prdNo != null ">,#{prdNo}</if>
+			<if test="prdDescribe != null">,#{prdDescribe}</if>
+			<if test="prdFrom != null ">,${prdFrom}</if>
+			<if test="prdStatus != null ">,${prdStatus}</if>
+			<if test="finchinaSymbol != null ">,#{finchinaSymbol}</if>
+			<if test="crmPrdId != null ">,${crmPrdId}</if>
+			<if test="delFlag != null ">,${delFlag}</if>
+			<if test="shared != null ">,${shared}</if>
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				<if test="productFinishTime != null and  productFinishTime!='' ">,#{productFinishTime}</if>
+				,now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				<if test="productFinishTime != null and  productFinishTime!='' ">,to_date(substr(#{productFinishTime},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+				,SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				<if test="productFinishTime != null and  productFinishTime!='' ">,#{productFinishTime}</if>
+				,GETDATE()
+			</if>
+			,#{creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_PRD_PRODUCTS.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('PRD_Products')
+			</if>
+		</selectKey>		
+	</insert>
+	
+		
+	<!-- 
+	更新产品信息
+	 -->
+	<update id="update" parameterMap="product">
+		update PRD_Products
+		<set>
+			<trim prefixOverrides=",">
+				<if test="prdType != null and prdType!=0 ">,PrdType = ${prdType}</if>
+				<if test="prdName != null and  prdName!='' ">,PrdName=#{prdName}</if>
+				<if test="prdNo != null ">,PrdNo=#{prdNo}</if>
+				<if test="prdDescribe != null ">,PrdDescribe=#{prdDescribe}</if>
+				<if test="prdFrom != null and prdFrom!=0 ">,PrdFrom=${prdFrom}</if>
+				<if test="prdStatus != null and prdStatus!=0 ">,PrdStatus=${prdStatus}</if>
+				<if test="finchinaSymbol != null ">,FinchinaSymbol=#{finchinaSymbol}</if>
+				<if test="crmPrdId != null and  crmPrdId !=0 ">,CrmPrdId=${crmPrdId}</if>
+				<if test="delFlag !=null " >,DelFlag = ${delFlag}</if>
+				<if test="shared !=null " >,Shared = ${shared}</if>
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					<if test="productFinishTime !=null and  productFinishTime !='' "  >,ProductFinishTime = #{productFinishTime}</if>
+					<if test="productFinishTime =='' "  >,ProductFinishTime = null </if>
+					,ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					<if test="productFinishTime != null  and  productFinishTime !='' ">,ProductFinishTime = to_date(substr(#{productFinishTime},0,19),'YYYY-MM-DD HH24:MI:SS')</if>
+					<if test="productFinishTime =='' "  >,ProductFinishTime = null </if>
+					,ModifyTime=SYSDATE
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					<if test="productFinishTime !=null  and  productFinishTime !='' " >,ProductFinishTime = #{productFinishTime}</if>
+					<if test="productFinishTime =='' "  >,ProductFinishTime = null </if>
+					,ModifyTime=GETDATE()
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="prdId !=null and prdId !=''">
+				PrdID=${prdId}
+			</if>
+		</where>
+	</update>
+	<!--
+	 删除产品
+	  -->
+	<delete id="delete" parameterMap="product">
+		delete from PRD_Products where PrdID=${prdId} 
+	</delete>
+
+	<!-- 
+	更新CRM产品上架状态
+	 -->
+	<update id="updateCRM" parameterMap="product">
+		update CFG_Finance_Product  
+		<set>
+			AddedFlag = 0
+		</set>
+		<where>
+			<if test="crmPrdId != null">
+				SerialNo=${crmPrdId}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 根据产品ids批量查询产品 -->
+	<select id="selectByIds" resultMap="productResult" parameterMap="product">
+		select PrdID,PrdType,PrdName,PrdNo,PrdDescribe,PrdFrom,PrdStatus,FinchinaSymbol,CrmPrdId,DelFlag,Shared,ProductFinishTime,CrmPrdID
+		from PRD_Products 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="ids != null">
+					CrmPrdID in
+					<foreach item="cd" index="index" collection="ids" open="(" separator="," close=")">  
+		           	 	#{cd}
+	    			</foreach> 
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 根据产品ids批量查询产品属性 -->
+	<select id="selectAttributeValueByIds" resultMap="attributeMap" parameterMap="product">
+		select
+			A.PrdID,
+			A.PrdValue,
+			B.EnglishName
+		from PRD_ProductsValues A,PRD_ProductAttribute B
+		<where>
+			<trim prefixOverrides="and">
+				and ( A.PrdAttribute = B.ID and B.IsEnabled = 1 )
+				<if test="ids != null">
+					and A.PrdID in
+					<foreach item="cd" index="index" collection="ids" open="(" separator="," close=")">  
+		           	 	#{cd}
+	    			</foreach> 
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 
+	通产品数量查询
+	 -->
+	<select id="selectCountIsSiMu" resultType="long" parameterMap="product">
+		SELECT count(*) FROM  PRD_Products 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="prdType != null">and PrdType=${prdType}</if>
+				<if test="prdId !=null and prdId !=''"> and PrdID=${prdId}</if>
+			</trim>
+		</where>
+	</select>
+	
+</mapper>

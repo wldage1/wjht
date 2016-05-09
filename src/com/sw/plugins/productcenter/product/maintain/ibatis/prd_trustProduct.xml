@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="trustProduct">
+	<parameterMap id="trustProduct"	type="com.sw.plugins.productcenter.product.maintain.entity.TrustProduct" />
+	<!-- 产品结果集 -->
+	<resultMap id="trustProductResult" type="com.sw.plugins.productcenter.product.maintain.entity.TrustProduct">
+		<id property="trustId" column="TrustID" />
+		<result property="trustName" column="TrustName" />
+		<result property="trustCode" column="TrustCode" />
+		<result property="trustAName" column="TrustAName" />
+		<result property="sspell" column="SSpell" />
+		<result property="declareDate" column="DeclareDate" />
+		<result property="updateDate" column="UpdateDate" />
+		<result property="trust22" column="Trust22" />
+		<result property="trust31" column="Trust31" />
+		<result property="trust28" column="Trust28" />
+		<result property="type" column="Type" />
+		<result property="trust30" column="Trust30" />
+		<result property="isstat" column="IsStat" />
+		<result property="trust16" column="Trust16" />
+		<result property="trust17" column="Trust17" />
+		<result property="trust32" column="Trust32" />
+		<result property="trust1" column="Trust1" />
+		<result property="trust23" column="Trust23" />
+		<result property="trust2" column="Trust2" />
+		<result property="trust3" column="Trust3" />
+		<result property="trust27" column="Trust27" />
+		<result property="trust4" column="Trust4" />
+		<result property="trust29" column="Trust29" />
+		<result property="trust34" column="Trust34" />
+		<result property="trust5" column="Trust5" />
+		<result property="trust6" column="Trust6" />
+		<result property="trust26" column="Trust26" />
+		<result property="trust38" column="Trust38" />
+		<result property="trust7" column="Trust7" />
+		<result property="trust41" column="Trust41" />
+		<result property="trust9" column="Trust9" />
+		<result property="trust8" column="Trust8" />
+		<result property="trust18" column="Trust18" />
+		<result property="trust24" column="Trust24" />
+		<result property="trust37" column="Trust37" />
+		<result property="trust25" column="Trust25" />
+		<result property="trust10" column="Trust10" />
+		<result property="trust11" column="Trust11" />
+		<result property="trust12" column="Trust12" />
+		<result property="trust21" column="Trust21" />
+		<result property="trust19" column="Trust19" />
+		<result property="trust13" column="Trust13" />
+		<result property="trust20" column="Trust20" />
+		<result property="trust39" column="Trust39" />
+		<result property="trust40" column="Trust40" />
+		<result property="trust14" column="Trust14" />
+		<result property="trust35" column="Trust35" />
+		<result property="trust15" column="Trust15" />
+		<result property="trust33" column="Trust33" />
+		<result property="trust36" column="Trust36" />
+		<result property="memo" column="Memo" />
+		<result property="dataSource" column="DataSource" />
+		<result property="tmstamp" column="TMStamp" />
+		<result property="crmId" column="CrmID" />
+	</resultMap>
+	
+	<select id="select" resultMap="trustProductResult" parameterMap="trustProduct">
+		select 
+			TrustID,TrustCode,CrmID,TMStamp
+		from 
+			PRD_Trust 
+	</select>
+	
+	<select id="selectByTrustCode" resultMap="trustProductResult" parameterMap="trustProduct">
+		select 
+			TrustID,TrustName,TrustCode,TrustAName,SSpell,DeclareDate,UpdateDate,Trust22,Trust31,Trust28,Type,Trust30,IsStat,Trust16,Trust17,Trust32,
+			Trust1,Trust23,Trust2,Trust3,Trust27,Trust4,Trust29,Trust34,Trust5,Trust6,Trust26,Trust38,Trust7,Trust41,Trust9,Trust8,Trust18,Trust24,Trust37,
+			Trust25,Trust10,Trust11,Trust12,Trust21,Trust19,Trust13,Trust20,Trust39,Trust40,Trust14,Trust35,Trust15,Trust33,Trust36,Memo,DataSource,TMStamp,CrmID
+		from 
+			PRD_Trust 
+		<where>
+			<if test="trustCode != null and trustCode !=''">
+				TrustCode=#{trustCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="trustProduct">
+		select 
+			count(*)
+		from   
+			PRD_Trust
+		<where>
+			<if test="trustCode != null and trustCode !=''">
+				TrustCode=#{trustCode}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="trustProduct">
+		insert into PRD_Trust 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" trustId != null ">,TrustID </if>
+			<if test=" trustName != null and trustName != '' ">,TrustName</if>
+			<if test=" trustCode != null ">,TrustCode</if>
+			<if test=" trustAName != null and trustAName != '' ">,TrustAName</if>
+			<if test=" sspell != null and sspell != '' ">,SSpell</if>
+			<if test=" declareDate != null and declareDate != '' ">,DeclareDate</if>
+			<if test=" updateDate != null and updateDate != '' ">,UpdateDate</if>
+			<if test=" trust22 != null ">,Trust22</if>
+			<if test=" trust31 != null ">,Trust31</if>
+			<if test=" trust28 != null and trust28 != '' ">,Trust28</if>
+			<if test=" type != null and type != '' ">,Type</if>
+			<if test=" trust30 != null and trust30 != '' ">,Trust30</if>
+			<if test=" isstat != null ">,IsStat</if>
+			<if test=" trust16 != null and trust16 != '' ">,Trust16</if>
+			<if test=" trust17 != null and trust17 != '' ">,Trust17</if>
+			<if test=" trust32 != null ">,Trust32</if>
+			<if test=" trust1 != null and trust1 != '' ">,Trust1</if>
+			<if test=" trust23 != null ">,Trust23</if>
+			<if test=" trust2 != null and trust2 != '' ">,Trust2</if>
+			<if test=" trust3 != null and trust3 != '' ">,Trust3</if>
+			<if test=" trust27 != null ">,Trust27</if>
+			<if test=" trust4 != null ">,Trust4</if>
+			<if test=" trust29 != null and trust29 != '' ">,Trust29</if>
+			<if test=" trust34 != null and trust34 != '' ">,Trust34</if>
+			<if test=" trust5 != null and trust5 != '' ">,Trust5</if>
+			<if test=" trust6 != null and trust6 != '' ">,Trust6</if>
+			<if test=" trust26 != null ">,Trust26</if>
+			<if test=" trust38 != null ">,Trust38</if>
+			<if test=" trust7 != null and trust7 != '' ">,Trust7</if>
+			<if test=" trust41 != null ">,Trust41</if>
+			<if test=" trust9 != null ">,Trust9</if>
+			<if test=" trust8 != null and trust8 != '' ">,Trust8</if>
+			<if test=" trust18 != null and trust18 != '' ">,Trust18</if>
+			<if test=" trust24 != null ">,Trust24</if>
+			<if test=" trust37 != null ">,Trust37</if>
+			<if test=" trust25 != null and trust25 != '' ">,Trust25</if>
+			<if test=" trust10 != null ">,Trust10</if>
+			<if test=" trust11 != null ">,Trust11</if>
+			<if test=" trust12 != null ">,Trust12</if>
+			<if test=" trust21 != null ">,Trust21</if>
+			<if test=" trust19 != null ">,Trust19</if>
+			<if test=" trust13 != null and trust13 != '' ">,Trust13</if>
+			<if test=" trust20 != null and trust20 != '' ">,Trust20</if>
+			<if test=" trust39 != null ">,Trust39</if>
+			<if test=" trust40 != null and trust40 != '' ">,Trust40</if>
+			<if test=" trust14 != null and trust14 != '' ">,Trust14</if>
+			<if test=" trust35 != null and trust35 != '' ">,Trust35</if>
+			<if test=" trust15 != null and trust15 != '' ">,Trust15</if>
+			<if test=" trust33 != null and trust33 != '' ">,Trust33</if>
+			<if test=" trust36 != null and trust36 != '' ">,Trust36</if>
+			<if test=" memo != null and memo != '' ">,Memo</if>
+			<if test=" dataSource != null and dataSource != '' ">,DataSource</if>
+			<if test=" tmstamp != null ">,TMStamp</if>
+			<if test=" crmId != null ">,CrmID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" trustId != null ">,${trustId}</if>
+			<if test=" trustName != null and trustName != ''">,#{trustName}</if>
+			<if test=" trustCode != null and trustCode != ''">,#{trustCode}</if>
+			<if test=" trustAName != null and trustAName != '' ">,#{trustAName}</if>
+			<if test=" sspell != null and sspell != '' ">,#{sspell}</if>
+			<if test=" declareDate != null and declareDate != '' ">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{declareDate}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(substr(#{declareDate},0,19),'YYYY/MM/DD HH24:MI:SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					#{declareDate}
+				</if>
+			</if>
+			<if test=" updateDate != null and updateDate != '' ">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{updateDate}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(substr(#{updateDate},0,19),'YYYY/MM/DD HH24:MI:SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					#{updateDate}
+				</if>
+			</if>
+			<if test=" trust22 != null ">,${trust22}</if>
+			<if test=" trust31 != null ">,${trust31}</if>
+			<if test=" trust28 != null and trust28 != '' ">,#{trust28}</if>
+			<if test=" type != null and type != '' ">,#{type}</if>
+			<if test=" trust30 != null and trust30 != '' ">,#{trust30}</if>
+			<if test=" isstat != null ">,${isstat}</if>
+			<if test=" trust16 != null and trust16 != '' ">,#{trust16}</if>
+			<if test=" trust17 != null and trust17 != '' ">,#{trust17}</if>
+			<if test=" trust32 != null ">,${trust32}</if>
+			<if test=" trust1 != null and trust1 != '' ">,#{trust1}</if>
+			<if test=" trust23 != null ">,${trust23}</if>
+			<if test=" trust2 != null and trust2 != '' ">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{trust2}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(substr(#{trust2},0,19),'YYYY/MM/DD HH24:MI:SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					#{trust2}
+				</if>
+			</if>
+			<if test=" trust3 != null and trust3 != '' ">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{trust3}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(substr(#{trust3},0,19),'YYYY/MM/DD HH24:MI:SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					#{trust3}
+				</if>
+			</if>
+			<if test=" trust27 != null ">,${trust27}</if>
+			<if test=" trust4 != null ">,${trust4}</if>
+			<if test=" trust29 != null and trust29 != '' ">,#{trust29}</if>
+			<if test=" trust34 != null and trust34 != '' ">,#{trust34}</if>
+			<if test=" trust5 != null and trust5 != '' ">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{trust5}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(substr(#{trust5},0,19),'YYYY/MM/DD HH24:MI:SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					#{trust5}
+				</if>
+			</if>
+			<if test=" trust6 != null and trust6 != '' ">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{trust6}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(substr(#{trust6},0,19),'YYYY/MM/DD HH24:MI:SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					#{trust6}
+				</if>
+			</if>
+			<if test=" trust26 != null ">,${trust26}</if>
+			<if test=" trust38 != null ">,${trust38}</if>
+			<if test=" trust7 != null and trust7 != '' ">,#{trust7}</if>
+			<if test=" trust41 != null ">,${trust41}</if>
+			<if test=" trust9 != null ">,${trust9}</if>
+			<if test=" trust8 != null and trust8 != '' ">,#{trust8}</if>
+			<if test=" trust18 != null and trust18 != '' ">,#{trust18}</if>
+			<if test=" trust24 != null ">,${trust24}</if>
+			<if test=" trust37 != null ">,${trust37}</if>
+			<if test=" trust25 != null and trust25 != '' ">,#{trust25}</if>
+			<if test=" trust10 != null ">,${trust10}</if>
+			<if test=" trust11 != null ">,${trust11}</if>
+			<if test=" trust12 != null ">,${trust12}</if>
+			<if test=" trust21 != null ">,${trust21}</if>
+			<if test=" trust19 != null ">,${trust19}</if>
+			<if test=" trust13 != null and trust13 != '' ">,#{trust13}</if>
+			<if test=" trust20 != null and trust20 != '' ">,#{trust20}</if>
+			<if test=" trust39 != null ">,${trust39}</if>
+			<if test=" trust40 != null and trust40 != '' ">,#{trust40}</if>
+			<if test=" trust14 != null and trust14 != '' ">,#{trust14}</if>
+			<if test=" trust35 != null and trust35 != '' ">,#{trust35}</if>
+			<if test=" trust15 != null and trust15 != '' ">,#{trust15}</if>
+			<if test=" trust33 != null and trust33 != '' ">,#{trust33}</if>
+			<if test=" trust36 != null and trust36 != '' ">,#{trust36}</if>
+			<if test=" memo != null and memo != '' ">,#{memo}</if>
+			<if test=" dataSource != null and dataSource != '' ">,#{dataSource}</if>
+			<if test=" tmstamp != null ">,#{tmstamp}</if>
+			<if test=" crmId != null and crmId != '' ">,#{crmId}</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="trustProduct">
+		update PRD_Trust 
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" trustId != null ">,TrustID=${trustId}</if>
+				<if test=" trustName != null and trustName != '' ">,TrustName=#{trustName}</if>
+				<if test=" trustAName != null and trustAName != '' ">,TrustAName=#{trustAName}</if>
+				<if test=" sspell != null and sspell != '' ">,SSpell=#{sspell}</if>
+				<if test=" declareDate != null and declareDate != '' ">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						DeclareDate=#{declareDate}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						DeclareDate=to_date(substr(#{declareDate},0,19),'YYYY/MM/DD HH24:MI:SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						DeclareDate=#{declareDate}
+					</if>
+				</if>
+				<if test=" updateDate != null and updateDate != '' ">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						UpdateDate=#{updateDate}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						UpdateDate=to_date(substr(#{updateDate},0,19),'YYYY/MM/DD HH24:MI:SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						UpdateDate=#{updateDate}
+					</if>
+				</if>
+				<if test=" trust22 != null ">,Trust22=${trust22}</if>
+				<if test=" trust31 != null ">,Trust31=${trust31}</if>
+				<if test=" trust28 != null and trust28 != '' ">,Trust28=#{trust28}</if>
+				<if test=" type != null and type != '' ">,Type=#{type}</if>
+				<if test=" trust30 != null and trust30 != '' ">,Trust30=#{trust30}</if>
+				<if test=" isstat != null ">,IsStat=${isstat}</if>
+				<if test=" trust16 != null and trust16 != '' ">,Trust16=#{trust16}</if>
+				<if test=" trust17 != null and trust17 != '' ">,Trust17=#{trust17}</if>
+				<if test=" trust32 != null ">,Trust32=${trust32}</if>
+				<if test=" trust1 != null and trust1 != '' ">,Trust1=#{trust1}</if>
+				<if test=" trust23 != null ">,Trust23=${trust23}</if>
+				<if test=" trust2 != null and trust2 != '' ">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						Trust2=#{trust2}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						Trust2=to_date(substr(#{trust2},0,19),'YYYY/MM/DD HH24:MI:SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						Trust2=#{trust2}
+					</if>
+				</if>
+				<if test=" trust3 != null and trust3 != '' ">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						Trust3=#{trust3}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						Trust3=to_date(substr(#{trust3},0,19),'YYYY/MM/DD HH24:MI:SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						Trust3=#{trust3}
+					</if>
+				</if>
+				<if test=" trust27 != null ">,Trust27=${trust27}</if>
+				<if test=" trust4 != null ">,Trust4=${trust4}</if>
+				<if test=" trust29 != null and trust29 != '' ">,Trust29=#{trust29}</if>
+				<if test=" trust34 != null and trust34 != '' ">,Trust34=#{trust34}</if>
+				<if test=" trust5 != null and trust5 != '' ">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						Trust5=#{trust5}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						Trust5=to_date(substr(#{trust5},0,19),'YYYY/MM/DD HH24:MI:SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						Trust5=#{trust5}
+					</if>
+				</if>
+				<if test=" trust6 != null and trust6 != '' ">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						Trust6=#{trust6}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						Trust6=to_date(substr(#{trust6},0,19),'YYYY/MM/DD HH24:MI:SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						Trust6=#{trust6}
+					</if>
+				</if>
+				<if test=" trust26 != null ">,Trust26=${trust26}</if>
+				<if test=" trust38 != null ">,Trust38=${trust38}</if>
+				<if test=" trust7 != null and trust7 != '' ">,Trust7=#{trust7}</if>
+				<if test=" trust41 != null ">,Trust41=${trust41}</if>
+				<if test=" trust9 != null ">,Trust9=${trust9}</if>
+				<if test=" trust8 != null and trust8 != '' ">,Trust8=#{trust8}</if>
+				<if test=" trust18 != null and trust18 != '' ">,Trust18=#{trust18}</if>
+				<if test=" trust24 != null ">,Trust24=${trust24}</if>
+				<if test=" trust37 != null ">,Trust37=${trust37}</if>
+				<if test=" trust25 != null and trust25 != '' ">,Trust25=#{trust25}</if>
+				<if test=" trust10 != null ">,Trust10=${trust10}</if>
+				<if test=" trust11 != null ">,Trust11=${trust11}</if>
+				<if test=" trust12 != null ">,Trust12=${trust12}</if>
+				<if test=" trust21 != null ">,Trust21=${trust21}</if>
+				<if test=" trust19 != null ">,Trust19=${trust19}</if>
+				<if test=" trust13 != null and trust13 != '' ">,Trust13=#{trust13}</if>
+				<if test=" trust20 != null and trust20 != '' ">,Trust20=#{trust20}</if>
+				<if test=" trust39 != null ">,Trust39=${trust39}</if>
+				<if test=" trust40 != null and trust40 != '' ">,Trust40=#{trust40}</if>
+				<if test=" trust14 != null and trust14 != '' ">,Trust14=#{trust14}</if>
+				<if test=" trust35 != null and trust35 != '' ">,Trust35=#{trust35}</if>
+				<if test=" trust15 != null and trust15 != '' ">,Trust15=#{trust15}</if>
+				<if test=" trust33 != null and trust33 != '' ">,Trust33=#{trust33}</if>
+				<if test=" trust36 != null and trust36 != '' ">,Trust36=#{trust36}</if>
+				<if test=" memo != null and memo != '' ">,Memo=#{memo}</if>
+				<if test=" dataSource != null and dataSource != '' ">,DataSource=#{dataSource}</if>
+				<if test=" tmstamp != null ">,TMStamp=#{tmstamp}</if>
+				<if test=" crmId != null and crmId != '' ">,CrmID=#{crmId}</if>
+			</trim>
+		</set>
+		<where>
+			<if test=" trustCode != null and trustCode != ''">TrustCode=#{trustCode}</if>
+		</where>
+	</update>
+</mapper>

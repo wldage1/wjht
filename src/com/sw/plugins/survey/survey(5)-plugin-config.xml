@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<survey index="survey" code="5" name="调查系统" level="1"  controller="/survey" icon="images/icon/survey.gif">
+		<questionnaire index="questionnaire_mgr" code="501" name="调查问卷管理" level="2" controller="/survey/questionnaire/maintain/mgr" icon="images/icon/su_questionnaire.gif">
+		    <info index="info_mgr" code="50101" isStatus="true" isNav="true" isSubAuth="true" name="问卷管理" level="3" controller="/survey/questionnaire/maintain/list">
+		        <language>
+					<value>/survey/questionnaire/maintain/language/questionnaire_zh_CN.properties</value>
+					<value>/survey/questionnaire/maintain/language/questionnaire_en_CN.properties</value>
+				</language>
+				<create index="questionnaire_create" isSubAuth="true" code="5010101" isNav="true" isLog="true" name="创建" level="4" controller="/survey/questionnaire/maintain/create"/>
+				<modify index="questionnaire_modify" isSubAuth="true" code="5010102" isNav="true" isLog="true" name="修改" level="4" controller="/survey/questionnaire/maintain/modify"/>
+				<delete index="questionnaire_delete" isSubAuth="true" code="5010103" isNav="true" isLog="true" name="删除" level="4" controller="/survey/questionnaire/maintain/delete"/>
+				<detail index="questionnaire_detail" isSubAuth="true" code="5010104" isNav="true" isLog="true" name="详细" level="4" controller="/survey/questionnaire/maintain/detail"/>
+		       
+		        <design index="questionnaire_design" isStatus="true"  isSubAuth="true" code="5010105" isNav="true" name="设计" level="4" controller="/survey/questionnaire/maintain/design">
+		              <create index="question_create" isSubAuth="true" code="501010501" isNav="true" isLog="true" name="新增问题" level="5" controller="/survey/question/maintain/create"/>
+		              <modify index="question_modify" isSubAuth="true" code="501010502" isNav="true" isLog="true" name="修改问题" level="5" controller="/survey/question/maintain/modify"/>
+		              <delete index="question_delete" isSubAuth="true" code="501010503" isNav="true" isLog="true" name="删除问题" level="5" controller="/survey/question/maintain/delete"/>
+		              <preview index="questionnaire_preview" isSubAuth="true" code="501010504" isNav="true" name="预览问卷" level="5" controller="/survey/question/maintain/preview"/>
+		              <submit index="questionnaire_submit" isSubAuth="true" code="501010505" isNav="true" isLog="true" name="提交问卷" level="5" controller=" /survey/question/maintain/questionnairesubmit"/>
+		        </design>
+		        <release index="questionnaire_release" isSubAuth="true" code="5010106" isNav="true" isLog="true" name="发布" level="4" controller="/survey/questionnaire/maintain/questionnairerelease"/>
+		        <preview1 index="questionnaire_preview_1" isSubAuth="true" code="5010107" isNav="true" isLog="true" name="预览" level="4" controller="/survey/question/maintain/preview1"/>
+		        <result index="questionnaire_result" isSubAuth="true" code="5010108" isNav="true" isLog="true" name="结果" level="4" controller="/survey/questionnaire/maintain/viewresult">
+		            <blank index="result_blankresult" isSubAuth="true" code="501010801" isNav="true" isLog="true" name="查看结果" level="5" controller="/survey/question/maintain/viewblankresult" />
+		        </result>
+		        <deleteResult index="questionnaire_deleteResult" isSubAuth="true" code="5010109" isNav="true" isLog="true" name="清空结果" level="4" controller="/survey/questionnaire/maintain/deleteresult" />
+		        <link index="questionnaire_link" isSubAuth="true" code="5010110" isLog="true" name="链接" level="4" controller="/survey/question/maintain/link"/>
+		        <userresult index="questionnaire_userresult" isSubAuth="true" code="5010111" isNav="true" isLog="true" name="参与者" level="4" controller="/survey/questionnaire/maintain/userresult">
+		              <info index="userresult_info" isSubAuth="true" code="501011101" isNav="true" isLog="true" name="详细" level="5" controller="/survey/question/maintain/userresultinfo" />
+		        </userresult>
+		        <message index="questionnaire_message" isSubAuth="true" code="5010112" isNav="true" isLog="true" name="推送消息" level="4" controller="/survey/questionnaire/maintain/sendmessage" />
+		    </info>
+		</questionnaire>
+	</survey>
+</plugins>
