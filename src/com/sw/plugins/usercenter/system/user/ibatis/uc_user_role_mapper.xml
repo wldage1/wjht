@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	UserID               bigint not null comment '用户随机编号：系统生成',
+   	RoleID               bigint not null comment '角色ID',
+ -->
+<mapper namespace="userRoleMapper">
+	<parameterMap id="userRoleMapper" type="com.sw.plugins.usercenter.system.user.entity.UserRoleMapper" />
+
+	<!-- 新增用户角色关系 -->
+	<insert id="insert" parameterMap="userRoleMapper">
+		insert into UC_UserRoleMapper
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,RoleID</if>
+			<if test="userId!=null">,UserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,${roleId}</if>
+			<if test="userId!=null">,${userId}</if>
+		</trim>
+	</insert>
+
+	<!-- 用户角色关系统计 -->
+	<select id="count" resultType="long" parameterMap="userRoleMapper">
+		select count(*) from UC_UserRoleMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null and userId != -1"> and UserID = ${userId}</if>
+				<if test="roleId != null and roleId != -1"> and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除用户角色关系 -->
+	<delete id="delete" parameterMap="userRoleMapper">
+		delete from UC_UserRoleMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null and userId != -1"> and UserID = ${userId}</if>
+				<if test="roleId != null and roleId != -1"> and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>

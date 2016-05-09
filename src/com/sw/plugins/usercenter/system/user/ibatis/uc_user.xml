@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	   ID                   bigint not null auto_increment comment '用户随机编号：系统生成',
+	   OrgName              varbinary(255) comment '机构名称',
+	   Account              varchar(50) comment '用户登录ID：用户登录系统的标识，一般是英文字符或者数字。',
+	   Name                 varchar(100) comment '用户名称：登录系统的用户的姓名。',
+	   Type                 char(1) comment '0.超级管理员 1.其他管理员',
+	   Password             varchar(50) comment '用户密码：用户登录系统的验证密码。',
+	   Gender               char(1) comment '用户性别
+	            1:男性
+	            2:女性
+	            3:其他',
+	   MobilePhone          varchar(20) comment '用户移动电话：用户移动电话号码。',
+	   OfficePhone          varchar(20) comment '用户办公电话：用户办公电话号码。',
+	   Email                varchar(200) comment '用户邮件：用户的邮箱地址。',
+	   Description          varchar(200) comment '用户描述：用户一些相关的备注信息',
+	   Status               char(1) comment '用户状态：1.启用 0.禁用',
+	   CreateTime           datetime comment '创建时间：记录用户的创建时间。',
+	   ModifyTime           datetime comment '更新时间',
+	   Creator              varchar(50) comment '创建者：记录用户的创建人员的名称。',
+ -->
+<mapper namespace="user">
+	<parameterMap id="user" type="com.sw.plugins.usercenter.system.user.entity.User" />
+		
+	<parameterMap id="userOrgMapper" type="com.sw.plugins.usercenter.system.user.entity.UserOrgMapper" />	
+		
+	<resultMap id="userOrgMapper" type="com.sw.plugins.usercenter.system.user.entity.UserOrgMapper" >	
+		<result property="userID" column="UserID" />
+		<result property="orgID" column="orgID" />
+    </resultMap>	
+
+	<!-- 用户结果集 -->
+	<resultMap id="userResult" type="com.sw.plugins.usercenter.system.user.entity.User">
+		<id property="id" column="ID" />
+		<result property="account" column="Account" />
+		<result property="roleID" column="RoleID" />
+		<result property="roleName" column="RoleName" />
+		<result property="orgID" column="orgID" />
+		<result property="orgName" column="orgName" />
+		<result property="name" column="Name" />
+		<result property="type" column="Type" />
+		<result property="userType" column="UserType" />
+		<result property="password" column="Password" />
+		<result property="gender" column="Gender" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="officePhone" column="OfficePhone" />
+		<result property="email" column="Email" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creator" column="Creator" />
+		<!-- <result property="roleID" column="roleID" />
+		<result property="roleName" column="roleName" /> -->
+		<collection property="roles" ofType="java.util.List" resultMap="roleResult" />
+	</resultMap>
+
+
+	<!-- 用户角色结果集 -->
+	<resultMap id="roleResult" type="com.sw.plugins.usercenter.system.role.entity.Role">
+		<result property="id" column="RoleID" />
+		<result property="name" column="RoleName" />
+	</resultMap>
+
+
+	<!-- 用户统计查询 -->
+	<select id="count" resultType="long" parameterMap="user">
+		select count(id) from UC_User
+		<where>
+			Type!=0
+			<if test="name!=null and name!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and Name like CONCAT('%',#{name},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and Name like '%'||#{name}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and Name like '%'+#{name}+'%' 
+				</if>
+			</if>
+			<if test="account!=null and account!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and Account like CONCAT('%',#{account},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and Account like '%'||#{account}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and Account like '%'+#{account}+'%' 
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 用户通用查询 -->
+	<select id="select" resultMap="userResult" parameterMap="user">
+		select * from UC_User 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+				<if test="account!=null and account!=''">
+					and Account='${account}'
+				</if>		
+			</trim>
+		</where>
+	</select>
+
+	<!-- 用户分页查询 -->
+	<select id="selectPaginated" resultMap="userResult" parameterMap="user">
+		select u.*, o.Name as orgName, r.Name as roleName
+		from UC_User u LEFT JOIN uc_organization o ON o.id=u.OrgID LEFT JOIN uc_role r ON r.ID = u.RoleID 
+		<where>
+		u.Type!=0
+		<if test="name!=null and name!=''">
+			and u.Name like CONCAT('%',#{name},'%') 
+		</if>
+		</where>
+		limit ${start},${offset}
+	</select>
+
+	<!-- 用户角色查询 -->
+	<select id="selectUserRole" resultMap="roleResult" parameterMap="user">
+		select uu.* , role.ID as roleID,role.Name as roleName
+		from UC_Role role,UC_UserRoleMapper mapper,UC_User uu
+		<where>
+			role.ID = mapper.roleID and mapper.userID = uu.iD
+			<if test="id!=null">
+				and uu.ID=${id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 新建用户 -->
+	<insert id="insert" parameterMap="user">
+		insert into UC_User
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="account!=null and account != ''">,Account</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="orgID!=null">,OrgID</if>
+			<if test="roleID!=null">,roleID</if>
+			<if test="type!=null">,Type</if>
+			<if test="userType!=null">,UserType</if>
+			<if test="password!=null and password!=''">,Password</if>
+			<if test="gender!=null and gender !=''">,Gender</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone</if>
+			<if test="officePhone!=null and officePhone!=''">,OfficePhone</if>
+			<if test="email!=null and email!=''">,Email</if>
+			<if test="description!=null and description!=''">,Description</if>
+			<if test="status!=null and status!=''">,Status</if>
+			,CreateTime
+			<if test="creator!=null">,Creator</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="account!=null and account != ''">,#{account}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+		    <if test="orgID!=null">,${orgID}</if>
+		    <if test="roleID!=null">,${roleID}</if>
+			<if test="type!=null">,${type}</if>
+			<if test="userType!=null">,${userType}</if>
+			<if test="password!=null and password!=''">,#{password}</if>
+			<if test="gender!=null and gender !=''">,#{gender}</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,#{mobilePhone}</if>
+			<if test="officePhone!=null and officePhone!=''">,#{officePhone}</if>
+			<if test="email!=null and email!=''">,#{email}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			<if test="status!=null and status!=''">,#{status}</if>
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				,now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				,SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				,GETDATE()
+			</if>
+			<if test="creator!=null">,${creator}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_UC_USER.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				  SELECT IDENT_CURRENT('UC_User')
+			</if> 
+		</selectKey>
+	</insert>
+
+	<!-- 更新用户 -->
+	<update id="update" parameterMap="user">
+		update UC_User
+		<set>
+			<trim prefixOverrides=",">
+				<if test="account!=null and account != ''">,Account = #{account}</if>
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="orgID!=null">,OrgID=${orgID}</if>
+				<if test="roleID!=null">,RoleID=${roleID}</if>
+				<if test="type!=null and type!=''">,Type = ${type}</if>
+				<if test="userType!=null and userType!=''">,UserType = ${userType}</if>
+				<if test="password!=null and password!=''">,Password = #{password}</if>
+				<if test="gender!=null and gender !=''">,Gender = #{gender}</if>
+				<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone = #{mobilePhone}</if>
+				<if test="officePhone!=null and officePhone!=''">,OfficePhone = #{officePhone}</if>
+				<if test="email!=null and email!=''">,Email = #{email}</if>
+				<if test="description!=null ">,Description = #{description}</if>
+				<if test="status!=null and status!=''">,Status = #{status}</if>
+				<if test="creator!=null">,Creator = #{creator}</if>
+				<if test="modifyTime!=null">,ModifyTime=#{modifyTime}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+
+	<!-- 用户通用删除 -->
+	<delete id="delete" parameterMap="user">
+		delete from UC_User
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+				<if test="account!=null and account!=''">
+					and Account='${account}'
+				</if>		
+			</trim>
+		</where>
+	</delete>
+
+	<delete id="deleteByIn" parameterMap="user">
+		delete from UC_User where ID in (#{id})
+	</delete>
+
+	<!-- 删除用户 -->
+	<delete id="deleteUser" parameterMap="user">
+		delete from UC_User where ID=${id}
+	</delete>
+
+	<!-- 删除用户权限 -->
+	<delete id="deleteUserRole" parameterMap="user">
+		delete UC_UserRoleMapper where userID=${id}
+	</delete>
+		
+	<!--保存用户与机构的关系 -->
+  	<insert id="saveUserOrgMapper" parameterMap="userOrgMapper">
+		insert into UC_UserOrgMapper
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userID!=null">,UserID</if>
+			<if test="orgID!=null">,OrgID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userID!=null">,${userID}</if>
+			<if test="orgID!=null">,${orgID}</if>
+		</trim>
+	</insert>
+	
+	<!-- 删除用户与机构的关系 -->
+	<delete id="deleteUserOrg" parameterMap="user">
+		delete from UC_UserOrgMapper where UserID=${id}
+	</delete>
+	
+	<!-- 查询用户管理的机构 -->
+    <select id="selectUserOrg" resultMap="userOrgMapper" parameterMap="userOrgMapper">
+		select * from UC_UserOrgMapper 
+		<where>
+				<if test="userID!=null">
+					 UserID=${userID}
+				</if>
+		</where>
+	</select>
+	
+	<select id="selectUserList" resultMap="userResult" parameterMap="user">
+		select u.* 
+		from uc_user u LEFT JOIN uc_role r ON r.ID=u.RoleID
+		<where> 
+		 	u.id != 1
+		 	<!-- r.name like CONCAT('%代理%') and r.status != '9' -->
+		</where> 
+         order by id ASC
+	</select>
+	
+	<!-- 根據用戶查詢角色信息 -->
+	<select id="selectRoleByUid" resultMap="userResult" parameterMap="user">
+		select r.ID as roleID, r.Name as roleName
+		from uc_user u LEFT JOIN uc_role r ON r.ID=u.RoleID
+		<where> 
+	 		u.ID=${id}
+		</where> 
+	</select>
+	
+</mapper>
