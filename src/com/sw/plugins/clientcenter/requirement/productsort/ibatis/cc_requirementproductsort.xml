@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    <!-- 
+    ID                     bigint not null auto_increment comment '编号',
+    Name                   varchar(50)  comment '类型名称',
+    description            varchar(200) comment '类型描述 ',
+   -->
+
+<mapper namespace="requirementProductSort">
+	<parameterMap id="requirementProductSort" type="com.sw.plugins.clientcenter.requirement.productsort.entity.RequirementProductSort"/>
+	
+	<!-- 产品类型结果集 -->
+	<resultMap id="productSortResult" type="com.sw.plugins.clientcenter.requirement.productsort.entity.RequirementProductSort">
+		<id property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="description" column="Description" />
+		<result property="creator" column="Creator" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+
+	<!-- 新建产品类型 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterMap="requirementProductSort">
+		insert into CC_RequirementProductSort
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="description!=null and description!=''">,Description</if>
+			,CreateTime
+			,creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_CC_REQUIREMENTPRODUCTSORT.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('CC_RequirementProductSort')
+			</if>
+		</selectKey>
+	</insert>
+	
+	<!-- 更新产品类型 -->
+	<update id="update" parameterMap="requirementProductSort">
+		update CC_RequirementProductSort
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="description!=null">,Description = #{description}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now() 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+		 	<if test="id!=null and id!=''">
+		 	 ID=${id}
+			</if>
+		</where>		
+	</update>
+	
+	<!-- 产品类型通用查询 -->
+	<select id="select" resultMap="productSortResult" parameterMap="requirementProductSort">
+		select * from CC_RequirementProductSort
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+			 	 ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 产品类型统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="requirementProductSort">
+		select count(*) from CC_RequirementProductSort
+		<where>
+				<if test="name!=null and name!=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and Name like CONCAT('%',#{name},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and Name like '%'||#{name}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and Name like '%'+#{name}+'%' 
+					</if>
+				</if>
+		</where>
+	</select>
+	
+	<!-- 产品类型分页查询 -->
+	<select id="selectPaginated" resultMap="productSortResult" parameterMap="requirementProductSort">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select * from CC_RequirementProductSort
+			<where>
+				 <if test="name!=null and name!=''">
+					and Name like CONCAT('%',#{name},'%')
+				</if>
+			</where>
+			order by ID desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+		select a.* from (	
+		select t.*,ROWNUM rn from (
+			select rps.* from CC_RequirementProductSort rps 
+			<where>
+				<trim prefix="(" prefixOverrides="and" suffix=")"> 
+				<if test="name!=null and name!=''">
+					and Name like '%'||#{name}||'%'  
+				</if>
+				</trim>
+			</where>
+			order by rps.id desc
+		) t
+		<where>
+		<if test="offset!=null and offset!=''">
+			<![CDATA[ROWNUM<=${offset}]]>
+		</if>  
+		</where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select a.* from (
+			select row_number() over(order by  Id desc
+			) as rowNum, *
+			from CC_RequirementProductSort 
+			<where>
+				<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+					and Name like '%'+#{name}+'%'
+				</if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</if>
+	</select>
+
+	<!-- 删除产品类型 -->
+	<delete id="delete" parameterMap="requirementProductSort">
+		delete from CC_RequirementProductSort where ID=${id}
+	</delete>
+</mapper>

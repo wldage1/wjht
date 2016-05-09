@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   SysID                 bigint not null auto_increment comment '系统标识ID',
+   MsgID              	  bigint not nul '消息ID',
+   UserID          	  bigint not null  '接受用户ID',
+   SendDate        	  datetime comment '发送日期',
+   Oper            		  bigint comment '发送人ID',
+ -->
+<mapper namespace="sendrecord">
+
+	<parameterMap id="sendrecord" type="com.sw.plugins.informationcenter.message.maintain.entity.SendRecord" />	
+	<!-- 消息发送记录结果集 -->
+	<resultMap id="sendRecordResult"
+		type="com.sw.plugins.informationcenter.message.maintain.entity.SendRecord">
+		<id property="sysId" column="SysID" />
+		<result property="msgId" column="MsgID" />
+		<result property="sendDate" column="SendDate" />
+		<result property="msgTitle" column="MsgTitle" />
+		<result property="msgFrom" column="MsgFrom" />
+		<result property="published" column="CreateTime" />
+		<result property="memberName" column="MemberName" />
+		<result property="sex" column="Sex" />
+		<result property="mobile" column="MobilePhone" />
+		<result property="city" column="City" />
+		<result property="email" column="Email" />
+	
+	</resultMap>
+	
+	<!-- 新增发送消息记录 -->
+	<insert id="saveSendRecord" parameterMap="sendrecord">
+		insert into MSG_Objective
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="msgId != null ">,MsgID </if>
+		<if test="userId != null">,UserID</if>
+		,SendDate
+		,Oper
+		,DelFlag
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="msgId != null ">,${msgId} </if>
+		<if test="userId != null">,${userId} </if>
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			,now()
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			,SYSDATE
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			,getdate()
+		</if>
+		<if test="oper != null">,${oper} </if>
+		,0
+		</trim>
+	</insert>
+	
+    <!-- 消息发送记录列表查询 -->
+	<select id="sendRecordList" resultMap="sendRecordResult" parameterMap="sendrecord">
+	<if test="databaseType!=null and databaseType == 'mysql'">
+			select MsgID,CreateTime,MsgFrom,MsgTitle
+			from MSG_Message msg
+			<where>
+			   <trim prefixOverrides="and">
+					EXISTS (SELECT 1 from MSG_Objective obj where msg.MsgID=obj.MsgID)
+					<if test="msgTitle != null and msgTitle!='' ">and MsgTitle like CONCAT('%',#{msgTitle},'%')</if>
+					<if test="msgFrom != null  and msgFrom!=0 ">and MsgFrom=${msgFrom}</if>
+					<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=#{startTime})]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and ((CreateTime<=#{endTime}) or CreateTime like CONCAT('%',#{endTime},'%'))]]></if>
+					<if test="published !=null and published !='' ">	and CreateTime like CONCAT('%',#{published},'%')</if>
+				</trim>
+			</where>
+			order by msg.MsgID  desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.MsgID,a.MsgTitle,a.CreateTime,a.MsgFrom from (	
+			select t.*,ROWNUM rn from (
+				select msg.* from MSG_Message msg 
+				<where>
+					<trim prefixOverrides="and">
+						EXISTS (SELECT 1 from MSG_Objective obj where msg.MsgID=obj.MsgID)
+						<if test="msgTitle != null and msgTitle!='' ">and MsgTitle like '%'||#{msgTitle}||'%')</if>
+						<if test="msgFrom != null  and msgFrom!=0 ">and MsgFrom=${msgFrom}</if>
+						<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=to_date(#{startTime},'YYYY-MM-DD'))]]></if>
+						<if test="endTime !=null and endTime!='' "><![CDATA[and ((CreateTime<=to_date(#{endTime},'YYYY-MM-DD')) or CreateTime like '%'||to_date(#{endTime},'YYYY-MM-DD')||'%')]]></if>
+						<if test="published !=null and published !='' ">and CreateTime like '%'||to_date(#{published},'YYYY-MM-DD')||'%' </if>
+					</trim>
+				</where>
+				order by msg.MsgID desc
+			) t
+			<where>
+			      <if test="offset!=null and offset!=''">
+			         <![CDATA[ROWNUM<=${offset}]]>
+			       </if>  
+		    </where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select a.MsgID,a.MsgTitle,a.CreateTime,a.MsgFrom  from (
+			select row_number() over(order by MsgID DESC) as rowNum, MsgID,MsgTitle,MsgContent,MsgPushDate,MsgPusher,SourceID,MsgAuditing,Auditor,MsgFrom,CreateTime,DelFlag
+			from MSG_Message  msg
+			<where>
+				<trim prefixOverrides="and">
+					EXISTS (SELECT 1 from MSG_Objective obj where msg.MsgID=obj.MsgID)
+					<if test="msgTitle != null and msgTitle!='' ">and MsgTitle like '%'+#{msgTitle}+'%' </if>
+					<if test="msgFrom != null  and msgFrom!=0 ">and MsgFrom=${msgFrom}</if>
+					<if test="msgAuditing != null  and msgAuditing!=0 ">and MsgAuditing=${msgAuditing}</if>
+					<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=#{startTime}+' 00:00:00.000')]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and (CreateTime<=#{endTime}+' 23:59:59.999')]]></if>
+					<if test="published !=null and published !='' "><![CDATA[and ((CreateTime>=#{published}+' 00:00:00.000' and CreateTime<=#{published}+' 23:59:59.999'))]]></if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+		</if>
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="sendrecord">
+		SELECT count(*) FROM MSG_Message msg  WHERE EXISTS (SELECT 1 from MSG_Objective obj where msg.MsgID=obj.MsgID)
+		<if test="msgTitle != null and msgTitle!='' ">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and MsgTitle like CONCAT('%',#{msgTitle},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and MsgTitle like '%'||#{msgTitle}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and MsgTitle like '%'+#{msgTitle}+'%' 
+					</if>
+				</if>
+				<if test="msgFrom != null  and msgFrom!=0 ">and MsgFrom=${msgFrom}</if>
+				<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=#{startTime})]]></if>
+				<if test="endTime !=null and endTime!='' "><![CDATA[and (CreateTime<=#{endTime})]]></if>
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=#{startTime})]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and ((CreateTime<=#{endTime}) or CreateTime like CONCAT('%',#{endTime},'%'))]]></if>
+					<if test="published !=null and published !='' ">and CreateTime like CONCAT('%',#{published},'%')</if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=to_date(#{startTime},'YYYY-MM-DD'))]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and ((CreateTime<=to_date(#{endTime},'YYYY-MM-DD')) or CreateTime like '%'||to_date(#{endTime},'YYYY-MM-DD')||'%')]]></if>
+					<if test="published !=null and published !='' ">and CreateTime like '%'||to_date(#{published},'YYYY-MM-DD')||'%'  </if>  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					<if test="startTime !=null and startTime!='' "><![CDATA[and (CreateTime>=#{startTime}+' 00:00:00.000')]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and (CreateTime<=#{endTime}+' 23:59:59.999')]]></if>
+					<if test="published !=null and published !='' "><![CDATA[and ((CreateTime>=#{published}+' 00:00:00.000' and CreateTime<=#{published}+' 23:59:59.999'))]]></if>
+				</if>
+	</select>
+	
+   <select id="sendRecordUsers" resultMap="sendRecordResult" parameterMap="sendrecord">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select SysID,MsgID,SendDate,UserID,MemberName,Sex,MobilePhone,City,Email
+			from MSG_Objective obj,CC_Member member
+			<where>
+			   <trim prefixOverrides="and">
+					obj.UserID = member.ID 
+					<if test="msgId != null">and MsgID = ${msgId}</if>
+					<if test="memberName != null and memberName != '' ">and MemberName like CONCAT('%',#{memberName},'%')</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						<if test="memberName != null and memberName != '' ">and MemberName like '%'||#{memberName}||'%'  </if>
+					</if>
+				</trim>
+			</where>
+			order by obj.SendDate desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select  a.SysID,a.MsgID,a.SendDate,a.UserID,a.MemberName,a.Sex,a.MobilePhone,a.City,a.Email from (	
+			select t.*,ROWNUM rn from (
+				select member.*,obj.* from MSG_Objective obj,CC_Member member
+				<where>
+				   <trim prefixOverrides="and">
+						obj.UserID = member.ID 
+						<if test="msgId != null">and MsgID = ${msgId}</if>
+						<if test="memberName != null and memberName != '' ">and MemberName like '%'||#{memberName}||'%'  </if>
+					</trim>
+				</where>
+				order by obj.SendDate  desc
+			) t
+			<where>
+			      <if test="offset!=null and offset!=''">
+			         <![CDATA[ROWNUM<=${offset}]]>
+			       </if>  
+		    </where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select  a.SysID,a.MsgID,a.SendDate,a.UserID,a.MemberName,a.Sex,a.MobilePhone,a.City,a.Email from (
+			select row_number() over(order by obj.SendDate DESC) as rowNum, member.*,obj.* 
+			from MSG_Objective obj,CC_Member member
+			<where>
+				<trim prefixOverrides="and">
+					obj.UserID = member.ID 
+					<if test="msgId != null">and MsgID = ${msgId}</if>
+					<if test="memberName != null and memberName != '' ">and MemberName like '%'+#{memberName}+'%'  </if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+		</if>
+		
+	</select>
+	
+	<select id="selectSenedUsersCount" resultType="long" parameterMap="sendrecord">
+		select count(*)
+		from MSG_Objective obj,CC_Member member
+		<where>
+		   <trim prefixOverrides="and">
+				obj.UserID = member.ID 
+				<if test="msgId != null">and MsgID = ${msgId}</if>
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					<if test="memberName != null and memberName != '' ">and MemberName like CONCAT('%',#{memberName},'%')</if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					<if test="memberName != null and memberName != '' ">and MemberName like '%'||#{memberName}||'%'  </if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					<if test="memberName != null and memberName != '' ">and MemberName like '%'+#{memberName}+'%'  </if>
+				</if>
+			</trim>
+		</where>
+	</select>
+	<!-- 删除消息 -->
+	<delete id="delete" parameterMap="sendrecord">
+		delete from MSG_Objective where SysID=${sysId} 
+	</delete>
+</mapper>

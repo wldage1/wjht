@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<informationcenter index="informationcenter" code="4" name="信息中心" level="1" controller="/informationcenter" icon="images/icon/information_center.gif" >
+		<message index="message_mgr" code="402" name="消息管理" level="2" controller="/informationcenter/message/maintain/mgr" icon="images/icon/info_message.gif">
+			<maintain index="msg_mgr" code="40201" isNav="true" isSubAuth="true" isStatus="true" name="消息列表" level="3" controller="/informationcenter/message/maintain/list">
+				<language>
+					<value>/informationcenter/message/maintain/language/messageMessages_zh_CN.properties</value>
+					<value>/informationcenter/message/maintain/language/messageMessages_en_US.properties</value>
+				</language>
+				<create index="msg_create" code="4020101" isLog="true" name="创建" level="4" controller="/informationcenter/message/maintain/create" />
+				<modify index="msg_modify" code="4020102" isLog="true" name="修改" level="4" controller="/informationcenter/message/maintain/modify" />
+				<delete index="msg_delete" code="4020103" isLog="true" name="删除" level="4" controller="/informationcenter/message/maintain/delete" />
+				<send index="msg_send" code="4020104"  isNav="false" isSubAuth="true" name=" 发送" level="4" controller="/informationcenter/message/maintain/sendlist" >
+					<sending index="msg_sending" code="402010401" isLog="false" name=" 发送消息" level="5" controller="/informationcenter/message/maintain/sending" />
+					<sendall index="msg_sendall" code="402010403" isLog="false" name=" 推送所有用户" level="5" controller="/informationcenter/message/maintain/sendall" />
+					<sendby index="msg_sendby" code="402010404" isLog="false" name=" 推送检索条件用户" level="5" controller="/informationcenter/message/maintain/sendby" />
+				</send>
+				<details index="msg_details" code="4020105" isLog="true" name="消息详情" level="4" controller="/informationcenter/message/maintain/details" />
+			</maintain>
+			<auditing index="auditing_mgr" code="40202" isNav="true" isSubAuth="true" name="待审核消息" level="3" controller="/informationcenter/message/maintain/auditinglist">
+				<language>
+				<value>/informationcenter/message/maintain/language/messageMessages_zh_CN.properties</value>
+				<value>/informationcenter/message/maintain/language/messageMessages_en_US.properties</value>
+				</language>
+				<audit index="auditing_audit" code="4020201" isLog="true" name="审核" level="4" controller="/informationcenter/message/maintain/audit" />
+				<ddetails index="auditing_details" code="4020202" isLog="true" name="消息详情" level="4" controller="/informationcenter/message/maintain/d_details" />
+			</auditing>
+			<audited index="audited_mgr" code="40203" isNav="true" isSubAuth="true" name="已审核消息" level="3" controller="/informationcenter/message/maintain/auditedlist">
+				<language>
+				<value>/informationcenter/message/maintain/language/messageMessages_zh_CN.properties</value>
+				<value>/informationcenter/message/maintain/language/messageMessages_en_US.properties</value>
+				</language>
+				<adetails index="audited_details" code="4020301" isLog="true" name="消息详情" level="4" controller="/informationcenter/message/maintain/a_details" />  
+			</audited>
+			<recycled index="recycled_mgr" code="40204" isNav="true" isSubAuth="true" name="消息回收" level="3" controller="/informationcenter/message/maintain/recycledlist">
+				<language>
+				<value>/informationcenter/message/maintain/language/messageMessages_zh_CN.properties</value>
+				<value>/informationcenter/message/maintain/language/messageMessages_en_US.properties</value>
+				</language>
+				<tdelete index="recycled_tdelete" code="4020401" isLog="true" name="删除" level="4" controller="/informationcenter/message/maintain/tdelete" />
+				<restore index="recycled_restore" code="4020402" isLog="true" name="还原" level="4" controller="/informationcenter/message/maintain/restore" />
+				<rdetails index="recycled_details" code="4020403" isLog="true" name="消息详情" level="4" controller="/informationcenter/message/maintain/r_details" />  
+			</recycled>
+			<sendrecord index="sendrecord_mgr" code="40205" isNav="true" isSubAuth="true" name="发送记录" level="3" controller="/informationcenter/message/maintain/sendrecordlist">
+				<language>
+				<value>/informationcenter/message/maintain/language/messageMessages_zh_CN.properties</value>
+				<value>/informationcenter/message/maintain/language/messageMessages_en_US.properties</value>
+				</language>
+				<mdetails index="sendrecord_mdetails" code="4020501" isLog="true" name="消息详情" level="4" controller="/informationcenter/message/maintain/m_details" />
+				<sendusers index="sendrecord_sendusers" code="4020502"  isNav="false" isSubAuth="true" name="已发送用户" level="4" controller="/informationcenter/message/maintain/sendusers" >
+					<recorddel index="sendrecord_delete" code="402050201" isLog="true" name=" 删除" level="5" controller="/informationcenter/message/maintain/recorddel" />
+				</sendusers>		
+			</sendrecord>
+		</message>
+	    <!--
+	    <infomation index="infomation_mgr" code="401" name="咨询管理" level="2" controller="/informationcenter/infomation/mgr">
+		
+		</infomation> 
+		-->
+	</informationcenter>
+</plugins>

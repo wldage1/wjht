@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- ID bigint not null auto_increment comment '投资需求随机编号：系统生成', memberID 
+	bigint comment '用户ID', productID Integer comment '产品类型ID', investScale Integer 
+	comment '投资规模', investDeadline Integer comment '投资期限', yield Integer comment 
+	'预期收益率', predictTime Integer comment '预计投资时间', demandTime Integer comment 
+	'投资时间', description Integer comment '投资描述', state Integer comment '删除状态: 
+	0 正常；1 删除 ', CreateTime datetime comment '创建时间：记录投资需求的创建时间 ', -->
+
+<mapper namespace="investment">
+	<parameterMap id="investment"
+		type="com.sw.plugins.clientcenter.requirement.investment.entity.Investment" />
+
+	<!-- 投资需求结果集 -->
+	<resultMap id="investmentResult"
+		type="com.sw.plugins.clientcenter.requirement.investment.entity.Investment">
+		<id property="id" column="ID" />
+		<result property="memberId" column="MemberId" />
+		<result property="productId" column="ProductId" />
+		<result property="investScale" column="InvestScale" />
+		<result property="investDeadline" column="InvestDeadline" />
+		<result property="yield" column="Yield" />
+		<result property="predictTime" column="PredictTime" />
+		<result property="description" column="Description" />
+		<result property="state" column="State" />
+		<result property="creator" column="Creator" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+
+	<!-- 投资需求通用查询 -->
+	<select id="select" resultMap="investmentResult" parameterMap="investment">
+		select * from CC_Investment
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 投资需求统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="investment">
+		select count(ID) from CC_Investment I
+		<where>
+			<trim prefixOverrides="and">
+				<if test="state!=null">
+					and I.State=${state}
+				</if>
+				<if test="minInvestScale!=null and minInvestScale!=''">
+					and <![CDATA[I.InvestScale>=#{minInvestScale}]]>
+				</if>
+				<if test="maxInvestScale!=null and maxInvestScale!='' ">
+					and <![CDATA[I.InvestScale<=#{maxInvestScale}]]>
+				</if>
+				<if test="productId!=null and productId!='' ">
+					and I.ProductId=${productId}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 投资需求分页查询 -->
+	<select id="selectPaginated" resultMap="investmentResult"
+		parameterMap="investment">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select I.ID ID,I.State state,I.InvestScale investScale,I.MemberId
+			memberId,I.ProductId productId
+			from CC_Investment I
+			<where>
+				<trim prefixOverrides="and">
+					<if test="state!=null">
+						and I.State=${state}
+					</if>
+					<if test="minInvestScale!=null and minInvestScale!=''">
+						and <![CDATA[I.InvestScale>=#{minInvestScale}]]>
+					</if>
+					<if test="maxInvestScale!=null and maxInvestScale!='' ">
+						and <![CDATA[I.InvestScale<=#{maxInvestScale}]]>
+					</if>
+					<if test="productId!=null and productId!='' ">
+						and I.ProductId=${productId}
+					</if>
+				</trim>
+			</where>
+			order by I.ID desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.* from (
+			select t.*,ROWNUM rn from (
+			select I.ID ID,I.State state,I.InvestScale
+			investScale,I.MemberId memberId,I.ProductId productId from
+			CC_Investment I
+			<where>
+				<trim prefixOverrides="and">
+					<if test="state!=null">
+						and I.State=${state}
+					</if>
+					<if test="minInvestScale!=null and minInvestScale!=''">
+						and <![CDATA[I.InvestScale>=#{minInvestScale}]]>
+					</if>
+					<if test="maxInvestScale!=null and maxInvestScale!='' ">
+						and <![CDATA[I.InvestScale<=#{maxInvestScale}]]>
+					</if>
+					<if test="productId!=null and productId!='' ">
+						and I.ProductId=${productId}
+					</if>
+				</trim>
+			</where>
+			order by I.id desc
+			) t
+			<where>
+				<if test="offset!=null and offset!=''">
+			<![CDATA[ROWNUM<=${offset}]]>
+				</if>
+			</where>
+			) a
+			<where>
+				<if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+				</if>
+			</where>
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select a.* from (
+			select row_number() over(order by Id desc
+			) as
+			rowNum, I.ID ID,I.State state,I.InvestScale investScale,I.MemberId
+			memberId,I.ProductId productId
+			from CC_Investment I
+			<where>
+				<trim prefixOverrides="and">
+					<if test="state!=null">
+						and I.State=${state}
+					</if>
+					<if test="minInvestScale!=null and minInvestScale!=''">
+						and <![CDATA[I.InvestScale>=#{minInvestScale}]]>
+					</if>
+					<if test="maxInvestScale!=null and maxInvestScale!='' ">
+						and <![CDATA[I.InvestScale<=#{maxInvestScale}]]>
+					</if>
+					<if test="productId!=null and productId!='' ">
+						and I.ProductId=${productId}
+					</if>
+				</trim>
+			</where>)
+			a
+			where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+		</if>
+	</select>
+
+	<!-- 删除投资需求(改删除标志) -->
+	<update id="deleteinvestment" parameterMap="investment">
+		update CC_Investment
+		<set>
+			<trim prefixOverrides=",">
+				<if test="state!=null">State = ${state} </if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate()
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	<!-- 删除投资需求 (真删除) -->
+	<delete id="delete" parameterMap="investment">
+		delete from CC_Investment where
+		ID=${id}
+	</delete>
+</mapper>

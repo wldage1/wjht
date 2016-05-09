@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   <!-- 
+   ID                   bigint not null auto_increment comment '编号',
+   Title                varchar(100) 	comment '标题',
+   MeetingContent       varchar(1000)	comment '会议内容',
+   MeetingTime          datetime 		comment '会议时间',
+   MeetingPlace         varchar(200) 	comment '会议地点',
+   Status               bigint 			comment '状态		0:启用    1:停用',
+   CreateTime           datetime 		comment '创建时间',
+   ModifyTime           datetime 		comment '修改时间',
+   Creator              bigint 			comment '创建人',
+   -->
+<mapper namespace="SalonMessage">
+	<parameterMap id="SalonMessage" type="com.sw.plugins.clientcenter.salon.message.entity.SalonMessage"/>
+	
+	<!-- 理财沙龙消息结果集 -->
+	<resultMap id="messageResult" type="com.sw.plugins.clientcenter.salon.message.entity.SalonMessage">
+		<id property="id" column="ID" />
+		<result property="title" column="Title" />
+		<result property="meetingContent" column="MeetingContent" />
+		<result property="meetingTime" column="MeetingTime" />
+		<result property="meetingPlace" column="MeetingPlace" />
+		<result property="status" column="Status" />
+		<result property="creator" column="Creator" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+
+	<!-- 新建理财沙龙消息 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterMap="SalonMessage">
+		insert into CC_SalonMessage
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="title !=null and title !=''">,title</if>
+			<if test="meetingContent !=null and meetingContent !=''">,meetingContent</if>
+			<if test="meetingTime !=null and meetingTime !=''">,meetingTime</if>
+			<if test="meetingPlace !=null and meetingPlace !=''">,meetingPlace</if>
+			<if test="status !=null and status !=''">,status</if>
+			,CreateTime
+			,creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="title !=null and title !=''">,#{title}</if>
+			<if test="meetingContent !=null and meetingContent !=''">,#{meetingContent}</if>
+			<if test="meetingTime !=null and meetingTime !=''">,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					#{meetingTime}
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					to_date(#{meetingTime},'YYYY-MM-DD HH24-MI-SS')
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					CONVERT(varchar,#{meetingTime},120)
+				</if>
+			</if>
+			<if test="meetingPlace !=null and meetingPlace !=''">,#{meetingPlace}</if>
+			<if test="status !=null and status !=''">,${status}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_CC_SALONMESSAGE.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('CC_SalonMessage')
+			</if>
+		</selectKey>
+	</insert>
+	
+	<!-- 更新理财沙龙消息 -->
+	<update id="update" parameterMap="SalonMessage">
+		update CC_SalonMessage
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="title !=null and title !=''">,Title = #{title}</if>
+				<if test="meetingContent !=null and meetingContent !=''">,MeetingContent = #{meetingContent}</if>
+				<if test="meetingTime !=null and meetingTime !=''">,
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						MeetingTime=#{meetingTime}
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						MeetingTime=to_date(#{meetingTime},'YYYY-MM-DD HH24-MI-SS')
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						MeetingTime=CONVERT(varchar,#{meetingTime},120)
+					</if>
+				</if>
+				<if test="meetingPlace !=null and meetingPlace !=''">,MeetingPlace=#{meetingPlace}</if>
+				<if test="status !=null">,Status = ${status} </if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now() 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+		 	<if test="id!=null and id!=''">
+		 	 ID=${id}
+			</if>
+		</where>		
+	</update>
+	
+	<!-- 理财沙龙消息通用查询 -->
+	<select id="select" resultMap="messageResult" parameterMap="SalonMessage">
+		select * from CC_SalonMessage
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+			 	 and ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 理财沙龙消息统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="SalonMessage">
+		select count(*) from CC_SalonMessage
+		<where>
+			<trim prefixOverrides="and">
+				<if test="status !=null">
+				 and Status=${status}
+				</if>
+				<if test="title !=null and title !=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and Title like CONCAT('%',#{title},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and Title like '%'||#{title}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and Title like '%'+#{title}+'%' 
+					</if>
+				</if>
+				<if test="endTime!=null and endTime!=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+			 	 		<if test="starTime !=null and starTime!='' ">
+			 	 			<![CDATA[and (MeetingTime>=#{starTime})]]>
+			 	 		</if>
+						<if test="endTime !=null and endTime!='' ">
+							<![CDATA[and ((MeetingTime<=#{endTime}) or MeetingTime like CONCAT('%',#{endTime},'%'))]]>
+						</if>
+			 	 	</if>
+			 	 	<if test="databaseType!=null and databaseType == 'oracle'">
+			 	 		<if test="starTime !=null and starTime!='' ">
+							<![CDATA[and (MeetingTime>=to_date(#{starTime},'YYYY-MM-DD HH24-MI-SS'))]]>
+						</if>
+						<if test="endTime !=null and endTime!='' ">
+							<![CDATA[and ((MeetingTime<=to_date(#{endTime},'YYYY-MM-DD HH24-MI-SS')) or MeetingTime like '%'||to_date(#{endTime},'YYYY-MM-DD HH24-MI-SS')||'%')]]>
+						</if>
+			 	 	</if>
+			 	 	<if test="databaseType!=null and databaseType == 'sqlserver'">
+			 	 		<if test="starTime !=null and starTime!='' ">
+							<![CDATA[and (MeetingTime>=CONVERT(varchar,#{starTime}+' 00:00:00.000',120))]]>
+						</if>
+						<if test="endTime !=null and endTime!='' ">
+							<![CDATA[and (MeetingTime<=CONVERT(varchar,(#{endTime}+' 23:59:59.999'),120))]]>
+						</if>
+			 	 	</if>
+			 	</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 理财沙龙消息分页查询 -->
+	<select id="selectPaginated" resultMap="messageResult" parameterMap="SalonMessage">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+		select * from CC_SalonMessage
+		<where>
+			<trim prefixOverrides="and">
+				<if test="status !=null">
+				 Status=${status}
+				 </if>
+				<if test="title !=null and title !=''">
+					and Title like CONCAT('%',#{title},'%')
+				</if>
+				<if test="starTime !=null and starTime!='' ">
+					<![CDATA[and (MeetingTime>=#{starTime})]]>
+				</if>
+				<if test="endTime !=null and endTime!='' ">
+					<![CDATA[and ((MeetingTime<=#{endTime}) or MeetingTime like CONCAT('%',#{endTime},'%'))]]>
+				</if>
+			</trim>
+		</where>
+			order by id desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+		select a.* from (	
+		select t.*,ROWNUM rn from (
+			select S.* from CC_SalonMessage S
+		<where>
+			<trim prefixOverrides="and">
+				<if test="status !=null">
+				 Status=${status}
+				 </if>
+				<if test="title !=null and title !=''">
+					and Title like '%'||#{title}||'%'
+				</if>
+				<if test="starTime !=null and starTime!='' ">
+				<![CDATA[and (MeetingTime>=to_date(#{starTime},'YYYY-MM-DD HH24-MI-SS'))]]>
+				</if>
+				<if test="endTime !=null and endTime!='' ">
+				<![CDATA[and ((MeetingTime<=to_date(#{endTime},'YYYY-MM-DD HH24-MI-SS')) or MeetingTime like '%'||to_date(#{endTime},'YYYY-MM-DD HH24-MI-SS')||'%')]]>
+				</if>
+			</trim>
+		</where>
+			order by S.id desc
+		) t
+		<where>
+		<if test="offset!=null and offset!=''">
+			<![CDATA[ROWNUM<=${offset}]]>
+		</if>  
+		</where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select a.* from (
+			select row_number() over(order by  Id desc
+			) as rowNum, *
+			from CC_SalonMessage 
+			<where>
+				<trim prefixOverrides="and">
+				 <if test="status !=null">
+				 	Status=${status}
+				 </if>
+				<if test="title !=null and title !=''">
+					and Title like '%'+#{title}+'%'
+				</if>
+				<if test="starTime !=null and starTime!='' ">
+					<![CDATA[and (MeetingTime>=CONVERT(varchar,(#{starTime}+' 00:00:00.000'),120))]]>
+				</if>
+				<if test="endTime !=null and endTime!='' ">
+					<![CDATA[and (MeetingTime<=CONVERT(varchar,(#{endTime}+' 23:59:59.999'),120))]]>
+				</if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</if>
+	</select>
+
+	<!-- 删除理财沙龙消息(真删除) -->
+	<delete id="delete" parameterMap="SalonMessage">
+		delete from CC_SalonMessage where Id=${id}
+	</delete>
+</mapper>

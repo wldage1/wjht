@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="member">
+	<parameterMap id="member" type="com.sw.plugins.clientcenter.member.maintain.entity.Member"/>
+	<!-- 会员结果集 -->
+	<resultMap id="memberResult" type="com.sw.plugins.clientcenter.member.maintain.entity.Member">
+		<id property="id" column="ID" />
+		<result property="crmId" column="CRMID" />
+		<result property="memberLevel" column="MemberLevel" />
+		<result property="memberName" column="MemberName" />
+		<result property="sex" column="Sex" />
+		<result property="birthday" column="Birthday" />
+		<result property="birthdayYear" column="BirthdayYear" />
+		<result property="birthdayMonth" column="BirthdayMonth" />
+		<result property="birthdayDate" column="BirthdayDate" />
+		<result property="idCardType" column="IDCardType" />
+		<result property="idCard" column="IDCard" />
+		<result property="belief" column="Belief" />
+		<result property="nationality" column="Nationality" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="cardType" column="CardType" />
+		<result property="xltPhone" column="XLTPhone" />
+		<result property="phone" column="Phone" />
+		<result property="province" column="Province" />
+		<result property="city" column="City" />
+		<result property="crmSource" column="CRMSource" />
+		<result property="sourceIndustry" column="SourceIndustry" />
+		<result property="memberType" column="MemberType" />
+		<result property="married" column="Married" />
+		<result property="occupation" column="Occupation" />
+		<result property="education" column="Education" />
+		<result property="memberPosition" column="MemberPosition" />
+		<result property="workStatus" column="WorkStatus" />
+		<result property="income" column="Income" />
+		<result property="incomeRangeId" column="IncomeRangeID" />
+		<result property="hobby" column="Hobby" />
+		<result property="email" column="Email" />
+		<result property="homeAddress" column="HomeAddress" />
+		<result property="contactAddress" column="ContactAddress" />
+		<result property="postCode" column="PostCode" />
+		<result property="ventureTrend" column="VentureTrend" />
+		<result property="company" column="Company" />
+		<result property="companyIndustry" column="CompanyIndustry" />
+		<result property="totalUsingCount" column="TotalUsingCount" />
+		<result property="lastUsingTime" column="LastUsingTime" />
+		<result property="crmDateModifyTime" column="CRMDateModifyTime" />
+		<result property="financialPlanner" column="FinancialPlanner" />
+		<result property="introductionCustomers" column="IntroductionCustomers" />
+		<result property="crmDateCreateTime" column="CRMDateCreateTime" />
+		<result property="serialNumber" column="SerialNumber" />
+		<result property="fpOrganization" column="FPOrganization" />
+		<result property="lastFollowTime" column="LastFollowTime" />
+		<result property="minQuota" column="MinQuota" />
+		<result property="maxQuota" column="MaxQuota" />
+		<result property="intentionProduct" column="IntentionProduct" />
+		<result property="investmentSituation" column="InvestmentSituation" />
+		<result property="branchOrg" column="BranchOrg" />
+		<result property="crmCreateTime" column="CRMCreateTime" />
+		<result property="crmModifyTime" column="CRMModifyTime" />
+		<result property="crmCreator" column="CRMCreator" />
+		<result property="extendTableId" column="ExtendID" />
+		<result property="userName" column="UserName" />
+		<result property="passWord" column="PassWord" />
+		<result property="pwQuestion" column="PWQuestion" />
+		<result property="pwResult" column="PWResult" />
+		<result property="level" column="MebLevel" />
+		<result property="status" column="Status" />
+		<result property="delStatus" column="DelStatus" />
+		<result property="source" column="Source" />
+		<result property="registrationTime" column="RegistrationTime" />
+		<result property="terminal" column="Terminal" />
+		<result property="registrationIP" column="RegistrationIP" />
+		<result property="lastLoginTime" column="LastLoginTime" />
+		<result property="authenticationCodes" column="AuthenticationCodes" />
+		<result property="registPhone" column="RegistPhone" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creator" column="Creator" />
+	</resultMap>
+	
+	<select id="select" resultMap="memberResult" parameterMap="member">
+		select M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,
+			   ME.ID ExtendID,ME.UserName UserName,ME.MebLevel MebLevel,ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime,
+			   ME.PWQuestion pwQuestion,ME.PWResult pwResult,ME.RegistPhone RegistPhone
+		from   CC_Member M,CC_MemberExtend ME
+		<where>
+			   M.ID = ME.MemberID
+			<if test="id!=null and id!=0">
+				and M.ID=${id}
+			</if>
+			<if test="delStatus!=null">
+				and ME.DelStatus=${delStatus}
+			</if>
+			<if test="memberName!=null and memberName!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MemberName like CONCAT('%',#{memberName},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MemberName like '%'||#{memberName}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MemberName like '%'+#{memberName}+'%' 
+				</if>
+			</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MobilePhone like '%'||#{mobilePhone}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MobilePhone like '%'+#{mobilePhone}+'%' 
+				</if>
+			</if>
+			<if test="level!=null and level!=0">
+				and ME.MebLevel=${level}
+			</if>
+			<if test="sqlCondition!=null and sqlCondition!=''">
+				 <![CDATA[ 
+					and (${sqlCondition})
+				 ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectForSendMessage" resultMap="memberResult" parameterMap="member">
+		select M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,
+			   ME.ID ExtendID,ME.UserName UserName,ME.MebLevel MebLevel,ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime
+		from   CC_Member M,CC_MemberExtend ME
+		<where>
+			   M.ID = ME.MemberID
+			   and EXISTS (SELECT 1 from CC_TerminalCode tc where M.ID=tc.MemberID)
+			<if test="id!=null and id!=0">
+				and M.ID=${id}
+			</if>
+			<if test="delStatus!=null">
+				and ME.DelStatus=${delStatus}
+			</if>
+			<if test="memberName!=null and memberName!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MemberName like CONCAT('%',#{memberName},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MemberName like '%'||#{memberName}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MemberName like '%'+#{memberName}+'%' 
+				</if>
+			</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MobilePhone like '%'||#{mobilePhone}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MobilePhone like '%'+#{mobilePhone}+'%' 
+				</if>
+			</if>
+			<if test="level!=null and level!=0">
+				and ME.MebLevel=${level}
+			</if>
+			<if test="sqlCondition!=null and sqlCondition!=''">
+				 <![CDATA[ 
+					and (${sqlCondition})
+				 ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectPaginated" resultMap="memberResult" parameterMap="member">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,M.MemberLevel MemberLevel,M.FinancialPlanner FinancialPlanner,M.CRMID CRMID,M.BranchOrg BranchOrg,
+				   ME.ID ExtendID,ME.UserName UserName,ME.MebLevel MebLevel,ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime,ME.RegistPhone RegistPhone 
+			from   CC_Member M,CC_MemberExtend ME
+			<where>
+				   M.ID = ME.MemberID
+				<if test="id!=null and id!=0">
+					and M.ID=${id}
+				</if>
+				<if test="delStatus!=null">
+					and ME.DelStatus=${delStatus}
+				</if>
+				<if test="memberName!=null and memberName!=''">
+					and M.MemberName like CONCAT('%',#{memberName},'%') 
+				</if>
+				<if test="mobilePhone!=null and mobilePhone!=''">
+					and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="registPhone!=null and registPhone!=''">
+					and ME.RegistPhone like CONCAT('%',#{registPhone},'%') 
+				</if>
+				<if test="level!=null and level!=0">
+					and ME.MebLevel=${level}
+				</if>
+				<if test="financialPlanner!=null and financialPlanner!=''">
+					and M.FinancialPlanner like CONCAT('%',#{financialPlanner},'%') 
+				</if>
+				<if test="memberLevel!=null and memberLevel!=''">
+					and M.MemberLevel = #{memberLevel} 
+				</if>
+				<if test="sqlCondition!=null and sqlCondition!=''">
+					 <![CDATA[ 
+						and (${sqlCondition})
+					 ]]>
+				</if>
+			</where>
+			order by ME.RegistrationTime desc
+			limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.*
+		    from (	
+				select t.*,ROWNUM rn 
+				from (
+					select M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,ME.ID ExtendID,ME.UserName UserName,ME.MebLevel MebLevel,M.BranchOrg BranchOrg,
+					  	   ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime,ME.RegistPhone RegistPhone,M.MemberLevel MemberLevel,M.FinancialPlanner FinancialPlanner,M.CRMID CRMID 
+					from CC_Member M,CC_MemberExtend ME
+					<where>
+						   M.ID = ME.MemberID
+						<if test="id!=null and id!=0">
+							and M.ID=${id}
+						</if>
+						<if test="delStatus!=null">
+							and ME.DelStatus=${delStatus}
+						</if>
+						<if test="memberName!=null and memberName!=''">
+							and M.MemberName like '%'||#{memberName}||'%'  
+						</if>
+						<if test="mobilePhone!=null and mobilePhone!=''">
+							and M.MobilePhone like '%'||#{mobilePhone}||'%'  
+						</if>
+						<if test="registPhone!=null and registPhone!=''">
+							and ME.RegistPhone like '%'||#{registPhone}||'%'  
+						</if>
+						<if test="level!=null and level!=0">
+							and ME.MebLevel=${level}
+						</if>
+						<if test="financialPlanner!=null and financialPlanner!=''">
+							and M.FinancialPlanner like '%'||#{financialPlanner}||'%' 
+						</if>
+						<if test="memberLevel!=null and memberLevel!=''">
+							and M.MemberLevel = #{memberLevel} 
+						</if>
+						<if test="sqlCondition!=null and sqlCondition!=''">
+							 <![CDATA[ 
+								and (${sqlCondition})
+							 ]]>
+						</if>
+					</where>
+				) t
+				<where>
+				      <if test="offset!=null and offset!=''">
+				         <![CDATA[ROWNUM<=${offset}]]>
+				       </if>  
+			    </where>
+			) a
+			<where>
+		      <if test="start!=null and start!=''">
+		         <![CDATA[rn>=${start}]]>
+		       </if>       
+		    </where>
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select 
+					a.* 
+			from 
+					(
+						select 
+								row_number() over( order by  M.ID desc ) as rowNum, 
+								M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,ME.ID ExtendID,ME.UserName UserName,M.BranchOrg BranchOrg,
+								ME.MebLevel MebLevel,ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime,ME.RegistPhone RegistPhone,M.MemberLevel MemberLevel,M.FinancialPlanner FinancialPlanner,M.CRMID CRMID
+						from 
+								CC_Member M,CC_MemberExtend ME
+						<where>
+							   M.ID = ME.MemberID
+							<if test="id!=null and id!=0">
+								and M.ID=${id}
+							</if>
+							<if test="delStatus!=null">
+								and ME.DelStatus=${delStatus}
+							</if>
+							<if test="memberName!=null and memberName!=''">
+								and M.MemberName like '%'+#{memberName}+'%' 
+							</if>
+							<if test="mobilePhone!=null and mobilePhone!=''">
+								and M.MobilePhone like '%'+#{mobilePhone}+'%'  
+							</if>
+							<if test="registPhone!=null and registPhone!=''">
+								and ME.RegistPhone like '%'+#{registPhone}+'%' 
+							</if>
+							<if test="level!=null and level!=0">
+								and ME.MebLevel=${level}
+							</if>
+							<if test="financialPlanner!=null and financialPlanner!=''">
+								and M.FinancialPlanner like '%'+#{financialPlanner}+'%' 
+							</if>
+							<if test="memberLevel!=null and memberLevel!=''">
+								and M.MemberLevel = #{memberLevel} 
+							</if>
+							<if test="sqlCondition!=null and sqlCondition!=''">
+								 <![CDATA[ 
+									and (${sqlCondition})
+								 ]]>
+							</if>
+						</where>
+					) a
+			<![CDATA[
+			where  a.rowNum > ${start} and a.rowNum < ${offset} 
+			]]>
+		</if>
+	</select>
+	
+	<select id="selectForCertification" resultType="String" parameterMap="member">
+		select  MobilePhone
+		from   CC_Member,CC_MemberExtend
+		<where>
+			  CRMID IS NULL and CC_Member.ID = CC_MemberExtend.MemberID and CC_MemberExtend.DelStatus = 0
+		</where>
+	</select>
+	
+	
+	<select id="selectPaginatedForExport" resultMap="memberResult" parameterMap="member">
+		select M.MemberLevel MemberLevel,M.FinancialPlanner FinancialPlanner,M.CRMID CRMID,M.BranchOrg BranchOrg,ME.RegistrationTime RegistrationTime
+		from   CC_Member M,CC_MemberExtend ME
+		<where>
+			   M.ID = ME.MemberID
+			<if test="id!=null and id!=0">
+				and M.ID=${id}
+			</if>
+			<if test="delStatus!=null">
+				and ME.DelStatus=${delStatus}
+			</if>
+			<if test="memberName!=null and memberName!=''">
+				and M.MemberName like CONCAT('%',#{memberName},'%') 
+			</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+			</if>
+			<if test="registPhone!=null and registPhone!=''">
+				and ME.RegistPhone like CONCAT('%',#{registPhone},'%') 
+			</if>
+			<if test="level!=null and level!=0">
+				and ME.MebLevel=${level}
+			</if>
+			<if test="financialPlanner!=null and financialPlanner!=''">
+				and M.FinancialPlanner like CONCAT('%',#{financialPlanner},'%') 
+			</if>
+			<if test="memberLevel!=null and memberLevel!=''">
+				and M.MemberLevel = #{memberLevel} 
+			</if>
+			<if test="sqlCondition!=null and sqlCondition!=''">
+				 <![CDATA[ 
+					and (${sqlCondition})
+				 ]]>
+			</if>
+		</where>
+		order by ME.RegistrationTime desc
+	</select>
+	
+	
+	<select id="selectPaginatedForSendMessage" resultMap="memberResult" parameterMap="member">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,
+				   ME.ID ExtendID,ME.UserName UserName,ME.MebLevel MebLevel,ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime 
+			from   CC_Member M,CC_MemberExtend ME
+			<where>
+				   M.ID = ME.MemberID
+				   and EXISTS (SELECT 1 from CC_TerminalCode tc where M.ID=tc.MemberID)
+				<if test="id!=null and id!=0">
+					and M.ID=${id}
+				</if>
+				<if test="delStatus!=null">
+					and ME.DelStatus=${delStatus}
+				</if>
+				<if test="status!=null">
+					and ME.Status=${status}
+				</if>
+				<if test="memberName!=null and memberName!=''">
+					and M.MemberName like CONCAT('%',#{memberName},'%') 
+				</if>
+				<if test="mobilePhone!=null and mobilePhone!=''">
+					and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="level!=null and level!=0">
+					and ME.MebLevel=${level}
+				</if>
+				<if test="sqlCondition!=null and sqlCondition!=''">
+					 <![CDATA[ 
+						and (${sqlCondition})
+					 ]]>
+				</if>
+			</where>
+			order by M.CreateTime desc
+			limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.*
+		    from (	
+				select t.*,ROWNUM rn 
+				from (
+					select M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,ME.ID ExtendID,ME.UserName UserName,ME.MebLevel MebLevel,
+					  	   ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime 
+					from CC_Member M,CC_MemberExtend ME
+					<where>
+						   M.ID = ME.MemberID
+						   and EXISTS (SELECT 1 from CC_TerminalCode tc where M.ID=tc.MemberID)
+						<if test="id!=null and id!=0">
+							and M.ID=${id}
+						</if>
+						<if test="delStatus!=null">
+							and ME.DelStatus=${delStatus}
+						</if>
+						<if test="status!=null">
+							and ME.Status=${status}
+						</if>
+						<if test="memberName!=null and memberName!=''">
+							and M.MemberName like '%'||#{memberName}||'%'  
+						</if>
+						<if test="mobilePhone!=null and mobilePhone!=''">
+							and M.MobilePhone like '%'||#{mobilePhone}||'%'  
+						</if>
+						<if test="level!=null and level!=0">
+							and ME.MebLevel=${level}
+						</if>
+						<if test="sqlCondition!=null and sqlCondition!=''">
+							 <![CDATA[ 
+								and (${sqlCondition})
+							 ]]>
+						</if>
+					</where>
+				) t
+				<where>
+				      <if test="offset!=null and offset!=''">
+				         <![CDATA[ROWNUM<=${offset}]]>
+				       </if>  
+			    </where>
+			) a
+			<where>
+		      <if test="start!=null and start!=''">
+		         <![CDATA[rn>=${start}]]>
+		       </if>       
+		    </where>
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select 
+					a.* 
+			from 
+					(
+						select 
+								row_number() over( order by  M.ID desc ) as rowNum, 
+								M.ID ID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,ME.ID ExtendID,ME.UserName UserName,
+								ME.MebLevel MebLevel,ME.Status Status,ME.Source Source,ME.RegistrationTime RegistrationTime
+						from 
+								CC_Member M,CC_MemberExtend ME
+						<where>
+							   M.ID = ME.MemberID
+							   and EXISTS (SELECT 1 from CC_TerminalCode tc where M.ID=tc.MemberID)
+							<if test="id!=null and id!=0">
+								and M.ID=${id}
+							</if>
+							<if test="delStatus!=null">
+								and ME.DelStatus=${delStatus}
+							</if>
+							<if test="status!=null">
+								and ME.Status=${status}
+							</if>
+							<if test="memberName!=null and memberName!=''">
+								and M.MemberName like '%'+#{memberName}+'%' 
+							</if>
+							<if test="mobilePhone!=null and mobilePhone!=''">
+								and M.MobilePhone like '%'+#{mobilePhone}+'%' 
+							</if>
+							<if test="level!=null and level!=0">
+								and ME.MebLevel=${level}
+							</if>
+							<if test="sqlCondition!=null and sqlCondition!=''">
+								 <![CDATA[ 
+									and (${sqlCondition})
+								 ]]>
+							</if>
+						</where>
+					) a
+			<![CDATA[
+			where  a.rowNum > ${start} and a.rowNum < ${offset} 
+			]]>
+		</if>
+	</select>
+	
+	<select id="selectCount" resultType="long" parameterMap="member">
+		select count(*)
+		from   CC_Member M,CC_MemberExtend ME
+		<where>
+			   M.ID = ME.MemberID
+			<if test="delStatus!=null">
+				and ME.DelStatus=${delStatus}
+			</if>
+			<if test="memberName!=null and memberName!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MemberName like CONCAT('%',#{memberName},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MemberName like '%'||#{memberName}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MemberName like '%'+#{memberName}+'%' 
+				</if>
+			</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MobilePhone like '%'||#{mobilePhone}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MobilePhone like '%'+#{mobilePhone}+'%' 
+				</if>
+			</if>
+			<if test="level!=null and level!=0">
+				and ME.MebLevel=${level}
+			</if>
+			<if test="sqlCondition!=null and sqlCondition!=''">
+				 <![CDATA[ 
+					and (${sqlCondition})
+				 ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectCountForSendMessage" resultType="long" parameterMap="member">
+		select count(*)
+		from   CC_Member M,CC_MemberExtend ME
+		<where>
+			   M.ID = ME.MemberID
+			   and EXISTS (SELECT 1 from CC_TerminalCode tc where M.ID=tc.MemberID)
+			<if test="delStatus!=null">
+				and ME.DelStatus=${delStatus}
+			</if>
+			<if test="status!=null">
+				and ME.Status=${status}
+			</if>
+			<if test="memberName!=null and memberName!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MemberName like CONCAT('%',#{memberName},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MemberName like '%'||#{memberName}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MemberName like '%'+#{memberName}+'%' 
+				</if>
+			</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					and M.MobilePhone like CONCAT('%',#{mobilePhone},'%') 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					and M.MobilePhone like '%'||#{mobilePhone}||'%'  
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					and M.MobilePhone like '%'+#{mobilePhone}+'%' 
+				</if>
+			</if>
+			<if test="level!=null and level!=0">
+				and ME.MebLevel=${level}
+			</if>
+			<if test="sqlCondition!=null and sqlCondition!=''">
+				 <![CDATA[ 
+					and (${sqlCondition})
+				 ]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectCountForSave" resultType="long" parameterMap="member">
+		select count(*)
+		from   CC_Member M,CC_MemberExtend ME
+		<where>
+			   M.ID = ME.MemberID
+			<if test="mobilePhone!=null and mobilePhone!=''">
+				and M.MobilePhone=#{mobilePhone}
+			</if>
+			<if test="userName!=null and userName!=''">
+				and binary ME.UserName=#{userName}
+			</if>
+			<if test="id!=null">
+				and M.ID != ${id}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertMember" parameterMap="member">
+		insert into CC_Member
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="memberName!=null and memberName!=''">,MemberName</if>
+			<if test="sex!=null and sex!=0">,Sex</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone</if>
+			,CreateTime
+			,Creator
+			<if test="memberLevel!=null and memberLevel!=''">,MemberLevel</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="memberName!=null and memberName!=''">,#{memberName}</if>
+			<if test="sex!=null and sex!=0">,${sex}</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,#{mobilePhone}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+			<if test="memberLevel!=null and memberLevel!=''">,#{memberLevel}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_CC_MEMBER.CURRVAL AS VALUE FROM DUAL  
+			</if> 
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('CC_Member')
+			</if>
+		</selectKey>
+	</insert>
+	
+	<insert id="insertMemberExtend" parameterMap="member">
+		insert into CC_MemberExtend
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			,MemberID
+			<if test="userName!=null and userName!=''">,UserName</if>
+			<if test="passWord!=null">,PassWord</if>
+			<if test="level!=null and level!=0 ">,MebLevel</if>
+			<if test="status!=null and status!=0">,Status</if>
+			<if test="delStatus!=null">,DelStatus</if>
+			<if test="source!=null and source!=0">,Source</if>
+			<if test="pwQuestion!=null and pwQuestion!=''">,PWQuestion</if>
+			<if test="pwResult!=null and pwResult!=''">,PWResult</if>
+			,RegistrationTime
+			<if test="registPhone!=null and registPhone!=''">,RegistPhone</if>
+			,CreateTime
+			,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			,${generatedKey}
+			<if test="userName!=null and userName!=''">,#{userName}</if>
+			<if test="passWord!=null">,#{passWord}</if>
+			<if test="level!=null and level!=0 ">,${level}</if>
+			<if test="status!=null">,${status}</if>
+			<if test="delStatus!=null">,${delStatus}</if>
+			<if test="source!=null and source!=0">,${source}</if>
+			<if test="pwQuestion!=null and pwQuestion!=''">,#{pwQuestion}</if>
+			<if test="pwResult!=null and pwResult!=''">,#{pwResult}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			<if test="registPhone!=null and registPhone!=''">,#{registPhone}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+	</insert>
+	
+	<update id="updateMember" parameterMap="member">
+		update CC_Member
+		<set>
+			<trim prefixOverrides=",">
+				<if test="memberName!=null ">,MemberName=#{memberName}</if>
+				<if test="sex!=null and sex!=0">,Sex=${sex}</if>
+				<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone=#{mobilePhone}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=SYSDATE
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<update id="updateMemberExtend" parameterMap="member">
+		update CC_MemberExtend
+		<set>
+			<trim prefixOverrides=",">
+				<if test="userName!=null and userName!=''">,UserName=#{userName}</if>
+				<if test="passWord!=null">,PassWord=#{passWord}</if>
+				<if test="level!=null">,MebLevel=${level}</if>
+				<if test="status!=null">,Status=${status}</if>
+				<if test="delStatus!=null">,DelStatus=${delStatus}</if>
+				<if test="source!=null and source!=0">,Source=${source}</if>
+				<if test="pwQuestion!=null">,PWQuestion=#{pwQuestion}</if>
+				<if test="pwResult!=null">,PWResult=#{pwResult}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=SYSDATE
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				MemberID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<delete id="deleteMember" parameterMap="member">
+		delete from CC_Member where ID = ${id} 
+	</delete>
+	
+	<update id="emptyCRMId" parameterMap="member">
+		update CC_Member set CRMID = null where ID=${id}
+	</update>
+	
+	<update id="emptyAuthenticationCode" parameterMap="member">
+		update CC_MemberExtend set authenticationCodes = null where MemberID=${id}
+	</update>
+	
+	<update id="updateMemberForMP" parameterMap="member">
+		update CC_Member
+		<set>
+			<trim prefixOverrides=",">
+				<if test="crmId!=null and crmId!=0">,CRMID=${crmId}</if>
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					,ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					,ModifyTime=SYSDATE
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					,ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="mobilePhone!=null and mobilePhone!=''">
+			    MobilePhone=#{mobilePhone}
+			</if>
+		</where>
+	</update>
+	
+	<update id="updateMemberForSync" parameterMap="member">
+		update CC_Member
+		<set>
+			<trim prefixOverrides=",">
+				<if test="memberLevel!=null">,MemberLevel=#{memberLevel}</if>
+				<if test="financialPlanner!=null">,FinancialPlanner=#{financialPlanner}</if>
+				<if test="branchOrg!=null">,BranchOrg=#{branchOrg}</if>
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					,ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					,ModifyTime=SYSDATE
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					,ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="crmId!=null and crmId!=0">
+			    CRMID=${crmId}
+			</if>
+		</where>
+	</update>
+	
+
+</mapper>

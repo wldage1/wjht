@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="terminalcode">
+	<parameterMap id="terminalcode" type="com.sw.plugins.clientcenter.member.maintain.entity.TerminalCode"/>
+	
+	<!-- 
+	终端标识结果集
+	 -->
+	<resultMap id="terminalcodeResult" type="com.sw.plugins.clientcenter.member.maintain.entity.TerminalCode">
+		<id property="id" column="ID" />
+		<result property="memberId" column="MemberID" />
+		<result property="code" column="Code" />
+		<result property="iAuthCode" column="IAuthCode" />
+	</resultMap>
+	
+	<select id="select" resultMap="terminalcodeResult" parameterMap="terminalcode">
+		select DISTINCT(Code),MemberID
+		from  CC_TerminalCode
+		<where>
+			 MemberID in 
+			 <foreach item="cd" index="index" collection="ids" open="(" separator="," close=")">  
+	           	 #{cd}
+    		</foreach> 
+		</where>
+	</select>
+
+</mapper>

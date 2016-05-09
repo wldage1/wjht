@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    <!-- 
+   ID                     bigint not null auto_increment comment '预约随机编号：系统生成',
+   MemberId               bigint  comment '用户ID',
+   ProductID              bigint  comment '产品ID',
+   ClientGrade            char(1) comment '客户级别：1.普通会员 2.钻石会员 ',
+   BuySum				  int '购买金额：用户预计购买产品的金额，单位为‘万’元 ',          
+   CreateTime             datetime comment '创建时间：记录预约的创建时间 ',
+   DisposeState           char(1) comment '预约处理状态：0.未处理 1.处理 ',
+   DisposeContent         varchar(100) comment '处理内容：用户预约处理信息 ',
+   CCFPName               varchar(50) comment '理财师名称：处理用户预约的理财师姓名 ',
+   GuideNumber  		  varchar(100) comment '指南编号：给用户推荐的投资指南编号 ',
+   DelState               char(1) comment '预约状态：0.正常 1.管理员删除',
+   -->
+<mapper namespace="reservation">
+	<parameterMap id="reservation" type="com.sw.plugins.clientcenter.reservation.info.entity.Reservation"/>
+	
+	<!-- 预约结果集 -->
+	<resultMap id="reservationResult" type="com.sw.plugins.clientcenter.reservation.info.entity.Reservation">
+		<id property="id" column="ID" />
+		<result property="memberId" column="MemberId" />
+		<result property="productId" column="ProductId" />
+		<result property="account" column="Account" />
+		<result property="name" column="Name" />
+		<result property="gender" column="Gender" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="clientGrade" column="ClientGrade" />
+		<result property="buySum" column="BuySum" />
+		<result property="createTime" column="CreateTime" />
+		<result property="disposeState" column="DisposeState" />
+		<result property="disposeContent" column="DisposeContent" />
+		<result property="guideNumber" column="GuideNumber" />
+		<result property="delState" column="DelState" />
+		<result property="cancelState" column="CancelState" />
+		<result property="creator" column="Creator" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+
+	<!-- 预约通用查询 -->
+	<select id="select" resultMap="reservationResult" parameterMap="reservation">
+		select reservation.* from CC_Reservation reservation
+		<where>
+			<trim prefixOverrides="and">
+			<if test="id !=null and id !=''">
+		 	 and ID=${id}
+			</if>
+			<if test="disposeState!=null and disposeState!=''">
+		 	 and DisposeState=${disposeState}
+		 	 </if>
+		 	 </trim>
+		</where>
+	</select>
+
+	<!-- 预约统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="reservation">
+		select count(*) from CC_Reservation R,CC_Member M,CC_MemberExtend ME
+		<where>
+			R.MemberID=M.ID and M.id=ME.MemberID
+				<if test="delState!=null">
+				 and R.DelState=${delState}
+				</if>
+				<if test="cancelState!=null">
+				 and R.CancelState=${cancelState}
+				</if>
+				<if test="memberId!=null">
+				 and M.ID=${memberId}
+				</if>
+				<if test="name!=null and name!=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and M.MemberName like CONCAT('%',#{name},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and M.MemberName like '%'||#{name}||'%'
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver' ">
+						and M.MemberName like '%'+#{name}+'%'
+					</if>
+				</if>
+			 	<if test="mobilePhone!=null and mobilePhone!=''">
+			 	 and M.MobilePhone=#{mobilePhone}
+				</if>
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					<if test="starTime !=null and starTime!='' "><![CDATA[and (R.CreateTime>=#{starTime})]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and ((R.CreateTime<=#{endTime}) or R.CreateTime like CONCAT('%',#{endTime},'%'))]]></if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					<if test="starTime !=null and starTime!='' "><![CDATA[and (R.CreateTime>=to_date(#{starTime},'YYYY-MM-DD'))]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and ((R.CreateTime<=to_date(#{endTime},'YYYY-MM-DD')) or R.CreateTime like '%'||to_date(#{endTime},'YYYY-MM-DD')||'%')]]></if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					<if test="starTime !=null and starTime!='' "><![CDATA[and (R.CreateTime>=#{starTime}+' 00:00:00.000')]]></if>
+					<if test="endTime !=null and endTime!='' "><![CDATA[and (R.CreateTime<=#{endTime}+' 23:59:59.999')]]></if>
+				</if>
+			 	<if test="disposeState!=null">
+				 and R.DisposeState=${disposeState}
+				</if>
+		</where>
+	</select>
+	
+	<!-- 预约分页查询 -->
+	<select id="selectPaginated" resultMap="reservationResult" parameterMap="reservation">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+		select R.ID ID,R.DelState delState,R.CreateTime createTime,R.DisposeState disposeState,R.MemberID memberId,R.CancelState cancelState,
+		M.ID MID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,
+		ME.UserName UserName
+		from CC_Reservation R,CC_Member M,CC_MemberExtend ME
+		<where>
+			R.MemberID=M.ID and M.ID=ME.MemberID
+				<if test="delState!=null">
+				 and R.DelState=${delState}
+				</if>
+				<if test="cancelState!=null">
+				 and R.CancelState=${cancelState}
+				</if>
+				<if test="memberId!=null">
+				 and M.ID=${memberId}
+				</if>
+				<if test="name!=null and name!=''">
+			 	 and M.MemberName like CONCAT('%',#{name},'%')
+				</if>
+				<if test="starTime !=null and starTime!='' ">
+					<![CDATA[and (R.CreateTime>=#{starTime})]]>
+				</if>
+				<if test="endTime !=null and endTime!='' ">
+					<![CDATA[and ((R.CreateTime<=#{endTime}) or R.CreateTime like CONCAT('%',#{endTime},'%'))]]>
+				</if>
+			 	<if test="disposeState!=null">
+				 and R.DisposeState=${disposeState}
+				</if>
+		</where>
+			order by R.ID desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+		select a.* from (	
+		select t.*,ROWNUM rn from (
+			select R.ID ID,R.DelState delState,R.CreateTime createTime,R.DisposeState disposeState,R.MemberID memberId,R.CancelState cancelState,
+			M.ID MID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,
+			ME.UserName UserName
+			from CC_Reservation R,CC_Member M,CC_MemberExtend ME
+			<where>
+				R.MemberID=M.ID and M.ID=ME.MemberID
+				<if test="delState!=null">
+				 and R.DelState=${delState}
+				</if>
+				<if test="cancelState!=null">
+				 and R.CancelState=${cancelState}
+				</if>
+				<if test="memberId!=null">
+				 and M.ID=${memberId}
+				</if>
+				<if test="name!=null and name!=''">
+			 	 and M.MemberName like '%'||#{name}||'%'
+				</if>
+				<if test="starTime !=null and starTime!='' ">
+					<![CDATA[and (R.CreateTime>=to_date(#{starTime},'YYYY-MM-DD'))]]>
+				</if>
+				<if test="endTime !=null and endTime!='' ">
+					<![CDATA[and ((R.CreateTime<=to_date(#{endTime},'YYYY-MM-DD')) or R.CreateTime like '%'||to_date(#{endTime},'YYYY-MM-DD')||'%')]]>
+				</if>
+			 	<if test="disposeState!=null">
+				 and R.DisposeState=${disposeState}
+				</if>
+			</where>
+			order by R.id desc
+		) t
+		<where>
+		<if test="offset!=null and offset!=''">
+			<![CDATA[ROWNUM<=${offset}]]>
+		</if>  
+		</where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select a.* from (
+			select row_number() over(order by  R.ID desc
+			) as rowNum,R.ID ID,R.DelState delState,R.CreateTime createTime,R.DisposeState disposeState,R.MemberID memberId,R.CancelState cancelState,
+			M.ID MID,M.MemberName MemberName,M.Sex Sex,M.MobilePhone MobilePhone,
+			ME.UserName UserName
+			from CC_Reservation R,CC_Member M,CC_MemberExtend ME
+			<where>
+				R.MemberID=M.ID and M.ID=ME.MemberID
+				<if test="delState!=null">
+				 and R.DelState=${delState}
+				</if>
+				<if test="cancelState!=null">
+				 and R.CancelState=${cancelState}
+				</if>
+				<if test="memberId!=null">
+				 and M.ID=${memberId}
+				</if>
+				<if test="name!=null and name!=''">
+			 	 and M.MemberName like '%'+#{name}+'%'
+				</if>
+				<if test="starTime !=null and starTime!='' ">
+				<![CDATA[and (R.CreateTime>=#{starTime}+' 00:00:00.000')]]>
+				</if>
+				<if test="endTime !=null and endTime!='' ">
+				<![CDATA[and (R.CreateTime<=#{endTime}+' 23:59:59.999')]]>
+				</if>
+			 	<if test="disposeState!=null">
+				 and R.DisposeState=${disposeState}
+				</if>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</if>
+	</select>
+
+	<!-- 更新预约 -->
+	<update id="deleteReservation" parameterMap="reservation">
+		update CC_Reservation
+		<set>
+			<if test="delState!=null">
+				DelState=${delState}
+			</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				ModifyTime=now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				ModifyTime=sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				ModifyTime=getdate() 
+			</if>	
+		</set>
+		<where>
+		 	<if test="id!=null and id!=0">
+		 	 id=${id}
+			</if>
+		</where>		
+	</update>
+	<!-- 删除预约(真删除)  -->
+	<delete id="delete" parameterMap="reservation">
+		delete from CC_Reservation where ID=${id}
+	</delete>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<productcenter index="productcenter" code="3" name="产品中心" level="1" controller="/productcenter" icon="images/icon/product_center.gif">
+		<attribute index="attribute_mgr" code="301" name=" 产品属性" level="2" controller="/productcenter/attribute/mgr" icon="images/icon/product_attribute.gif">
+			<structure index="structure_mgr" code="30101" isNav="true" isSubAuth="true" name="产品结构" level="3" controller="/productcenter/attribute/structure/list">
+				<language>
+					<value>/productcenter/attribute/structure/language/structureMessages_zh_CN.properties</value>
+				</language>
+				<create index="structure_create" code="3010101" isNav="true" isLog="true" name="创建" level="4" controller="/productcenter/attribute/structure/create"/>
+				<modify index="structure_modify" code="3010102" isNav="true" isLog="true" name="修改" level="4" controller="/productcenter/attribute/structure/modify"/>
+				<delete index="structure_delete" code="3010103" isLog="true" name="删除" level="4" controller="/productcenter/attribute/structure/delete"/>
+				<detail index="structure_detail" code="3010104" isNav="true" name="预览" level="4" controller="/productcenter/attribute/structure/detail"/>
+			</structure>
+		</attribute>
+		<product index="product_mgr" code="302" name=" 产品管理" level="2" controller="/productcenter/product/mgr" icon="images/icon/product_manage.gif">
+			<maintain index="prd_mgr" code="30201" isNav="true" isSubAuth="true" name="产品列表" level="3" controller="/productcenter/product/maintain/list">
+				<language>
+					<value>/productcenter/product/maintain/language/productMessages_zh_CN.properties</value>
+				</language>
+				<create index="prd_create" code="3020101" isNav="true" isLog="true" name="创建" level="4" controller="/productcenter/product/maintain/create" />
+				<modify index="prd_modify" code="3020102" isNav="true" isLog="true" name="修改" level="4" controller="/productcenter/product/maintain/modify" />
+				<rdelete index="prd_recyclerdelete" code="3020103"  isLog="true" name="删除" level="4" controller="/productcenter/product/maintain/recyclerdelete" />
+				<start index="prd_start" code="3020104" isLog="true" name="未发布" level="4" controller="/productcenter/product/maintain/start"/>
+				<stop index="prd_stop" code="3020105" isLog="true" name="已发布" level="4" controller="/productcenter/product/maintain/stop"/>
+				<detail index="prd_detail" code="3020106" isLog="true" name="产品详情" level="4" controller="/productcenter/product/maintain/detail"/>
+				<recycler index="prd_recycler" code="3020108" isNav="true" isSubAuth="true" name="回收站" level="4" controller="/productcenter/product/maintain/recycler"/>
+				<restore index="prd_restore" code="302010801" isLog="true" name="还原" level="5" controller="/productcenter/product/maintain/restore"/>
+				<delete index="prd_delete" code="302010802" isLog="true" name="删除" level="5" controller="/productcenter/product/maintain/delete"/>
+				<export index="prd_export_member_product" code="3020109" isLog="true" name="导出成交客户存续产品信息" level="4" controller="/productcenter/product/maintain/export_member_product"/>
+				<shared index="prd_shared" code="3020110" isLog="true" name="分享" level="4" controller="/productcenter/product/maintain/shared"/>
+				<generate index="prd_generate" code="3020111" isLog="true" name="生成" level="4" controller="/productcenter/product/maintain/generate"/>
+				<uploadPDF index="prd_upload_pdf" code="3020112" isLog="true" name="批量上传存续报告附件" level="4" controller="/productcenter/product/maintain/upload_pdf"/>
+				<deletePDF index="prd_delete_pdf" code="3020113" isLog="true" name="批量删除存续报告附件" level="4" controller="/productcenter/product/maintain/delete_pdf"/>
+			</maintain>
+			<crm index="prd_crmlist" code="30202" isNav="true" isSubAuth="true" name="CRM产品列表" level="3" controller="/productcenter/product/maintain/crmlist">
+				<language>
+					<value>/productcenter/product/maintain/language/productMessages_zh_CN.properties</value>
+				</language>
+				<added index="prd_added" code="3020201" isLog="true" name="上架" level="4" controller="/productcenter/product/maintain/crmadd"/>
+				<pulling index="prd_pulling" code="3020202" isLog="true" name="拉取CRM产品" level="4" controller="/productcenter/product/maintain/pulling"/>
+				<addedby index="prd_addedby" code="3020203" isLog="true" name="批量上架" level="4" controller="/productcenter/product/maintain/addedby"/>
+				<upd index="prd_upd" code="3020204" name="更新" level="4" controller="/productcenter/product/maintain/crmupd"/>
+				<crmdetails index="prd_crmdetails" code="3020205"  isNav="true"  name="详细" level="4" controller="/productcenter/product/maintain/crmdetails" />
+				<synchronousTrustCode index="prd_synchronousTrustCode" code="3020206" name="同步财汇数据" level="4" controller="/productcenter/product/maintain/synchronousTrustCode" />
+			</crm>
+		</product>			
+	</productcenter>
+</plugins>

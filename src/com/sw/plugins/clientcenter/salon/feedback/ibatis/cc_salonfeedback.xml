@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   <!-- 
+   ID                   bigint 		not null comment '编号',
+   SalonMessageID       bigint 		comment '理财沙龙反馈信息表编号',
+   IsJoin               int    		comment '是否参加',
+   PeopleNumber         bigint 		comment '参加人数',
+   PeopleID             bigint 		comment '参加人ID',
+   PeopleMobilePhone    varchar(20) comment '参加人手机',
+   Status				int			comment '删除状态： 0：正常   1：删除',
+   CreateTime           datetime 	comment '创建时间',
+   ModifyTime           datetime 	comment '修改时间',
+   Creator              bigint 		comment '创建人',
+   --> 
+   
+<mapper namespace="messageFeedBack">
+	<parameterMap id="messageFeedBack" type="com.sw.plugins.clientcenter.salon.feedback.entity.SalonFeedback"/>
+	
+	<!-- 理财沙龙反馈信息结果集 -->
+	<resultMap id="messageFeedBackResult" type="com.sw.plugins.clientcenter.salon.feedback.entity.SalonFeedback">
+		<id property="id" column="ID" />
+		<result property="salonMessageID" column="SalonMessageID" />
+		<result property="isJoin" column="IsJoin" />
+		<result property="peopleNumber" column="PeopleNumber" />
+		<result property="peopleID" column="PeopleID" />
+		<result property="peopleMobilePhone" column="PeopleMobilePhone" />
+		<result property="status" column="Status" />
+		<result property="creator" column="Creator" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+
+	
+	<!-- 更新理财沙龙反馈信息 -->
+	<update id="update" parameterMap="messageFeedBack">
+		update CC_SalonFeedback
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="status !=null">,Status = ${status} </if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now() 
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+		 	<if test="id!=null and id!=''">
+		 	 id=${id}
+			</if>
+		</where>		
+	</update>
+	
+	<!-- 理财沙龙反馈信息通用查询 -->
+	<select id="select" resultMap="messageFeedBackResult" parameterMap="messageFeedBack">
+		select F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+		M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+		SM.Title Title,SM.MeetingContent MeetingContent,SM.MeetingTime MeetingTime,SM.MeetingPlace MeetingPlace
+		from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+		<where>
+			F.salonMessageId=SM.id and F.peopleID=M.id and F.id=${id}
+		</where>
+	</select>
+
+	<!-- 理财沙龙反馈信息统计查询 -->
+	<select id="selectCount" resultType="long" parameterMap="messageFeedBack">
+		select count(*) from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+		<where>
+			F.salonMessageId=SM.id and F.peopleID=M.id and F.Status=${status}
+				<if test="title !=null and title !=''">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and SM.Title like CONCAT('%',#{title},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and SM.Title like '%'||#{title}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and SM.Title like '%'+#{title}+'%' 
+					</if>
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+			 		<if test="databaseType!=null and databaseType == 'mysql'">
+						and PeopleMobilePhone like CONCAT('%',#{peopleMobilePhone},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and PeopleMobilePhone like '%'||#{peopleMobilePhone}||'%'
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and PeopleMobilePhone like '%'+#{peopleMobilePhone}+'%' 
+					</if>
+				</if>
+				<if test="isJoin != null">
+			 	 and F.IsJoin=${isJoin}
+				</if>
+		</where>
+	</select>
+	
+	<!-- 理财沙龙反馈信息分页查询 -->
+	<select id="selectPaginated" resultMap="messageFeedBackResult" parameterMap="messageFeedBack">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+		select F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+		M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+		SM.Title Title
+		from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+		<where>
+			F.salonMessageId=SM.id and F.peopleID=M.id
+				and F.Status=${status}
+				<if test="title !=null and title !=''">
+					and SM.Title like CONCAT('%',#{title},'%')
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+					and PeopleMobilePhone like CONCAT('%',#{peopleMobilePhone},'%')
+				</if>
+				<if test="isJoin != null">
+			 	 and F.IsJoin=${isJoin}
+				</if>
+		</where>
+			order by F.id desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+		select a.* from (	
+		select t.*,ROWNUM rn from (
+			select F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+				M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+				SM.Title Title
+			from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+		<where>
+			F.salonMessageId=SM.id and F.peopleID=M.id and F.Status=${status}
+				<if test="title !=null and title !=''">
+					and SM.Title like '%'||#{title}||'%'  
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+					and PeopleMobilePhone like '%'||#{peopleMobilePhone}||'%'
+				</if>
+				<if test="isJoin != null">
+			 	 and isJoin=${isJoin}
+				</if>
+		</where>
+			order by F.id desc
+		) t
+		<where>
+		<if test="offset!=null and offset!=''">
+			<![CDATA[ROWNUM<=${offset}]]>
+		</if>  
+		</where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select a.* from (
+			select row_number() over(order by  F.Id desc
+			) as rowNum, F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+				M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+				SM.Title Title
+			from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+			<where>
+				F.salonMessageId=SM.id and F.peopleID=M.id and F.Status=${status}
+				<if test="title !=null and title !=''">
+					and SM.Title like '%'+#{title}+'%'
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+					and PeopleMobilePhone like '%'+#{peopleMobilePhone}+'%'
+				</if>
+				<if test="isJoin != null">
+			 	 and isJoin=${isJoin}
+				</if>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</if>
+	</select>
+	
+	<!-- 数据导出查询-->
+	<select id="exportSelect" resultMap="messageFeedBackResult" parameterMap="messageFeedBack">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+		select F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+		M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+		SM.Title Title
+		from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+		<where>
+			F.salonMessageId=SM.id and F.peopleID=M.id
+				and F.Status=${status}
+				<if test="title !=null and title !=''">
+					and SM.Title like CONCAT('%',#{title},'%')
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+					and PeopleMobilePhone like CONCAT('%',#{peopleMobilePhone},'%')
+				</if>
+				<if test="isJoin != null">
+			 	 and F.IsJoin=${isJoin}
+				</if>
+		</where>
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+				M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+				SM.Title Title
+			from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+		<where>
+			F.salonMessageId=SM.id and F.peopleID=M.id and F.Status=${status}
+				<if test="title !=null and title !=''">
+					and SM.Title like '%'||#{title}||'%'  
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+					and PeopleMobilePhone like '%'||#{peopleMobilePhone}||'%'
+				</if>
+				<if test="isJoin != null">
+			 	 and isJoin=${isJoin}
+				</if>
+		</where>
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select F.ID ID,F.IsJoin IsJoin,F.PeopleMobilePhone PeopleMobilePhone,F.Status Status,F.PeopleNumber PeopleNumber,
+				M.ID MID,M.MemberName MemberName,M.MobilePhone MobilePhone,
+				SM.Title Title
+			from CC_SalonFeedback F,CC_Member M,CC_SalonMessage SM
+			<where>
+				F.salonMessageId=SM.id and F.peopleID=M.id and F.Status=${status}
+				<if test="title !=null and title !=''">
+					and SM.Title like '%'+#{title}+'%'
+				</if>
+			 	<if test="peopleMobilePhone !=null and peopleMobilePhone !=''">
+					and PeopleMobilePhone like '%'+#{peopleMobilePhone}+'%'
+				</if>
+				<if test="isJoin != null">
+			 	 and isJoin=${isJoin}
+				</if>
+			</where>
+	</if>
+	</select>
+
+	<!-- 删除理财沙龙反馈信息 (真删除) -->
+	<delete id="delete" parameterMap="messageFeedBack">
+		delete from CC_SalonFeedback where ID=${id}
+	</delete>
+</mapper>
