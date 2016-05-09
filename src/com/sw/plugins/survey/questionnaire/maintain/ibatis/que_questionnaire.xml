@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+
+问卷ID	ID	bigint			TRUE	FALSE	TRUE
+问卷名称	QueName	varchar(100)	100		FALSE	FALSE	FALSE
+问卷描述	QueDescribe	text			FALSE	FALSE	FALSE
+开启状态	OpenFlag	int			FALSE	FALSE	FALSE
+消息链接	MsgURL	text			FALSE	FALSE	FALSE
+问卷开始时间	QueStartTime	datetime			FALSE	FALSE	FALSE
+问卷结束时间	QueEndTime	datetime			FALSE	FALSE	FALSE
+创建时间	CreateTime	datetime			FALSE	FALSE	FALSE
+修改时间	ModifyTime	datetime			FALSE	FALSE	FALSE
+创建人	Createor	bigint			FALSE	FALSE	FALSE
+
+ -->
+<mapper namespace="questionnaire">
+
+	<parameterMap id="questionnaire"
+		type="com.sw.plugins.survey.questionnaire.maintain.entity.Questionnaire" />
+		
+	<!-- 调查问卷结果集 -->
+	<resultMap id="questionnaireResult"
+		type="com.sw.plugins.survey.questionnaire.maintain.entity.Questionnaire">
+		<id property="id" column="ID" />
+		<result property="queName" column="QueName" />
+		<result property="queTitle" column="QueTitle" />
+		<result property="queSubTitle" column="QueSubTitle" />
+		<result property="queDescribe" column="QueDescribe" />
+		<result property="queStartTime" column="QueStartTime" />
+		<result property="queEndTime" column="QueEndTime" />
+		<result property="userID" column="UserID" />
+		<result property="memberName" column="MemberName" />
+		<result property="sex" column="Sex" />
+		<result property="mobile" column="MobilePhone" />
+		<result property="city" column="City" />
+		<result property="email" column="Email" />
+	</resultMap>
+	
+	<!-- 根据id查询问卷 -->
+	<select id="selectByOne" resultMap="questionnaireResult" parameterMap="questionnaire">
+		select * 
+		from QUE_Questionnaire 
+		where ID=${id}
+	</select>
+	
+	<!-- 列表页面数据查询 -->
+	<select id="select" resultMap="questionnaireResult" parameterMap="questionnaire">
+	<choose>
+	  <when test="databaseType!=null and databaseType == 'mysql'">
+		select *
+		from QUE_Questionnaire 
+		<where>
+			<trim prefixOverrides="and">
+			    <if test="queName != null and queName !='' ">
+						and QueName like CONCAT('%',#{queName},'%')
+				</if>
+				<if test="queTitle != null and queTitle !='' ">
+				  and QueTitle like CONCAT('%',#{queTitle},'%')
+					<!-- <if test="databaseType!=null and databaseType == 'mysql'">
+						and QueTitle like CONCAT('%',#{queTitle},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and QueTitle like '%'||#{queTitle}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and QueTitle like '%'+#{queTitle}+'%' 
+					</if> -->
+				</if>
+			</trim>
+		</where>
+		order by ID desc limit ${start},${offset}
+		</when>
+		<when test="databaseType!=null and databaseType == 'oracle'">
+		select a.* from (	
+				select t.*,ROWNUM rn from (
+		   select * from QUE_Questionnaire 
+		<where>
+			<trim prefixOverrides="and">
+			    <if test="queName != null and queName !='' ">
+					    and QueName like '%'||#{queName}||'%'  
+				</if>
+				<if test="queTitle != null and queTitle !='' ">
+				        and QueTitle like '%'||#{queTitle}||'%'
+				</if>
+			</trim>
+		</where>
+		order by ID desc
+			) t
+				<where>
+				      <if test="offset!=null and offset!=''">
+				         <![CDATA[ROWNUM<=${offset}]]>
+				       </if>  
+			    </where>
+			) a
+			<where>
+		      <if test="start!=null and start!=''">
+		         <![CDATA[rn>=${start}]]>
+		       </if>       
+		    </where>
+		</when>
+		<when test="databaseType!=null and databaseType == 'sqlserver'">
+		select a.* from (
+		select row_number() over(order by ID desc) as rowNum,que.ID,que.QueName,que.QueTitle,que.QueSubTitle,que.OpenFlag,que.QueStartTime,que.QueEndTime
+		from QUE_Questionnaire que
+		<where>
+			<trim prefixOverrides="and">
+			    <if test="queName != null and queName !='' ">
+						and QueName like '%'+#{queName}+'%'
+				</if>
+				<if test="queTitle != null and queTitle !='' ">
+				  and QueTitle like '%'+#{queTitle}+'%' 
+				</if>
+			</trim>
+		</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+		</when>
+	 </choose>	
+	</select>
+	
+	<!-- 问卷列表数量查询 -->
+	<select id="selectCount" resultType="long" parameterMap="questionnaire">
+		SELECT count(*) FROM QUE_Questionnaire
+         <where>
+			<trim prefixOverrides="and">
+			    <if test="queName != null and queName !='' ">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and QueName like CONCAT('%',#{queName},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and QueName like '%'||#{queName}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and QueName like '%'+#{queName}+'%' 
+					</if>
+				</if>
+				
+				<if test="queTitle != null and queTitle !='' ">
+					<if test="databaseType!=null and databaseType == 'mysql'">
+						and QueTitle like CONCAT('%',#{queTitle},'%')
+					</if>
+					<if test="databaseType!=null and databaseType == 'oracle'">
+						and QueTitle like '%'||#{queTitle}||'%'  
+					</if>
+					<if test="databaseType!=null and databaseType == 'sqlserver'">
+						and QueTitle like '%'+#{queTitle}+'%' 
+					</if>
+				</if>
+
+			</trim>
+		</where>
+	</select>
+	
+	
+	<!-- 新建问卷 -->
+	<insert id="insert" parameterMap="questionnaire">
+		insert into QUE_Questionnaire 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="queName != null and queName !='' ">,QueName </if>
+		<if test="queTitle != null and queTitle !='' ">,QueTitle</if>
+		,QueSubTitle
+		,QueDescribe
+		,QueImgIpad
+		,QueImgIphone
+		,QueStartTime
+		,QueEndTime
+		,CreateTime
+		,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		<if test="queName!=null and queName !='' ">,#{queName}</if>
+		<if test="queTitle!=null and queTitle !='' ">,#{queTitle}</if>
+		,#{queSubTitle}
+		,#{queDescribe}
+		,#{queImgIpad}
+		,#{queImgIphone}
+	    <choose>  
+           <when  test="queStartTime !=null and queStartTime != '' and databaseType == 'mysql'">
+           	      ,#{queStartTime}
+           </when>
+           <when  test="queStartTime !=null and queStartTime != '' and databaseType == 'oracle'">
+           	      ,to_date(#{queStartTime},'YYYY-MM-DD HH24:MI:SS') 
+           </when>
+           <otherwise>
+           	      ,null
+           </otherwise>
+		 </choose>
+		 <choose>  
+           <when  test="queEndTime !=null and queEndTime != '' and databaseType == 'mysql'">
+           	      ,#{queEndTime}
+           </when>
+           <when  test="queEndTime !=null and queEndTime != '' and databaseType == 'oracle'">
+           	      ,to_date(#{queEndTime},'YYYY-MM-DD HH24:MI:SS') 
+           </when>
+           <otherwise>
+           	      ,null
+           </otherwise>
+		 </choose>    
+		 ,	
+		    <if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+		,${creator}
+		</trim>
+	</insert>
+	
+	<!-- 更新问卷 -->
+	<update id="update" parameterMap="questionnaire">
+			update QUE_Questionnaire
+		<set>
+			<trim prefixOverrides=",">
+				<if test="queName !=null and queName !='' ">,QueName=#{queName}</if>
+				<if test="queTitle !=null and queTitle !='' ">,QueTitle=#{queTitle}</if>
+				,QueSubTitle=#{queSubTitle}
+				,QueDescribe=#{queDescribe}
+				,QueImgIpad=#{queImgIpad}
+				,QueImgIphone=#{queImgIphone}
+		       <choose>  
+                  <when  test="queStartTime !=null and queStartTime != '' and databaseType == 'mysql'">
+           	      ,QueStartTime=#{queStartTime}
+                  </when>
+                  <when  test="queStartTime !=null and queStartTime != '' and databaseType == 'oracle'">
+           	      ,QueStartTime=to_date(#{queStartTime},'YYYY-MM-DD HH24:MI:SS') 
+                  </when>
+                  <otherwise>
+           	      ,QueStartTime=null
+                  </otherwise>
+		       </choose>    
+		       <choose>  
+                  <when  test="queEndTime !=null and queEndTime != '' and databaseType == 'mysql'">
+           	      ,QueEndTime=#{queEndTime}
+                  </when>
+                  <when  test="queEndTime !=null and queEndTime != '' and databaseType == 'oracle'">
+           	      ,QueEndTime=to_date(#{queEndTime},'YYYY-MM-DD HH24:MI:SS') 
+                  </when>
+                  <otherwise>
+           	      ,QueEndTime=null
+                  </otherwise>
+		       </choose>  
+		        <if test="openFlag!=null and openFlag != '' " >,OpenFlag=${openFlag}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 删除问卷 -->
+	<delete id="delete" parameterMap="questionnaire">
+		delete from QUE_Questionnaire where ID = ${id} 
+	</delete>
+
+	<insert id="creatAnswerTable" parameterMap="questionnaire">
+		<choose>
+			<when test="databaseType == 'mysql'">
+				CREATE TABLE `QUE_Answer_${id}` (
+				`ID` bigint(20) NOT NULL auto_increment,
+				`UserID` bigint(20) ,
+				`IpAddress` varchar(100) ,
+				`Area` varchar(100) ,
+				`JoinTime` datetime,
+				`OverTime` datetime,
+				`OverFlag` int(1),
+				`Grade` varchar(100) ,
+				${customSQL}
+				PRIMARY KEY (`ID`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			</when>
+			<when test="databaseType == 'oracle'">
+				CREATE TABLE QUE_Answer_${id} (
+				ID NUMBER NOT NULL,
+				UserID NUMBER,
+				IpAddress varchar2(100) ,
+				Area varchar2(100) ,
+				JoinTime DATE,
+				OverTime DATE,
+				OverFlag INTEGER,
+				Grade varchar2(100),
+				${customSQL}
+				PRIMARY KEY (ID)
+				)
+			</when>
+			<when test="databaseType == 'sqlserver'">
+				CREATE TABLE QUE_Answer_${id} (
+				ID  bigint identity,
+				UserID bigint,
+				IpAddress varchar(100) ,
+				Area varchar(100) ,
+				JoinTime datetime,
+				OverTime datetime,
+				OverFlag int,
+				Grade varchar(100),
+				${customSQL}
+				PRIMARY KEY (ID)
+				)
+			</when>
+		</choose>
+	</insert>
+	
+	<!-- 创建答案表触发器(答案表ID改为手动插入，此方法废弃) -->
+	<insert id="createAnswerTrigger" parameterMap="questionnaire">
+	    CREATE TRIGGER TIB_QUE_Answer_${id} BEFORE INSERT
+                ON QUE_Answer_${id} FOR EACH ROW
+                DECLARE
+       
+                INTEGRITY_ERROR  EXCEPTION;
+                ERRNO            INTEGER;
+                ERRMSG           CHAR(200);
+                DUMMY            INTEGER;
+                FOUND            BOOLEAN;
+
+				BEGIN
+				    SELECT S_QUE_Answer.NEXTVAL INTO :NEW.ID FROM DUAL;
+				EXCEPTION
+				    WHEN INTEGRITY_ERROR THEN
+				       RAISE_APPLICATION_ERROR(ERRNO, ERRMSG);
+				END;
+	</insert>
+    
+    <!-- 保存问卷答案 -->
+	<insert id="saveQuestionnaireAnswer" parameterMap="questionnaire">
+		insert into QUE_Answer_${id}
+		 ${customSQL}
+	</insert>
+	
+	 <!-- 统计调查回复数 -->
+	 <select id="selectQuestionnaireResponseNum" resultType="long" parameterMap="questionnaire"  >   
+	     select count(*) from QUE_Answer_${id}  
+	 </select>
+	 
+	 <!-- 删除答案表 -->
+	 <insert id="deleteQuestionnaireAnswer"  parameterMap="questionnaire">
+	  <choose>  
+           <when  test="databaseType == 'mysql'">
+               drop table if exists QUE_Answer_${id};
+           </when>
+           <when  test="databaseType == 'sqlserver'">
+               drop table QUE_Answer_${id};
+           </when>
+           <when  test="databaseType == 'oracle'">
+              DROP TABLE QUE_ANSWER_${id} CASCADE CONSTRAINTS
+           </when>
+      </choose>
+    </insert>
+    
+    <!-- 设置问卷发布状态 -->
+	<update id="setQuestionnaireOpenFlag" parameterMap="questionnaire">
+			update QUE_Questionnaire
+		<set>
+			<trim prefixOverrides=",">
+		        <if test="openFlag!=null" >,OpenFlag=${openFlag}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<select id="getUserResult" resultMap="questionnaireResult" parameterMap="questionnaire">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+			select QueID,UserID,MemberName,Sex,MobilePhone,City,Email
+			from QUE_UserQueMapper que,CC_Member member
+			<where>
+			   <trim prefixOverrides="and">
+					que.UserID = member.ID 
+					and QueID = ${id}
+					<if test="memberName != null and memberName != '' ">and MemberName like CONCAT('%',#{memberName},'%')</if>
+				</trim>
+			</where>
+			order by que.UserID  desc limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select   a.QueID,a.UserID,a.MemberName,a.Sex,a.MobilePhone,a.City,a.Email from (	
+			select t.*,ROWNUM rn from (
+				select member.*,que.* from QUE_UserQueMapper que,CC_Member member
+				<where>
+				   <trim prefixOverrides="and">
+						que.UserID = member.ID 
+						and QueID = ${id}
+						<if test="memberName != null and memberName != '' ">and MemberName like '%'||#{memberName}||'%'  </if>
+					</trim>
+				</where>
+				order by que.UserID  desc
+			) t
+			<where>
+			      <if test="offset!=null and offset!=''">
+			         <![CDATA[ROWNUM<=${offset}]]>
+			       </if>  
+		    </where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>					
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select   a.QueID,a.UserID,a.MemberName,a.Sex,a.MobilePhone,a.City,a.Email from (
+			select row_number() over(order by que.QueID DESC) as rowNum, member.*,que.* 
+			from QUE_UserQueMapper que,CC_Member member
+			<where>
+				<trim prefixOverrides="and">
+					que.UserID = member.ID 
+					and QueID = ${id}
+					<if test="memberName != null and memberName != '' ">and MemberName like '%'+#{memberName}+'%'  </if>
+				</trim>
+			</where>) a
+				where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+		</if>
+		
+	</select>
+	
+    <select id="getUserResultCount" resultType="long" parameterMap="questionnaire">
+		select count(*)
+		from QUE_UserQueMapper que,CC_Member member
+		<where>
+		   <trim prefixOverrides="and">
+				que.UserID = member.ID 
+				and QueID = ${id}
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					<if test="memberName != null and memberName != '' ">and MemberName like CONCAT('%',#{memberName},'%')</if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					<if test="memberName != null and memberName != '' ">and MemberName like '%'||#{memberName}||'%'  </if>
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					<if test="memberName != null and memberName != '' ">and MemberName like '%'+#{memberName}+'%'  </if>
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<delete id="deleteUserResult" parameterMap="questionnaire">
+		delete from QUE_UserQueMapper where QueID = ${id} 
+	</delete>
+	    
+	<!-- 删除问卷对应的图片信息 -->
+	<update id="deleteQueImg" parameterMap="questionnaire">
+			update QUE_Questionnaire
+		<set>
+			<trim prefixOverrides=",">
+		        <if test="queImgType == 'Ipad' " >,QueImgIpad=""</if>
+		        <if test="queImgType == 'Iphone' " >,QueImgIphone=""</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+</mapper>

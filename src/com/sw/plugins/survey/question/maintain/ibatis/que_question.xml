@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+问题表相关SQL操作
+
+ -->
+<mapper namespace="question">
+
+	<parameterMap id="question"
+		type="com.sw.plugins.survey.question.maintain.entity.Question" />
+	
+	<parameterMap id="questionnaire"
+		type="com.sw.plugins.survey.questionnaire.maintain.entity.Questionnaire" />	
+		
+	<!-- 问题结果集 -->
+	<resultMap id="questionResult"
+		type="com.sw.plugins.survey.question.maintain.entity.Question">
+		<id property="id" column="ID" />
+		<result property="questionName" column="QuestionName" />
+		<result property="questionType" column="QuestionType" />
+		<result property="queID" column="QueID" />
+		<result property="questionNotes" column="QuestionNotes" />
+		<result property="requiredFlag" column="RequiredFlag" />
+		<result property="arrangeFlag" column="ArrangeFlag" />   
+		<result property="minChoose" column="MinChoose" />
+		<result property="maxChoose" column="MaxChoose" />
+		<result property="maxWordNumber" column="MaxWordNumber" />
+		<result property="minWordNumber" column="MinWordNumber" />
+		<result property="fieldWidth" column="FieldWidth" />
+		<result property="fieldHeight" column="FieldHeight" />
+		<result property="orderId" column="OrderId" />
+	</resultMap>
+	
+	<!-- 调查问卷对应的问题列表（不分页） -->
+	<select id="selectQuestions" resultMap="questionResult" parameterMap="questionnaire">
+		select * from QUE_Question 
+		<where>
+			QueID=${id}
+		</where>
+			order by orderId
+	</select>
+	
+	<!-- 保存问题 -->
+	<insert id="insert" parameterMap="question" >
+		insert into QUE_Question
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="databaseType!=null and databaseType == 'oracle'">
+				ID
+			</if>
+			<if test="questionName!=null and questionName !='' ">,QuestionName</if>
+			<if test="queID != null and queID !=0 ">,QueID</if>
+			<if test="orderId != null and orderId !=0 ">,OrderId</if>
+			<if test="questionType != null and questionType !=0 ">,QuestionType</if>
+			,QuestionNotes
+			,RequiredFlag
+			<if test="arrangeFlag != null and arrangeFlag !=0 ">,ArrangeFlag</if>
+			<if test="isDisplayAsSelect != null and isDisplayAsSelect !=0 ">,IsDisplayAsSelect</if>
+			<if test="isRandOptions != null and isRandOptions !=0 ">,IsRandOptions</if>
+			<if test="perRowCol != null and perRowCol !=0 ">,PerRowCol</if>
+			<if test="maxWordNumber != null and maxWordNumber !=0 ">,MaxWordNumber</if>
+			<if test="minWordNumber != null and minWordNumber !=0 ">,MinWordNumber</if>
+			<if test="fieldWidth != null and fieldWidth !=0 ">,FieldWidth</if>
+			<if test="fieldHeight != null and fieldHeight !=0 ">,FieldHeight</if>
+			,CreateTime
+			,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		   <if test="databaseType!=null and databaseType == 'oracle'">
+				S_QUE_QUESTION.NEXTVAL
+			</if>
+			<if test="questionName !=null and questionName !=''">,#{questionName}</if>
+			<if test="queID !=null and queID !=0">,${queID}</if>
+			<if test="orderId !=null and orderId !=0">,${orderId}</if>
+			<if test="questionType != null and questionType !=0 ">,${questionType}</if>
+			,#{questionNotes}
+			,${requiredFlag}
+			<if test="arrangeFlag != null and arrangeFlag !=0 ">,${arrangeFlag}</if>
+			<if test="isDisplayAsSelect != null and isDisplayAsSelect !=0 ">,${isDisplayAsSelect}</if>
+			<if test="isRandOptions != null and isRandOptions !=0 ">,${isRandOptions}</if>
+			<if test="perRowCol != null and perRowCol !=0 ">,${perRowCol}</if>
+			<if test="maxWordNumber != null and maxWordNumber !=0 ">,${maxWordNumber}</if>
+			<if test="minWordNumber != null and minWordNumber !=0 ">,${minWordNumber}</if>
+			<if test="fieldWidth != null and fieldWidth !=0 ">,${fieldWidth}</if>
+			<if test="fieldHeight != null and fieldHeight !=0 ">,${fieldHeight}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+		 <choose>
+		   <when test="databaseType!=null and databaseType == 'mysql'">
+		   		select LAST_INSERT_ID() generatedKey   
+		   	</when>
+		   	<when test="databaseType!=null and databaseType == 'oracle'">
+		   	    SELECT S_QUE_QUESTION.CURRVAL AS generatedKey FROM DUAL 
+		   	</when> 
+		   	<when test="databaseType!=null and databaseType == 'sqlserver'">
+		   	    SELECT IDENT_CURRENT('QUE_Question')  AS generatedKey 
+		   	</when>
+         </choose>
+         </selectKey> 
+	</insert>
+	
+	<!-- 更新问题 -->
+	<update id="update" parameterMap="question">
+			update QUE_Question
+		<set>
+			<trim prefixOverrides=",">
+				<if test="questionName !=null and questionName !='' ">,QuestionName=#{questionName}</if>
+				<if test="queID !=null and queID !=0 ">,QueID=${queID}</if>
+				<if test="orderId !=null and orderId !=0 ">,OrderId=${orderId}</if>
+				<if test="questionType !=null and questionType !=0 ">,QuestionType=${questionType}</if>
+				,QuestionNotes=#{questionNotes}
+				,RequiredFlag=${requiredFlag}
+				<if test="arrangeFlag !=null and arrangeFlag !=0 ">,ArrangeFlag =${arrangeFlag}</if>
+				<if test="isDisplayAsSelect !=null and isDisplayAsSelect !=0 ">,IsDisplayAsSelect=${isDisplayAsSelect}</if>
+				<if test="isRandOptions !=null and isRandOptions !=0 ">,IsRandOptions=${isRandOptions}</if>
+				,PerRowCol=${perRowCol}
+				,MaxWordNumber=${maxWordNumber}
+				,MinWordNumber=${minWordNumber}
+				,FieldWidth=${fieldWidth}
+				,FieldHeight=${fieldHeight}
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 排序 -->
+	<update id="updateOrderId" parameterMap="question">
+			update QUE_Question
+		<set>
+			<trim prefixOverrides=",">
+				<if test="questionName !=null and questionName !='' ">,QuestionName=#{questionName}</if>
+				<if test="queID !=null and queID !=0 ">,QueID=${queID}</if>
+				<if test="orderId !=null and orderId !=0 ">,OrderId=${orderId}</if>
+				<if test="questionType !=null and questionType !=0 ">,QuestionType=${questionType}</if>
+				,
+				<if test="databaseType!=null and databaseType == 'mysql'">
+					ModifyTime=now()
+				</if>
+				<if test="databaseType!=null and databaseType == 'oracle'">
+					ModifyTime=sysdate
+				</if>
+				<if test="databaseType!=null and databaseType == 'sqlserver'">
+					ModifyTime=getdate() 
+				</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+		
+	<!-- 根据问题ID查询问题 -->
+	<select id="selectByOne" resultMap="questionResult" parameterMap="question">
+		select * from QUE_Question where ID=${id}
+	</select>
+	
+	<!-- 根据问题ID与问题类型ID查询需要排序的记录 -->
+	<select id="selectNext" resultMap="questionResult" parameterMap="question">
+	<if test="databaseType!=null and databaseType == 'mysql'">
+		select  * from QUE_Question where OrderId>${orderId} and QueID=${queID} order by orderId LIMIT 1
+	</if>
+	<if test="databaseType!=null and databaseType == 'oracle'">
+		select * from (select * from QUE_Question order by OrderId) where OrderId>${orderId} and QueID=${queID} <![CDATA[and rownum<=1]]>
+	</if>
+	<if test="databaseType!=null and databaseType == 'sqlserver'">
+		select top 1 * from QUE_Question where OrderId>${orderId} and QueID=${queID} order by OrderId
+	</if>
+	</select>
+	
+	<select id="selectMaxOrderId" resultType="long" parameterMap="question">
+		select MAX(OrderId) from QUE_Question where QueID=${queID}
+	</select>
+	
+	<!-- 根据问题ID删除问题 -->
+	<select id="delete" parameterMap="question">
+		delete from QUE_Question where ID=${id}
+	</select>
+	
+    <!-- 调查问卷对应的问题数 -->
+	<select id="countQueQuestions" resultType="long" parameterMap="questionnaire">
+		select count(*) from QUE_Question 
+		<where>
+		     QueID=${id}
+		</where>
+	</select>
+	
+	 <!-- 统计问题回复数 -->
+	<select id="countQuestionResponseNum" resultType="long" parameterMap="question">
+		    select count(*) from QUE_Answer_${queID}  
+		<where>
+		<if test="databaseType!=null and databaseType == 'mysql'">
+		    OPTION_${id} &lt;&gt;'' and
+		</if>
+		    OPTION_${id} is not null
+		</where>
+	</select>
+	
+	 <!-- 查询填空或者选择题答案 -->
+	<select id="selectBlankResult" resultType="java.util.HashMap" parameterMap="question">
+	<!-- 	    select IpAddress,JoinTime,OverTime,OPTION_${id} BLANKANSWER from QUE_Answer_${queID},QUE_UserQueMapper uqm ,CC_Member member
+		    where member.ID=uqm.UserID -->
+		    select IpAddress,JoinTime,OverTime,MemberName,OPTION_${id} BLANKANSWER from 
+            QUE_Answer_${queID} answer,QUE_UserQueMapper uqm ,CC_Member member
+		    where member.ID=uqm.UserID and  uqm.UserID=answer.UserID and uqm.QueID=${queID}
+	</select>
+	 <!-- 查询用户答案信息 -->
+	<select id="selectUserResponseInfo" resultType="java.util.HashMap" parameterMap="questionnaire">
+		    select * from QUE_Answer_${id}  
+	   <where>
+		<if test="userID!=null">
+		    userID  = ${userID}
+		</if>
+		</where>
+	</select>
+</mapper>

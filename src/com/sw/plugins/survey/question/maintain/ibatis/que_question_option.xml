@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+问题选项表相关SQL操作
+
+ -->
+<mapper namespace="questionOption">
+
+	<parameterMap id="questionOption"
+		type="com.sw.plugins.survey.question.maintain.entity.QuestionOption" />
+	
+	<parameterMap id="question"
+		type="com.sw.plugins.survey.question.maintain.entity.Question" />	
+		
+	<!-- 调查问卷结果集 -->
+	<resultMap id="questionOptionResult"
+		type="com.sw.plugins.survey.question.maintain.entity.QuestionOption">
+		<id property="id" column="ID" />
+		<result property="questionID" column="QuestionID" />
+		<result property="queID" column="QueID" />
+		<result property="optionName" column="OptionName" />
+		<result property="optionID" column="OptionID" />
+	</resultMap>
+	
+	<!-- 根据问卷ID和问题ID获取问题的选项 -->
+	<select id="selectQuestionOptions" resultMap="questionOptionResult" parameterMap="question">
+		select * from QUE_Option 
+		<where>
+		     QueID=${queID} and QuestionID=${id} 
+		</where>
+		order by OptionID asc 
+	</select>
+	
+	<!-- 保存问题选项 -->
+	<insert id="insert" parameterMap="question">
+		insert into QUE_Option
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="databaseType!=null and databaseType == 'oracle'">
+				ID
+			</if>
+			<if test="queID != null and queID !=0 ">,QueID</if>
+			<if test="questionID != null and questionID !=0 ">,QuestionID</if>
+			<if test="optionName !=null and optionName !='' ">,OptionName</if>
+			<if test="optionID !=null and optionID !=0 ">,OptionID</if>
+			,CreateTime
+			,Creator
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="databaseType!=null and databaseType == 'oracle'">
+				S_QUE_OPTION.NEXTVAL
+			</if>
+			<if test="queID !=null and queID !=0">,${queID}</if>
+			<if test="questionID !=null and questionID !=0">,${questionID}</if>
+			<if test="optionName !=null and optionName !=''">,#{optionName}</if>
+			<if test="optionID !=null and optionID !=0 ">,${optionID}</if>
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				getdate() 
+			</if>
+			,${creator}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+		 <choose>
+		   <when test="databaseType!=null and databaseType == 'mysql'">
+		   		select LAST_INSERT_ID() generatedKey   
+		   	</when>
+		   	<when test="databaseType!=null and databaseType == 'oracle'">
+		   	    SELECT S_QUE_OPTION.CURRVAL AS generatedKey FROM DUAL 
+		   	</when>
+		   	<when test="databaseType!=null and databaseType == 'sqlserver'">
+		   	    SELECT IDENT_CURRENT('QUE_Option')  AS generatedKey 
+		   	</when>
+         </choose>
+         </selectKey> 
+	</insert>
+	
+	<!-- 保存问题选项 -->
+	<update id="update" parameterMap="questionOption">
+		update  QUE_Option
+	 <set>
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			QueID=${queID},
+			QuestionID=${questionID},
+			OptionName=#{optionName},
+			OptionID=${optionID}
+			,
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				ModifyTime=now() 
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				ModifyTime=sysdate
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				ModifyTime=getdate() 
+			</if>
+		</trim>
+	</set>	
+			<where>
+			<if test="id !=null and id!=0">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<delete id="deleteOptionByQuestion" parameterMap="question">
+		delete from QUE_Option where QueID = ${queID} and  QuestionID = ${id}
+	</delete>
+	
+	 <!-- 统计问题选项回复数 -->
+	<select id="countQuestionOptionResponseNum" resultType="long" parameterMap="questionOption">
+		    select count(*) from QUE_Answer_${queID}   
+		<where>
+		   FIND_IN_SET('${id}',OPTION_${questionID})
+		</where>
+	</select>
+	
+	
+	 <!--获取某一个题的所有答案数据(oracle/sqlserver数据库使用) -->
+	<select id="selectQuestionOptionResponse" resultType="java.util.HashMap" parameterMap="question">
+		    select OPTION_${id} optionAnswer from QUE_Answer_${queID}   
+	</select>
+
+</mapper>
