@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   ID                   bigint not null auto_increment comment '角色ID',
+   ParentID             bigint comment '父角色ID：存储上一级角色ID，例如　232353，544243，123412',
+   Relation             varchar(1000) comment '角色关系',
+   Name                 varchar(50) comment '角色名称',
+   Description          varchar(500) comment '角色说明',
+   Type                 int comment '角色类型',
+   Status               char(1) comment '角色状态：0：开启
+                                1：禁用',
+   CreateTime           datetime comment '创建时间',
+   ModifyTime           datetime comment '更新时间',
+   Creator              varchar(50) comment '创建者',
+-->
+<mapper namespace="role">
+	<!-- 角色映射对象 -->
+	<parameterMap id="role" type="com.sw.plugins.usercenter.system.role.entity.Role" />
+	<!-- 角色映射结果集 -->
+	<resultMap id="roleResult" type="com.sw.plugins.usercenter.system.role.entity.Role">
+		<result property="id" column="ID" />
+		<result property="relation" column="Relation" />
+		<result property="name" column="Name" />
+		<result property="type" column="Type" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="orgId" column="OrgId" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creator" column="Creator" />
+		<collection property="authorizations" ofType="java.util.List" resultMap="authResult" />
+		<collection property="organizations" ofType="java.util.List" resultMap="orgResult" />
+	</resultMap>
+
+	<!-- 仅限映射结果集 -->
+	<resultMap id="authResult" type="com.sw.core.data.entity.Authorization">
+		<result property="id" column="AuthID" />
+		<result property="code" column="AuthCode" />
+		<result property="parentCode" column="AuthParentCode" />
+		<result property="name" column="AuthName" />
+	</resultMap>
+
+	<!-- 机构映射结果集 -->
+	<resultMap id="orgResult" type="com.sw.plugins.usercenter.system.organization.entity.Organization">
+		<result property="id" column="OrgID" />
+		<result property="parentId" column="OrgParentId" />
+		<result property="name" column="OrgName" />
+	</resultMap>
+
+
+	<!-- 角色权限查询 -->
+	<select id="selectRoleAuth" resultMap="roleResult" parameterMap="role">
+		select role.* auth.Code as authCode,auth.ParentCode as authParentCode,auth.Name as authName
+		from UC_Role role,UC_RoleAuthMapper mapper,UC_Authorization auth
+		<where>
+			role.ID = mapper.RoleID and mapper.AuthCode = auth.Code
+			<if test="id!=null">
+				and role.ID=${id}
+			</if>
+			<if test="type!=null">
+				and role.Type=${type}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectAuth" resultMap="authResult" parameterMap="role">
+		select auth.Code as authCode,auth.ParentCode as authParentCode,auth.Name as authName
+		from UC_RoleAuthMapper mapper,UC_Authorization auth
+		<where>
+			mapper.AuthCode = auth.Code
+			<if test="id!=null">
+				and mapper.RoleID=${id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 角色机构查询 -->
+	<select id="selectRoleOrg" resultMap="roleResult" parameterMap="role">
+		select role.*,org.iD as orgId,org.ParentId as orgParentId,org.Name as orgName
+		from UC_Role role,UC_RoleOrgMapper mapper,UC_Organization org
+		<where>
+			role.ID = mapper.roleID and mapper.orgID = org.ID
+			<if test="id!=null">
+				and role.ID=${id}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectOrg" resultMap="orgResult" parameterMap="role">
+		select org.iD as orgId,org.ParentId as orgParentId,org.Name as orgName
+		from UC_RoleOrgMapper mapper,UC_Organization org
+		<where>
+			mapper.orgID = org.iD
+			<if test="id!=null">
+				and mapper.roleID=${id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 通用角色查询 -->
+	<select id="select" resultMap="roleResult" parameterMap="role">
+		select * from UC_Role
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+					and ID=${id}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 角色分页查询 -->
+	<select id="selectPaginated" resultMap="roleResult" parameterMap="role">
+		<if test="databaseType!=null and databaseType == 'mysql'">
+		 	select 
+		 		r.ID,r.ParentID,r.Name,r.Description ,org.name orgName 
+		 	from UC_Role r LEFT JOIN uc_organization org  ON org.ID=r.OrgId 
+		 	where r.Type!=0 limit ${start},${offset}
+		</if>
+		<if test="databaseType!=null and databaseType == 'oracle'">
+			select a.* from (	
+			select t.*,ROWNUM rn from (
+				select ur.* from UC_Role ur	order by ur.ID desc
+			) t
+			<where>
+			      <if test="offset!=null and offset!=''">
+			         <![CDATA[ROWNUM<=${offset}]]>
+			       </if>  
+		    </where>
+		) a
+		<where>
+	      <if test="start!=null and start!=''">
+	         <![CDATA[rn>=${start}]]>
+	       </if>       
+	    </where>	
+		</if>
+		<if test="databaseType!=null and databaseType == 'sqlserver'">
+			select a.* from (
+				select row_number() over(order by ID DESC) as rowNum, *
+				from UC_Role 
+			) 
+			a
+			where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+		</if>
+	</select>
+
+	<!-- 角色统计查询 -->
+	<select id="count" resultType="long" parameterMap="role">
+		select count(ID) from UC_Role
+		<where>
+			<trim prefixOverrides="and">
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 角色新增 -->
+	<insert id="insert" parameterMap="role">
+		insert into UC_Role
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="parentId!=null and parentId != ''">,ParentID</if>
+			<if test="relation!=null and relation != ''">,Relation</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="type!=null">,Type</if>
+			<if test="description!=null and description!=''">,Description</if>
+			<if test="status!=null and status!=''">,Status</if>
+			,CreateTime
+			<if test="creator!=null">,Creator</if>
+			<if test="orgId!=null">,OrgId</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="parentId!=null and parentId != ''">,#{parentId}</if>
+			<if test="relation!=null and relation != ''">,#{relation}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="type!=null">,#{type}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			<if test="status!=null and status!=''">,#{status}</if>
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				,now()
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				,SYSDATE
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				,getdate()
+			</if>
+			<if test="creator!=null">,#{creator}</if>
+			<if test="orgId!=null">,${orgId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			<if test="databaseType!=null and databaseType == 'mysql'">
+				select LAST_INSERT_ID() as generatedKey   
+			</if>
+			<if test="databaseType!=null and databaseType == 'oracle'">
+				SELECT S_UC_ROLE.CURRVAL AS VALUE FROM DUAL  
+			</if>
+			<if test="databaseType!=null and databaseType == 'sqlserver'">
+				SELECT IDENT_CURRENT('UC_Role')
+			</if> 
+		</selectKey>
+	</insert>
+
+	<!-- 角色更新 -->
+	<update id="update" parameterMap="role">
+		update UC_Role
+		<set>
+			<trim prefixOverrides=",">
+				<if test="relation!=null and relation != ''">,Relation=#{relation}</if>
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="description!=null">,Description=#{description}</if>
+				<if test="status!=null and status!=''">,Status=#{status}</if>
+				<if test="creator!=null">,Creator=#{creator}</if>
+				<if test="modifyTime!=null">,ModifyTime=#{modifyTime}</if>
+				<if test="orgId!=null">,OrgId = ${orgId}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+
+	<!-- 删除角色 -->
+	<delete id="delete" parameterMap="role">
+		delete from UC_Role where ID = ${id} 
+	</delete>
+
+</mapper>

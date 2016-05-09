@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   RoleID               bigint not null comment '角色ID',
+   OrgID                bigint not null comment '机构ID',
+-->
+<mapper namespace="roleOrgMapper">
+	<parameterMap id="roleOrgMapper"
+		type="com.sw.plugins.usercenter.system.role.entity.RoleOrgMapper" />
+
+	<!-- 新增角色机构关系 -->
+	<insert id="insert" parameterMap="roleOrgMapper">
+		insert into UC_RoleOrgMapper
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,RoleID</if>
+			<if test="orgId!=null">,OrgID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,${roleId}</if>
+			<if test="orgId!=null">,${orgId}</if>
+		</trim>
+	</insert>
+
+	<!-- 角色机构关系统计 -->
+	<select id="count" resultType="long" parameterMap="roleOrgMapper">
+		select count(*) from UC_RoleOrgMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="roleId != null and roleId != -1">and RoleID = ${roleId}</if>
+				<if test="orgId != null and orgId != -1">and OrgID = ${orgId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除角色机构关系 -->
+	<delete id="delete" parameterMap="roleOrgMapper">
+		delete from UC_RoleOrgMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="roleId != null and roleId != 0">
+					and  UC_RoleOrgMapper.RoleID = ${roleId}
+				</if>
+				<if test="orgId != null and orgId != 0">
+					and  UC_RoleOrgMapper.OrgID = ${orgId}
+				</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>

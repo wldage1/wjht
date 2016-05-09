@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   RoleID               bigint not null comment '角色ID',
+   AuthCode             varchar(100) not null comment '系统权限代码，编码为数字，具有一定的规律。格式如下：1，11，111，112，12，121，122，13，131，132……',
+-->
+<mapper namespace="roleAuthMapper">
+	<parameterMap id="roleAuthMapper"
+		type="com.sw.plugins.usercenter.system.role.entity.RoleAuthMapper" />
+
+	<!-- 新建角色关系 -->
+	<insert id="insert" parameterMap="roleAuthMapper">
+		insert into UC_RoleAuthMapper
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,RoleID</if>
+			<if test="authCode!=null and authCode != ''">,AuthCode</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,${roleId}</if>
+			<if test="authCode!=null and authCode != ''">,#{authCode}</if>
+		</trim>
+	</insert>
+
+	<!-- 角色权限关系统计 -->
+	<select id="count" resultType="long" parameterMap="roleAuthMapper">
+		select count(*) from UC_RoleAuthMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="authCode != null and authCode != ''">and AuthCode = #{roleCode}</if>
+				<if test="roleId != null and roleId != -1">and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除角色权限关系 -->
+	<delete id="delete" parameterMap="roleAuthMapper">
+		delete from UC_RoleAuthMapper
+		<where>
+			<trim prefixOverrides="and">
+				<if test="roleId != null"> and RoleID = ${roleId}</if>
+				<if test="authCode != null and authCode != ''"> and AuthCode = #{authCode}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>
