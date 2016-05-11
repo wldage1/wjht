@@ -28,7 +28,7 @@
 					<input type="hidden" name="id" value="${client.id}" />
 					<input type="hidden" name="action" value="sendcard"/>
 					<input type="hidden" name="cardStatus" value="1" />
-					<input type="hidden" name="prompt" value="name" />
+					<input type="hidden" name="prompt" value="${client.name}" />
 					<table width="100%" border="0" cellspacing="0" cellpadding="0" class="skinLayout">
 						<tr>
 							<td width="15%" align="right" class="skinLayout_info"><msg:message code="client.cardNum"/><msg:message code="system.common.sign.colon"/></td>
