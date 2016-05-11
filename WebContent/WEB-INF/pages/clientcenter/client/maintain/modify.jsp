@@ -112,7 +112,7 @@ var setting = {
 					<input type="hidden" name="c" value="${client.c}"/>
 					<input type="hidden" name="id" value="${client.id}"/>
 					<input type="hidden" name="prompt" value="name" />
-					<input type="hidden" name="action" value="create"/>
+					<input type="hidden" name="action" value="modify"/>
 					<table width="100%" border="0" cellspacing="0" cellpadding="0" class="skinLayout">
 						<td width="15%" align="right" class="skinLayout_info"><msg:message code="organization.parent"/><msg:message code="system.common.sign.colon"/></td>
 						<td width="85%" class="skinLayout_lable">
