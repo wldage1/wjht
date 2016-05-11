@@ -166,9 +166,16 @@ public class ClientController extends BaseController {
 				c.setPhone(client.getPhone());
 				try {
 					Long count = clientService.getRecordCount(c);
-					if(count >= 1){
-						resultErrorFlag = true;
-						result.rejectValue("phone", "already.client.mobilePhone");
+					if(action.equals("create")){
+						if(count >= 1){
+							resultErrorFlag = true;
+							result.rejectValue("phone", "already.client.mobilePhone");
+						}
+					}else if(action.equals("modify")){
+						if(count > 1){
+							resultErrorFlag = true;
+							result.rejectValue("phone", "already.client.mobilePhone");
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -231,9 +238,10 @@ public class ClientController extends BaseController {
 				}
 			} else {
 				clientService.update(client);
-				if(action.equals("sendcard") && CommonUtil.isNotEmpty(client.getPhone())){
+				Client c = clientService.getOneById(client);
+				if(action.equals("sendcard") && CommonUtil.isNotEmpty(c.getPhone())){
 					//尊敬的用户{1}，您的消费卡授信额度为300000元，卡片7日内将会寄出，请您注意查收并激活，感谢你对本公司的大力支持。
-					SMSRest.sendSms("22040", client.getPhone(), client.getName());
+					SMSRest.sendSms("22040", c.getPhone(), c.getName());
 				}
 			}
 			viewName = this.SUCCESS;
@@ -390,12 +398,13 @@ public class ClientController extends BaseController {
 		try {
 			if (client != null && client.getId() != null) {
 				clientService.update(client);
-				if(CommonUtil.isNotEmpty(client.getCardNum()) && CommonUtil.isNotEmpty(client.getPhone())){
+				Client c = clientService.getOneById(client);
+				if(CommonUtil.isNotEmpty(c.getCardNum()) && CommonUtil.isNotEmpty(c.getPhone())){
 					//尊敬的用户{1}，您的卡号位数为{2}的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后可用马上购物。
 					//尊敬的用户{1}您可以马上购物。
-					String cardNum = client.getCardNum().substring(client.getCardNum().length()-4);
-					String content = client.getName() + "，您的卡号位数为"+ cardNum +"的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后";
-					SMSRest.sendSms("22041", client.getPhone(), content);
+					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
+					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后";
+					SMSRest.sendSms("22041", c.getPhone(), content);
 				}
 				viewName = this.SUCCESS;
 			}
@@ -417,8 +426,14 @@ public class ClientController extends BaseController {
 	@RequestMapping("/clientcenter/client/maintain/sendcard")
 	public CommonModelAndView sendcard(Client client, HttpServletRequest request) {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(request, client);
-		if(CommonUtil.isEmpty(client.getCardType())){
-			client.setCardType("0");
+		try {
+			Client c = clientService.getOneById(client);
+			client.setName(c.getName());
+			if(CommonUtil.isEmpty(client.getCardType())){
+				client.setCardType("0");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		commonModelAndView.addObject("client", client);
 		return commonModelAndView;
