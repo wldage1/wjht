@@ -146,8 +146,11 @@ public class SMSRest {
 	}
 	
 	public static void sendSms(String templateId, String to, String content){
-		//content="王磊您的卡号位数为8888的消费卡购买产品（衣服价值298元，余额1998元）";
-		testTemplateSMS(true, Constant.ACCOUNT_SID, Constant.AUTH_TOKEN, Constant.APPID, templateId, to, content);
+		//是否开启短信发送功能
+		String isOpen = SysConfig.getInstance().getProperty("is_open");
+		if(isOpen.equals("1")){
+			testTemplateSMS(true, Constant.ACCOUNT_SID, Constant.AUTH_TOKEN, Constant.APPID, templateId, to, content);
+		}
 	}
 	
 	/**
