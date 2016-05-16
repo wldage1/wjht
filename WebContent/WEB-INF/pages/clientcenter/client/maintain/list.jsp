@@ -256,11 +256,15 @@ $(document).ready(function(){
     	    $(".shortcut_${maintain_refuse.index}").click(function(){
     	     	var rowid = $(this).attr("id");
     	    	var data = jQuery("#clientList").jqGrid("getRowData",rowid);
-    	    	var msg = '您确定拒绝 ( '+data.mame+' : '+data.cardNum+' ) 这张卡吗？';
-    	    	var url = "${base}${maintain_refuse.controller}.json?c=${maintain_refuse.code}&id="+rowid+"&cardStatus=3";
+    	    	var msg = '';
+    	    	var url = "";
     	    	if(data.permit != '2'){
     	    		msg = '您确定拒绝此用户吗？';
     	    		url = "${base}${maintain_refuse.controller}.json?c=${maintain_refuse.code}&id="+rowid+"&permit=2";
+    	    	}
+    	    	if(data.cardStatus == '已激活'){
+    	    		msg = '您确定拒绝 ( '+data.mame+' : '+data.cardNum+' ) 这张卡吗？'
+    	    		url = "${base}${maintain_refuse.controller}.json?c=${maintain_refuse.code}&id="+rowid+"&cardStatus=3";
     	    	}
     			window.parent.Boxy.confirm(msg,  function(){
     				$.ajax({
