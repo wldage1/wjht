@@ -1,6 +1,5 @@
 package com.sw.plugins.clientcenter.client.maintain.controller;
 
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +10,10 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.opensymphony.oscache.base.Cache;
 import com.sw.core.common.Constant;
 import com.sw.core.controller.BaseController;
 import com.sw.core.controller.CommonModelAndView;
@@ -33,7 +29,6 @@ import com.sw.plugins.usercenter.config.dynamic.entity.Dictionary;
 import com.sw.plugins.usercenter.config.dynamic.service.DictionaryService;
 import com.sw.plugins.usercenter.system.organization.entity.Organization;
 import com.sw.plugins.usercenter.system.organization.service.OrganiztionService;
-import com.sw.plugins.usercenter.system.role.entity.Role;
 import com.sw.plugins.usercenter.system.user.entity.User;
 import com.sw.plugins.usercenter.system.user.service.UserService;
 
@@ -239,6 +234,7 @@ public class ClientController extends BaseController {
 			} else {
 				clientService.update(client);
 				Client c = clientService.getOneById(client);
+				client.setName(c.getName());
 				if(action.equals("sendcard") && CommonUtil.isNotEmpty(c.getPhone())){
 					//尊敬的用户{1}，您的消费卡授信额度为300000元，卡片7日内将会寄出，请您注意查收并激活，感谢你对本公司的大力支持。
 					SMSRest.sendSms("22040", c.getPhone(), c.getName());
@@ -375,6 +371,15 @@ public class ClientController extends BaseController {
 		try {
 			if (client != null && client.getId() != null) {
 				clientService.update(client);
+				
+				Client c = clientService.getOneById(client);
+				if(CommonUtil.isNotEmpty(c.getCardNum()) && CommonUtil.isNotEmpty(c.getPhone())){
+					//尊敬的用户{1}，如有问题请与我公司联系。
+					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
+					String content = c.getName() + "，您的卡尾号为"+ cardNum +"的消费卡已被我公司冻结";
+					SMSRest.sendSms("23985", c.getPhone(), content);
+				}
+				
 				viewName = this.SUCCESS;
 			}
 		} catch (Exception e) {
