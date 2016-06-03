@@ -44,8 +44,8 @@
 			<if test="phone != null and phone != ''">
 				and c.Phone = #{phone}
 			</if>
-			<if test="bankNum != null and bankNum != ''">
-				and c.BankNum = #{bankNum}
+			<if test="cardNum != null and cardNum != ''">
+				and c.cardNum like '%${cardNum}' 
 			</if>
 			<if test="permit != null and permit != ''">
 				and c.Permit = ${permit}
