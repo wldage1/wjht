@@ -153,6 +153,8 @@ public class SMSRest {
 		}
 	}
 	
+	
+	
 	/**
 	 * 测试说明 参数顺序，请参照各具体方法参数名称
 	 * 参数名称含义，请参考rest api 文档
@@ -163,9 +165,22 @@ public class SMSRest {
 	 * @throws IOException 
 	 * @method main
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
+		//微金汇通	25083	错误提醒	 普通模板	
+		//微金汇通	23985	卡拒绝	 普通模板	
+		//微金汇通	22041	卡激活	 普通模板	
+		//微金汇通	22042	消费通知	 普通模板	//尊敬的用户{1}已得到商城确认，商品会在7-10个工作日寄出;"您的卡号位数为"+ cardNum +"的消费卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"元，余额"+ money +"元）";
+		//微金汇通	22040	发卡提醒	 普通模板	
+		//微金汇通	22039	申请购物卡	 普通模板	
+		//尊敬的用户{1}，给您带来的困扰请谅解。“尊敬的用户xx,您的额度公司已经处理，目前已经解决，您现在的额度是297320,给您带来的困扰请谅解”
+		//String content = "王磊，您的额度我公司已经处理，目前已经解决，您现在的额度是300000";
+		String content = "卞论，您的卡号位数为"+ 2421 +"的消费卡购买产品（"+ "HTC VR" +"价值"+6680+"元）";
+		SMSRest.sendSms("22042", "18502412421", content);
+		//SMSRest.sendSms("25083", "18240148334", content);
+	}
+	
+	/*public static void main(String[] args) throws IOException {
 		sendSms("22042", "18240148334", null);
-		
 		
 		String accountSid="181f13d0347c655770d80c4861f2f882";
 		String token="f0d73a98ed0163ce5b225c042cc97b8e";
@@ -239,5 +254,5 @@ public class SMSRest {
 			String display="1";
 			testDispalyNumber(json, accountSid, token, appId, clientNumber, display);
 		}
-	}
+	}*/
 }
