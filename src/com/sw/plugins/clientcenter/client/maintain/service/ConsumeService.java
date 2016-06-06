@@ -75,7 +75,12 @@ public class ConsumeService extends CommonService<Consume> {
 
 	@Override
 	public Consume getOneById(Consume entity) throws Exception {
-		// TODO Auto-generated method stub
+		if (entity == null || entity.getId() == null)
+			return null;
+		Object obj = getCommonDao().selectObject("consume.selectOne", entity);
+		if (obj instanceof Consume){
+			return (Consume)obj;
+		}
 		return null;
 	}
 

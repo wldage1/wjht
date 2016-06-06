@@ -69,6 +69,14 @@
 		</selectKey>
 	</insert>
 	
+	<select id="selectOne" resultMap="consumeResult" parameterMap="consume">
+		SELECT *
+		FROM cc_consume
+		<where> 
+			Id = ${id}
+		</where>
+	</select>
+	
 	<select id="selectMoneySum" resultMap="consumeResult" parameterMap="consume">
 		select SUM(money) as total ,clientId from cc_consume 
 		<where> 

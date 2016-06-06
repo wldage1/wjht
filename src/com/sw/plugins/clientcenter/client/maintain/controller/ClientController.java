@@ -534,6 +534,18 @@ public class ClientController extends BaseController {
 		try {
 			if (consume != null && consume.getId() != null) {
 				consumeService.delete(consume);
+				Consume cu = consumeService.getOneById(consume);
+				if(cu != null){
+					Client client = new Client();
+					client.setId(Long.parseLong(cu.getClientId()));
+					client = clientService.getOneById(client);
+					int money = Integer.parseInt(consume.getMoney()) + Integer.parseInt(client.getCredit());
+					Client c = new Client();
+					c.setId(client.getId());
+					c.setCredit(String.valueOf(money));
+					clientService.update(c);
+				}
+				
 			}
 			viewName = this.SUCCESS;
 		} catch (Exception e) {
