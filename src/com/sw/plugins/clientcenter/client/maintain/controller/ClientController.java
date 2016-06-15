@@ -298,6 +298,7 @@ public class ClientController extends BaseController {
 	 */
 	@RequestMapping("/clientcenter/client/maintain/modify")
 	public CommonModelAndView modify(Client client, HttpServletRequest request, Map<String, Object> model) {
+		String uid = client.getCreator();
 		String code = client.getC();
 		if (client.getId() != null) {
 			try {
@@ -322,7 +323,8 @@ public class ClientController extends BaseController {
 			commonModelAndView.addObject("userList", userList);
 			
 			User u = new User();
-			u.setId(Long.valueOf(client.getCreator()));
+			//u.setId(Long.valueOf(client.getCreator()));
+			u.setId(Long.valueOf(uid));
 			User user = userService.getRoleByUid(u);
 			if(user != null && user.getRoleName().contains("代理")){
 				commonModelAndView.addObject("roleInfo", "1");
