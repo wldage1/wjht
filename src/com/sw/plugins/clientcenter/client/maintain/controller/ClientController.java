@@ -410,8 +410,8 @@ public class ClientController extends BaseController {
 					//尊敬的用户{1}，您的卡号位数为{2}的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后可用马上购物。
 					//尊敬的用户{1}您可以马上购物。
 					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
-					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后";
-					SMSRest.sendSms("22041", c.getPhone(), content);
+					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的逸贷款现已激活，可用额度为30万，使用此卡可以申请无抵押贷款，商城购物，购车，网贷等业务，请您正常使用此卡（杜绝套现）";
+					SMSRest.sendSms("22063", c.getPhone(), content);
 				}
 				viewName = this.SUCCESS;
 			}
@@ -530,6 +530,12 @@ public class ClientController extends BaseController {
 		return new CommonModelAndView("jsonView", map, consume, request);
 	}
 
+	/**
+	 * 删除
+	 * @param consume
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("/clientcenter/client/maintain/delete_consume")
 	public CommonModelAndView del(Consume consume, HttpServletRequest request) {
 		String viewName = null;
@@ -558,6 +564,12 @@ public class ClientController extends BaseController {
 		return commonModelAndView;
 	}
 	
+	/**
+	 * 增加页面跳转
+	 * @param consume
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("/clientcenter/client/maintain/carete_consume")
 	public CommonModelAndView add(Consume consume, HttpServletRequest request) {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(request, consume);
@@ -629,6 +641,98 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, consume, messageSource);
 		return commonModelAndView;
 	}
+	
+
+	/**
+	 * 贷款短信提醒
+	 * @author wang.l
+	 * @date 2016年8月20日
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping("/clientcenter/client/maintain/sendsms")
+	public CommonModelAndView sendSms(Client client, HttpServletRequest request) {
+		CommonModelAndView commonModelAndView = new CommonModelAndView(request, client);
+		try {
+			String code = client.getC();
+			Client c = clientService.getOneById(client);
+			c.setC(code);
+			commonModelAndView.addObject("client", c);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return commonModelAndView;
+	}
+	
+	/**
+	 * 贷款短信提醒
+	 * @author wang.l
+	 * @date 2016年8月20日
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping("/clientcenter/client/maintain/dosendsms")
+	public CommonModelAndView doSendSMS(Client client, HttpServletRequest request) {
+		String viewName = null;
+		Client c = new Client();
+		String code = client.getC();
+		try {
+			c = clientService.getOneById(client);
+			String content = c.getName()+"，"+ client.getSms();
+			SMSRest.sendSms("28137", c.getPhone(), content);
+			viewName = this.SUCCESS;
+		} catch (Exception e) {
+			viewName = this.ERROR;
+			logger.error(e.getMessage());
+		}
+		c.setC(code);
+		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, c, messageSource);
+		return commonModelAndView;
+	}
+	
+	/**
+	 * 催款提醒
+	 * @author wang.l
+	 * @date 2016年8月20日
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping("/clientcenter/client/maintain/sendcksms")
+	public CommonModelAndView sendckSms(Client client, HttpServletRequest request) {
+		CommonModelAndView commonModelAndView = new CommonModelAndView(request, client);
+		try {
+			String code = client.getC();
+			Client c = clientService.getOneById(client);
+			c.setC(code);
+			commonModelAndView.addObject("client", c);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return commonModelAndView;
+	}
+	
+	/**
+	 * 催款提醒提醒
+	 * @author wang.l
+	 * @date 2016年8月20日
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping("/clientcenter/client/maintain/dosendcksms")
+	public CommonModelAndView doSendCKSMS(Client client, HttpServletRequest request) {
+		String viewName = null;
+		Client c = new Client();
+		String code = client.getC();
+		try {
+			c = clientService.getOneById(client);
+			String content = c.getName()+"您好，"+ client.getSms();
+			SMSRest.sendSms("28343", c.getPhone(), content);
+			viewName = this.SUCCESS;
+		} catch (Exception e) {
+			viewName = this.ERROR;
+			logger.error(e.getMessage());
+		}
+		c.setC(code);
+		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, c, messageSource);
+		return commonModelAndView;
+	}
+	
 	
 	/**
 	 * 获取下拉列表树信息

@@ -24,9 +24,9 @@ $(document).ready(function(){
                    "<msg:message code='client.userName'/>",
                    "<msg:message code='client.createTime'/>",
                    "<msg:message code='client.operate'/>"],
-        colModel: [{name: 'mame',index:'mame',width:'8%',align:'center',hidden: false,sortable:false},
-				   {name: 'phone',index:'phone',width:'10%',align:'center',hidden: false,sortable:false},
-                   {name: 'permit',index:'permit',width:'6%',align:'center',hidden: false,sortable:false,
+        colModel: [{name: 'mame',index:'mame',width:'7%',align:'center',hidden: false,sortable:false},
+				   {name: 'phone',index:'phone',width:'8%',align:'center',hidden: false,sortable:false},
+                   {name: 'permit',index:'permit',width:'4%',align:'center',hidden: false,sortable:false,
 					   formatter: function(cellvalue, options, rowObject){
 	   	            	  	var value = "";
 		   	            	if(cellvalue == '1'){
@@ -39,8 +39,8 @@ $(document).ready(function(){
 	               			return value;
 	         	 	 	}	
 				   },
-                   {name: 'cardNum',index:'cardNum',width:'16%',align:'center',hidden: false,sortable:false},
-                   {name: 'cardStatus',index:'cardStatus',width:'7%',align:'center',hidden: false,sortable:false,
+                   {name: 'cardNum',index:'cardNum',width:'11%',align:'center',hidden: false,sortable:false},
+                   {name: 'cardStatus',index:'cardStatus',width:'6%',align:'center',hidden: false,sortable:false,
                 	   formatter: function(cellvalue, options, rowObject){
    	            	  	var value = "";
    	            		if(cellvalue == '0'){
@@ -55,7 +55,7 @@ $(document).ready(function(){
                			return value;
          	 	 	  }	
                    },
-                   {name: 'cardType',index:'cardType',width:'8%',align:'center',hidden: false,sortable:false,
+                   {name: 'cardType',index:'cardType',width:'6%',align:'center',hidden: false,sortable:false,
                 	   formatter: function(cellvalue, options, rowObject){
       	            	  	var value = "";
       	            		 if(cellvalue == '1'){
@@ -69,9 +69,9 @@ $(document).ready(function(){
             	   		}	   
                    },
                    {name: 'credit',index:'credit',width:'8%',align:'center',hidden: false,sortable:false},
-                   {name: 'userName',index:'userName',width:'5%',align:'center',hidden: false,sortable:false},
+                   {name: 'userName',index:'userName',width:'6%',align:'center',hidden: false,sortable:false},
                    {name: 'crateTime',index:'crateTime',width:'11%',align:'center',hidden: false,sortable:false},
-                   {name:'operate',index:'operate', width:'26%',align:'left',sortable:false}],
+                   {name:'operate',index:'operate', width:'35%',align:'left',sortable:false}],
         mtype:"POST",
         postData:{c:"${client.c}",name:"${client.name}",phone:"${client.phone}",cardNum:"${client.cardNum}",permit:"${client.permit}",cardStatus:"${client.cardStatus}",userId:"${client.userId}",startTime:"${client.startTime}",endTime:"${client.endTime}",areaId:$('#areaId').val()},
         rowNum:10,    
@@ -131,6 +131,20 @@ $(document).ready(function(){
     	    		    <security:authorize ifAnyGranted="${maintain_refuse.code}">	
     	    			content += "<a href='javascript:void(0);' id='" + id + "' class='shortcut_${maintain_refuse.index}' title='${maintain_refuse.name}' >";
     	    			content += "<img src='${base}/${common}/${style}/images/icon/outage.png' weight='18' height='18' border='0' align='absmiddle'/>${maintain_refuse.name}";
+    	    			content += "</a>";
+    	    		    </security:authorize>
+    	    		    </c:if>
+    	    		    <c:if test="${!empty maintain_sendsms}">
+    	    		    <security:authorize ifAnyGranted="${maintain_sendsms.code}">	
+    	    			content += "<a href='javascript:void(0);' id='" + id + "' class='shortcut_${maintain_sendsms.index}' title='${maintain_sendsms.name}' >";
+    	    			content += "<img src='${base}/${common}/${style}/images/icon/Binding-role.png' weight='18' height='18' border='0' align='absmiddle'/>${maintain_sendsms.name}";
+    	    			content += "</a>";
+    	    		    </security:authorize>
+    	    		    </c:if>
+    	    		    <c:if test="${!empty maintain_sendcksms}">
+    	    		    <security:authorize ifAnyGranted="${maintain_sendcksms.code}">	
+    	    			content += "<a href='javascript:void(0);' id='" + id + "' class='shortcut_${maintain_sendcksms.index}' title='${maintain_sendcksms.name}' >";
+    	    			content += "<img src='${base}/${common}/${style}/images/icon/Binding-role.png' weight='18' height='18' border='0' align='absmiddle'/>${maintain_sendcksms.name}";
     	    			content += "</a>";
     	    		    </security:authorize>
     	    		    </c:if>
@@ -287,6 +301,16 @@ $(document).ready(function(){
     	    	var rowid = $(this).attr("id");
     	    	var data = jQuery("#clientList").jqGrid("getRowData",rowid);
     	    	window.location.href = "${base}${maintain_consume.controller}?c=${maintain_consume.code}&clientId="+rowid;
+    	    });
+    	    //短信提醒
+    	    $(".shortcut_${maintain_sendsms.index}").click(function(){
+    	    	var rowid = $(this).attr("id");
+    	    	window.location.href = "${base}${maintain_sendsms.controller}?c=${maintain_sendsms.code}&id="+rowid;
+    	    });
+    	    //催款提醒
+    	    $(".shortcut_${maintain_sendcksms.index}").click(function(){
+    	    	var rowid = $(this).attr("id");
+    	    	window.location.href = "${base}${maintain_sendcksms.controller}?c=${maintain_sendcksms.code}&id="+rowid;
     	    });
     	    $(".shortcut_${maintain_detail.index}").click(function(){
     	    	var rowid = $(this).attr("id");

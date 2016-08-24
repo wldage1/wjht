@@ -27,6 +27,7 @@ public class Client extends BaseEntity {
 	private String orgName;
 	private String roleInfo;
 	private String cardType;
+	private String sms;
 	
 	public String getAreaId() {
 		return areaId;
@@ -162,5 +163,11 @@ public class Client extends BaseEntity {
 	}
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
+	}
+	public String getSms() {
+		return sms;
+	}
+	public void setSms(String sms) {
+		this.sms = sms;
 	}
 }

@@ -69,6 +69,8 @@
 				<activation index="maintain_activation" code="1030107" isLog="true" name="卡激活" level="4" controller="/clientcenter/client/maintain/activation"/>
 				<sendCard index="maintain_sendcard" code="1030108" name="发卡" level="4" controller="/clientcenter/client/maintain/sendcard"/>
 				<detail index="maintain_detail" code="1030109" name="详细" level="4" controller="/clientcenter/client/maintain/detail"/>
+				<sendSms index="maintain_sendsms" code="1030110" isLog="true" isNav="true" name="贷款通知" level="4" controller="/clientcenter/client/maintain/sendsms"/>
+				<sendSms index="maintain_sendcksms" code="1030111" isLog="true" isNav="true" name="催款通知" level="4" controller="/clientcenter/client/maintain/sendcksms"/>
 				<add index="consume_create" code="103010401" isLog="true" isNav="true" name="创建" level="5" controller="/clientcenter/client/maintain/carete_consume"/>
 				<del index="consume_delete" code="103010402" isLog="true" name="删除" level="5" controller="/clientcenter/client/maintain/delete_consume"/>
 			
