@@ -34,7 +34,7 @@ import com.sw.plugins.usercenter.system.user.service.UserService;
 
 /**
  * 类简要说明
- * 
+ *
  */
 @Controller
 public class ClientController extends BaseController {
@@ -51,10 +51,10 @@ public class ClientController extends BaseController {
     private OrganiztionService organiztionService;
 	@Resource
 	private ConsumeService consumeService;
-	
+
 	/**
 	 * 跳转到列表页
-	 * 
+	 *
 	 * @param client
 	 * @param request
 	 * @return
@@ -86,7 +86,7 @@ public class ClientController extends BaseController {
 
 	/**
 	 * 列表json
-	 * 
+	 *
 	 * @param client
 	 * @param request
 	 * @return
@@ -98,9 +98,10 @@ public class ClientController extends BaseController {
 		return new CommonModelAndView("jsonView", map, client, request);
 	}
 
+	@SuppressWarnings({ "unused", "rawtypes" })
 	@RequestMapping("/clientcenter/client/maintain/orgMap")
 	public Map orgMap(Client client, HttpServletRequest request) {
-		String viewName = null;		
+		String viewName = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			Organization org = new Organization();
@@ -126,7 +127,7 @@ public class ClientController extends BaseController {
 
 	/**
 	 * 保存修改方法
-	 * 
+	 *
 	 * @param member
 	 * @param result
 	 * @param model
@@ -193,7 +194,7 @@ public class ClientController extends BaseController {
 				result.rejectValue("bankNum", "NotEmpty.client.bankNum");
 			}
 		}
-		
+
 		try {
 			Client tempClient = new Client();
 			// 判断是新增还是修改
@@ -213,7 +214,7 @@ public class ClientController extends BaseController {
 					commonModelAndView.addObject("genderList", genderList);
 					List<User> userList = userService.selectUserList(null);
 					commonModelAndView.addObject("userList", userList);
-						
+
 					model.put("client", client);
 					return commonModelAndView;
 				} catch (Exception e) {
@@ -228,7 +229,7 @@ public class ClientController extends BaseController {
 			if (client.getId() == null) {
 				clientService.save(client);
 				if(CommonUtil.isNotEmpty(client.getPhone()) && CommonUtil.isNotEmpty(client.getName())){
-					//尊敬的用户{1}，您在我公司申请的购物卡，我公司已受理，客服会在24小时内与您联系。
+					//尊敬的用户{1}，您在我公司申请的逸贷卡，我公司已受理，客服会在24小时内与您联系。
 					SMSRest.sendSms("22039", client.getPhone(), client.getName());
 				}
 			} else {
@@ -252,7 +253,7 @@ public class ClientController extends BaseController {
 
 	/**
 	 * 跳转到创建页面
-	 * 
+	 *
 	 * @param member
 	 * @param request
 	 * @return
@@ -272,7 +273,7 @@ public class ClientController extends BaseController {
 			commonModelAndView.addObject("genderList", genderList);
 			List<User> userList = userService.selectUserList(null);
 			commonModelAndView.addObject("userList", userList);
-			
+
 			User u = new User();
 			u.setId(Long.valueOf(client.getCreator()));
 			User user = userService.getRoleByUid(u);
@@ -290,7 +291,7 @@ public class ClientController extends BaseController {
 
 	/**
 	 * 跳转到修改页面
-	 * 
+	 *
 	 * @param member
 	 * @param request
 	 * @return
@@ -321,7 +322,7 @@ public class ClientController extends BaseController {
 			commonModelAndView.addObject("genderList", genderList);
 			List<User> userList = userService.selectUserList(null);
 			commonModelAndView.addObject("userList", userList);
-			
+
 			User u = new User();
 			//u.setId(Long.valueOf(client.getCreator()));
 			u.setId(Long.valueOf(uid));
@@ -360,7 +361,7 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, client, messageSource);
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 卡拒绝
 	 * @author wang.l
@@ -373,15 +374,15 @@ public class ClientController extends BaseController {
 		try {
 			if (client != null && client.getId() != null) {
 				clientService.update(client);
-				
+
 				Client c = clientService.getOneById(client);
 				if(CommonUtil.isNotEmpty(c.getCardNum()) && CommonUtil.isNotEmpty(c.getPhone())){
 					//尊敬的用户{1}，如有问题请与我公司联系。
 					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
-					String content = c.getName() + "，您的卡尾号为"+ cardNum +"的消费卡已被我公司冻结";
+					String content = c.getName() + "，您的卡尾号为"+ cardNum +"的逸贷卡已被我公司冻结";
 					SMSRest.sendSms("23985", c.getPhone(), content);
 				}
-				
+
 				viewName = this.SUCCESS;
 			}
 		} catch (Exception e) {
@@ -391,8 +392,8 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, client, messageSource);
 		return commonModelAndView;
 	}
-	
-	
+
+
 	/**
 	 * 卡激活
 	 * @author wang.l
@@ -422,8 +423,8 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, client, messageSource);
 		return commonModelAndView;
 	}
-	
-	
+
+
 	/**
 	 * 发卡
 	 * @author wang.l
@@ -445,7 +446,7 @@ public class ClientController extends BaseController {
 		commonModelAndView.addObject("client", client);
 		return commonModelAndView;
 	}
-	
+
 	@RequestMapping("/clientcenter/client/maintain/delete")
 	public CommonModelAndView delete(Client client, HttpServletRequest request) {
 		String viewName = null;
@@ -493,7 +494,7 @@ public class ClientController extends BaseController {
 		}
 		model.put("client", client);
 		return commonModelAndView;
-	
+
 	}
 
 	/**
@@ -509,16 +510,16 @@ public class ClientController extends BaseController {
 			if (obj instanceof SalonFeedback){
 				consume = (Consume)obj;
 			}
-		} 
+		}
 		CommonModelAndView commonModelAndView = new CommonModelAndView(request, consume);
 		commonModelAndView.addObject("code", consume.getC());
 		commonModelAndView.addObject("consume", consume);
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 列表json
-	 * 
+	 *
 	 * @param client
 	 * @param request
 	 * @return
@@ -553,7 +554,7 @@ public class ClientController extends BaseController {
 					c.setCredit(String.valueOf(money));
 					clientService.update(c);
 				}
-				
+
 			}
 			viewName = this.SUCCESS;
 		} catch (Exception e) {
@@ -563,7 +564,7 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, consume, messageSource);
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 增加页面跳转
 	 * @param consume
@@ -576,10 +577,10 @@ public class ClientController extends BaseController {
 		commonModelAndView.addObject("consume", consume);
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 保存修改方法
-	 * 
+	 *
 	 * @param member
 	 * @param result
 	 * @param model
@@ -613,7 +614,7 @@ public class ClientController extends BaseController {
 		String viewName = null;
 		try {
 			consumeService.save(consume);
-			
+
 			//获取客户信息
 			Client client = new Client();
 			client.setId(Long.valueOf(consume.getClientId()));
@@ -624,14 +625,14 @@ public class ClientController extends BaseController {
 			Consume cm = consumeService.getMoneyTotal(consume);
 			if(cm != null){
 				int money = 300000 - Integer.parseInt(cm.getTotal());
-				String content = "您的卡号位数为"+ cardNum +"的消费卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"元，余额"+ money +"元）";
+				String content = "您的卡号位数为"+ cardNum +"的逸贷卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"元，余额"+ money +"元）";
 				SMSRest.sendSms("22042", client.getPhone(), content);
 				Client c = new Client();
 				c.setId(Long.valueOf(consume.getClientId()));
 				c.setCredit(money+"");
 				clientService.update(c);
 			}
-			
+
 			viewName = this.SUCCESS;
 
 		} catch (Exception e) {
@@ -641,7 +642,7 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, consume, messageSource);
 		return commonModelAndView;
 	}
-	
+
 
 	/**
 	 * 贷款短信提醒
@@ -662,7 +663,7 @@ public class ClientController extends BaseController {
 		}
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 贷款短信提醒
 	 * @author wang.l
@@ -687,7 +688,7 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, c, messageSource);
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 催款提醒
 	 * @author wang.l
@@ -707,7 +708,7 @@ public class ClientController extends BaseController {
 		}
 		return commonModelAndView;
 	}
-	
+
 	/**
 	 * 催款提醒提醒
 	 * @author wang.l
@@ -732,8 +733,8 @@ public class ClientController extends BaseController {
 		CommonModelAndView commonModelAndView = new CommonModelAndView(viewName, c, messageSource);
 		return commonModelAndView;
 	}
-	
-	
+
+
 	/**
 	 * 获取下拉列表树信息
 	 * @param id
@@ -742,8 +743,8 @@ public class ClientController extends BaseController {
 	 */
 	@RequestMapping("/clientcenter/client/maintain/stree")
 	public CommonModelAndView stree(String id,HttpServletRequest request){
-		Map<String, Object> map = organiztionService.getSelectTree(id); 
-		return new CommonModelAndView("jsonView",map); 		
+		Map<String, Object> map = organiztionService.getSelectTree(id);
+		return new CommonModelAndView("jsonView",map);
 	}
 	@Override
 	public String uploadfile(BaseEntity baseEntity, HttpServletRequest request) {
