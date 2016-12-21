@@ -230,7 +230,8 @@ public class ClientController extends BaseController {
 				clientService.save(client);
 				if(CommonUtil.isNotEmpty(client.getPhone()) && CommonUtil.isNotEmpty(client.getName())){
 					//尊敬的用户{1}，您在我公司申请的逸贷卡，我公司已受理，客服会在24小时内与您联系。
-					SMSRest.sendSms("22039", client.getPhone(), client.getName());
+					String str = client.getName() + ",您在我公司申请的逸贷卡";
+					SMSRest.sendSms("22039", client.getPhone(), str);
 				}
 			} else {
 				clientService.update(client);
@@ -238,7 +239,8 @@ public class ClientController extends BaseController {
 				client.setName(c.getName());
 				if(action.equals("sendcard") && CommonUtil.isNotEmpty(c.getPhone())){
 					//尊敬的用户{1}，您的消费卡授信额度为300000元，卡片7日内将会寄出，请您注意查收并激活，感谢你对本公司的大力支持。
-					SMSRest.sendSms("22040", c.getPhone(), c.getName());
+					String str = c.getName() + ",您的逸贷卡授信额度为300000元";
+					SMSRest.sendSms("22040", c.getPhone(), str);
 				}
 			}
 			viewName = this.SUCCESS;
@@ -411,7 +413,7 @@ public class ClientController extends BaseController {
 					//尊敬的用户{1}，您的卡号位数为{2}的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后可用马上购物。
 					//尊敬的用户{1}您可以马上购物。
 					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
-					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的逸贷款现已激活，可用额度为30万，使用此卡可以申请无抵押贷款，商城购物，购车，网贷等业务，请您正常使用此卡（杜绝套现）";
+					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的逸贷卡现已激活，可用额度为30万，使用此卡可以申请无抵押贷款，商城购物，购车，网贷等业务，请您正常使用此卡（杜绝套现）";
 					SMSRest.sendSms("22063", c.getPhone(), content);
 				}
 				viewName = this.SUCCESS;
@@ -619,13 +621,13 @@ public class ClientController extends BaseController {
 			Client client = new Client();
 			client.setId(Long.valueOf(consume.getClientId()));
 			client = clientService.getOneById(client);
-			//尊敬的用户{1}，您的卡号位数为{2}的消费卡购买产品（{3}价值{4}元，余额{5}元）已得到商城确认，商品会在7-10个工作日寄出。
-			//尊敬的用户{1}已得到商城确认，商品会在7-10个工作日寄出。
+			//尊敬的用户{1}，您的卡号尾数为{2}的消费卡购买产品（{3}价值{4}元，余额{5}元）已得到商城确认，商品会在7-10个工作日寄出。
+			//尊敬的用户{1}已得到商城确认，商品会在3-10个工作日寄出。
 			String cardNum = client.getCardNum().substring(client.getCardNum().length()-4);
 			Consume cm = consumeService.getMoneyTotal(consume);
 			if(cm != null){
 				int money = 300000 - Integer.parseInt(cm.getTotal());
-				String content = "您的卡号位数为"+ cardNum +"的逸贷卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"元，余额"+ money +"元）";
+				String content = "您的卡号尾数为"+ cardNum +"的逸贷卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"，额度"+ money +"）";
 				SMSRest.sendSms("22042", client.getPhone(), content);
 				Client c = new Client();
 				c.setId(Long.valueOf(consume.getClientId()));
