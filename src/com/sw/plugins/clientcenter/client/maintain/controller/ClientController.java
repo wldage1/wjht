@@ -413,7 +413,7 @@ public class ClientController extends BaseController {
 					//尊敬的用户{1}，您的卡号位数为{2}的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后可用马上购物。
 					//尊敬的用户{1}您可以马上购物。
 					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
-					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的逸贷卡现已激活，可用额度为30万，使用此卡可以申请无抵押贷款，商城购物，购车，网贷等业务，请您正常使用此卡（杜绝套现）";
+					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的逸贷卡现已激活，总积分30万，请您正常使用此卡（杜绝套现）";
 					SMSRest.sendSms("22063", c.getPhone(), content);
 				}
 				viewName = this.SUCCESS;

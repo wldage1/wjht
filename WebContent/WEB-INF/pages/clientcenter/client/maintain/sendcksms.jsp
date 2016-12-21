@@ -57,17 +57,17 @@ $(document).ready(function(){
 						<tr>
 							<td width="15%" align="right" class="skinLayout_info">短信示例<msg:message code="system.common.sign.colon"/></td>
 							<td width="85%" class="skinLayout_lable">
-								 &nbsp短信模板：尊敬的会员{1}。请您在三日内进行还款。<br>
-								 &nbsp示例： 尊敬的会员xxx您好，{&nbsp您本月消费金额为xx，本月消费利息为xx，应还款xx，如未能全额还款，需偿还利息xx&nbsp}，请您在三日内进行还款。<br>
+								 &nbsp短信模板：尊敬的会员{1}。（此卡在微金汇通商城购物一积分等于一元）<br>
+								 &nbsp示例： 尊敬的会员xxx，{&nbsp您本月消费xx积分，应偿还积分转换总额xx，如未能偿还转换积分总额，需每月按时偿还xx转换积分&nbsp}<br>
 								 &nbsp<span style="color:red;"><b>注意：您只需要填写{}内的内容，注意不包括{}；&nbsp短信内容（包括标点符号）不能超过65个字。</b></span>
 							</td>
 						</tr>
 						<tr>
 							<td width="15%" align="right" class="skinLayout_info">短信内容<msg:message code="system.common.sign.colon"/></td>
 							<td width="85%" class="skinLayout_lable">
-								<span>尊敬的会员&nbsp${client.name}&nbsp您好，</span><br>
-								<form:input type="text" id="sms" path="sms" placeholder="您本月消费金额为xx，本月消费利息为xx，应还款xx，如未能全额还款，需还利息xx" maxlength="100" style="width: 600px;" /><font color="red">&nbsp;*&nbsp;<form:errors path="sms" delimiter=","/></font><br>
-								<span>，请您在三日内进行还款。</span><br>
+								<span>尊敬的会员&nbsp${client.name}&nbsp，</span><br>
+								<form:input type="text" id="sms" path="sms" placeholder="您本月消费xx积分，应偿还积分转换总额xx，如未能偿还转换积分总额，需每月按时偿还xx转换积分" maxlength="100" style="width: 600px;" /><font color="red">&nbsp;*&nbsp;<form:errors path="sms" delimiter=","/></font><br>
+								<span></span><br>
 							</td>
 						</tr>
 
@@ -83,5 +83,5 @@ $(document).ready(function(){
 				</form:form>
 			</td>
 		</tr>
-	</table> 
+	</table>
 </html>
