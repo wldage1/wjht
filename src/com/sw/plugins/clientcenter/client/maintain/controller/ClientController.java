@@ -410,10 +410,10 @@ public class ClientController extends BaseController {
 				clientService.update(client);
 				Client c = clientService.getOneById(client);
 				if(CommonUtil.isNotEmpty(c.getCardNum()) && CommonUtil.isNotEmpty(c.getPhone())){
-					//尊敬的用户{1}，您的卡号位数为{2}的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后可用马上购物。
+					//尊敬的用户{1}，您的卡号尾数为{2}的消费卡现已激活，可用额度为300000元，此卡暂无提现额度，激活后可用马上购物。
 					//尊敬的用户{1}您可以马上购物。
 					String cardNum = c.getCardNum().substring(c.getCardNum().length()-4);
-					String content = c.getName() + "，您的卡号位数为"+ cardNum +"的逸贷卡现已激活，总积分30万，请您正常使用此卡（杜绝套现）";
+					String content = c.getName() + "，您的卡号尾数为"+ cardNum +"的逸贷卡现已激活，总积分30万，请您正常使用此卡（杜绝套现）";
 					SMSRest.sendSms("22063", c.getPhone(), content);
 				}
 				viewName = this.SUCCESS;
