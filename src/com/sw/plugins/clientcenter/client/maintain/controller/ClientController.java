@@ -238,7 +238,7 @@ public class ClientController extends BaseController {
 				Client c = clientService.getOneById(client);
 				client.setName(c.getName());
 				if(action.equals("sendcard") && CommonUtil.isNotEmpty(c.getPhone())){
-					//尊敬的用户{1}，您的消费卡授信额度为300000元，卡片7日内将会寄出，请您注意查收并激活，感谢你对本公司的大力支持。
+					//尊敬的用户{1}，您的消费卡授信额度为30万，卡片7日内将会寄出，请您注意查收并激活，感谢你对本公司的大力支持。
 					String str = c.getName() + "，您的逸贷卡授信总积分为30万";
 					SMSRest.sendSms("22040", c.getPhone(), str);
 				}

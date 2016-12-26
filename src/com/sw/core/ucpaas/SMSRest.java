@@ -5,9 +5,9 @@
  */
 package com.sw.core.ucpaas;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+
+import org.apache.log4j.Logger;
 
 import com.sw.core.common.Constant;
 import com.sw.core.ucpaas.client.AbsRestClient;
@@ -15,9 +15,11 @@ import com.sw.core.ucpaas.client.JsonReqClient;
 import com.sw.core.ucpaas.client.XmlReqClient;
 
 public class SMSRest {
+	private static final Logger logger = Logger.getLogger(SMSRest.class);
+
 	private String accountSid;
 	private String authToken;
-	
+
 	public String getAccountSid() {
 		return accountSid;
 	}
@@ -122,8 +124,12 @@ public class SMSRest {
 	}
 	public static void testTemplateSMS(boolean json,String accountSid,String authToken,String appId,String templateId,String to,String param){
 		try {
-			String result=InstantiationRestAPI(json).templateSMS(accountSid, authToken, appId, templateId, to, param);
-			System.out.println("Response content is: " + result);
+			String result = InstantiationRestAPI(json).templateSMS(accountSid, authToken, appId, templateId, to, param);
+			logger.info("############################[发送结果]##########################");
+			logger.info("******[TemplateId]" + templateId + " [To] " + to);
+			logger.info("******[Conetent] " + param);
+			logger.info("******[Result] " + result);
+			logger.info("############################[发送结果]##########################");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -144,7 +150,7 @@ public class SMSRest {
 			// TODO: handle exception
 		}
 	}
-	
+
 	public static void sendSms(String templateId, String to, String content){
 		//是否开启短信发送功能
 		String isOpen = SysConfig.getInstance().getProperty("is_open");
@@ -152,9 +158,9 @@ public class SMSRest {
 			testTemplateSMS(true, Constant.ACCOUNT_SID, Constant.AUTH_TOKEN, Constant.APPID, templateId, to, content);
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 测试说明 参数顺序，请参照各具体方法参数名称
 	 * 参数名称含义，请参考rest api 文档
@@ -162,26 +168,26 @@ public class SMSRest {
 	 * @date 2014-06-30
 	 * @param params[]
 	 * @return void
-	 * @throws IOException 
+	 * @throws IOException
 	 * @method main
 	 */
 	public static void main(String[] args) {
-		//微金汇通	25083	错误提醒	 普通模板	
-		//微金汇通	23985	卡拒绝	 普通模板	
-		//微金汇通	22041	卡激活	 普通模板	
+		//微金汇通	25083	错误提醒	 普通模板
+		//微金汇通	23985	卡拒绝	 普通模板
+		//微金汇通	22041	卡激活	 普通模板
 		//微金汇通	22042	消费通知	 普通模板	//尊敬的用户{1}已得到商城确认，商品会在7-10个工作日寄出;"您的卡号位数为"+ cardNum +"的消费卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"元，余额"+ money +"元）";
-		//微金汇通	22040	发卡提醒	 普通模板	
-		//微金汇通	22039	申请购物卡	 普通模板	
+		//微金汇通	22040	发卡提醒	 普通模板
+		//微金汇通	22039	申请购物卡	 普通模板
 		//尊敬的用户{1}，给您带来的困扰请谅解。“尊敬的用户xx,您的额度公司已经处理，目前已经解决，您现在的额度是297320,给您带来的困扰请谅解”
 		//String content = "王磊，您的额度我公司已经处理，目前已经解决，您现在的额度是300000";
-		String content = "卞论，您的卡号位数为"+ 2421 +"的消费卡购买产品（"+ "HTC VR" +"价值"+6680+"元）";
-		SMSRest.sendSms("22042", "18502412421", content);
-		//SMSRest.sendSms("25083", "18240148334", content);
+		//尊敬的用户{1}，您在我公司申请的逸贷卡，我公司已受理，客服会在24小时内与您联系。
+		String str = "王磊，您的逸贷卡授信额度为300000元";
+		SMSRest.sendSms("22040", "18240148334", str);
 	}
-	
+
 	/*public static void main(String[] args) throws IOException {
 		sendSms("22042", "18240148334", null);
-		
+
 		String accountSid="181f13d0347c655770d80c4861f2f882";
 		String token="f0d73a98ed0163ce5b225c042cc97b8e";
 //		String jsonStr="{\"client\":\"1\"}";
@@ -236,7 +242,7 @@ public class SMSRest {
 			String appId="";
 			String para = "";
 			testVoiceCode(json, accountSid, token, appId, to, para);
-		}else if (method.equals("11")) { //短信验证码 
+		}else if (method.equals("11")) { //短信验证码
 //			String accountSid="";
 //			String token="";
 			String appId="f0fac203d73b4ddd9dcfa85604b741e4";
