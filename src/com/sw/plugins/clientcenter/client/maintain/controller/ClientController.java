@@ -230,7 +230,7 @@ public class ClientController extends BaseController {
 				clientService.save(client);
 				if(CommonUtil.isNotEmpty(client.getPhone()) && CommonUtil.isNotEmpty(client.getName())){
 					//尊敬的用户{1}，您在我公司申请的逸贷卡，我公司已受理，客服会在24小时内与您联系。
-					String str = client.getName() + ",您在我公司申请的逸贷卡";
+					String str = client.getName() + "，您在我公司申请的逸贷卡";
 					SMSRest.sendSms("22039", client.getPhone(), str);
 				}
 			} else {
@@ -239,7 +239,7 @@ public class ClientController extends BaseController {
 				client.setName(c.getName());
 				if(action.equals("sendcard") && CommonUtil.isNotEmpty(c.getPhone())){
 					//尊敬的用户{1}，您的消费卡授信额度为300000元，卡片7日内将会寄出，请您注意查收并激活，感谢你对本公司的大力支持。
-					String str = c.getName() + ",您的逸贷卡授信额度为300000元";
+					String str = c.getName() + "，您的逸贷卡授信总积分为30万";
 					SMSRest.sendSms("22040", c.getPhone(), str);
 				}
 			}
@@ -627,7 +627,7 @@ public class ClientController extends BaseController {
 			Consume cm = consumeService.getMoneyTotal(consume);
 			if(cm != null){
 				int money = 300000 - Integer.parseInt(cm.getTotal());
-				String content = "您的卡号尾数为"+ cardNum +"的逸贷卡购买产品（"+ consume.getDescription() +"价值"+consume.getMoney()+"，额度"+ money +"）";
+				String content = "您的卡号尾数为"+ cardNum +"的逸贷卡（购买产品"+ consume.getDescription() +"价值"+consume.getMoney()+"，额度"+ money +"）";
 				SMSRest.sendSms("22042", client.getPhone(), content);
 				Client c = new Client();
 				c.setId(Long.valueOf(consume.getClientId()));
